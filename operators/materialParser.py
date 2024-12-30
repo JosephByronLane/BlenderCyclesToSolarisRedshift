@@ -100,20 +100,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
-
-            elif node.bl_idname == 'ShaderNodeMix':
-                if node.data_type == 'FLOAT':
-                    ir_node = IRNode(node_id=new_id("MixFloat"),
-                                     node_type="MixFloat")
-                    ir_node.properties["fac"] = node.inputs["Fac"].default_value
-                    ir_nodes.append(ir_node)
-                    blender_node_to_id[node] = ir_node.id
-                elif node.data_type == 'COLOR':
-                    ir_node = IRNode(node_id=new_id("MixColor"),
-                                     node_type="MixColor")
-                    ir_node.properties["fac"] = node.inputs["Fac"].default_value
-                    ir_nodes.append(ir_node)
-                    blender_node_to_id[node] = ir_node.id
             else:
                 pass
 
