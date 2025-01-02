@@ -160,8 +160,18 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
+            #separate color
+            elif node.bl_idname == 'ShaderNodeSeparateColor':
+                if(node.mode != 'RGB'):
+                    self.report({'ERROR'}, "Color separate node only supports RGB mode")
+                    return {'CANCELLED'}
 
-            
+                ir_node = IRNode(node_id=new_id("SeparateColor"),
+                                 node_type="RSColorSplitter")
+                ir_node.properties["input"] = tuple(node.inputs["Color"].default_value)
+
+                ir_nodes.append(ir_node)
+                blender_node_to_id[node] = ir_node.id
 
 
             else:

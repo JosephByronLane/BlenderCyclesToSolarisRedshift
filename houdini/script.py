@@ -212,7 +212,7 @@ def import_ir_json():
                 Input_mapping= {
                     "A": "input1",
                     "B": "input2",
-                    "Factor": "mix"
+                    "Factor": "mixAmount"
                 }
 
 
@@ -223,7 +223,14 @@ def import_ir_json():
                     "Blue": "blue",
                 }
 
+            elif this_node.node.type().name() == "redshift::RSColorSplitter":
+                Input_mapping= {
+                    "Color": "input",
+                }
 
+
+
+            #OUTPUTS
             if from_node.type().name() == "redshift::StandardMaterial":
                 output_mapping={
                     "Color": "outColor",
@@ -247,11 +254,16 @@ def import_ir_json():
                 output_mapping={
                     "Color": "outColor"
                 }
-
+            elif from_node.type().name() == "redshift::RSColorSplitter":
+                output_mapping={
+                    "Red": "outR",
+                    "Green": "outG",
+                    "Blue": "outB"
+                }
 
             if input_name in Input_mapping:
                 print(f"Connecting {from_node.name()}'s {from_output_name} to {this_node.name()}'s {input_name}")
-                print(f"{input_name}, {from_node.name()}, {from_output_name}")
+                print(f"{Input_mapping[input_name]}, {from_node.name()}, {output_mapping[from_output_name]}")
 
                 #setNamedInput("refl_roughness", inputNode, "outColor")
                 this_node.setNamedInput(Input_mapping[input_name], from_node, output_mapping[from_output_name])
