@@ -176,6 +176,9 @@ def import_ir_json():
             this_node = created_nodes[node_id]
             from_node = created_nodes[from_id]
 
+            print(f"Iterating over connections: {input_name} -> {from_str} on {from_node} -> {this_node}")
+
+            #INPUTS
             if this_node.type().name() == "redshift::StandardMaterial":
                
                 Input_mapping= {
@@ -223,17 +226,26 @@ def import_ir_json():
                     "Blue": "blue",
                 }
 
-            elif this_node.node.type().name() == "redshift::RSColorSplitter":
+            elif this_node.type().name() == "redshift::RSColorSplitter":
                 Input_mapping= {
                     "Color": "input",
                 }
-
-
+            
+            elif this_node.type().name() == "redshift::BumpMap":
+                Input_mapping= {
+                    "Color": "input",
+                    "Strength": "scale",
+                }
 
             #OUTPUTS
             if from_node.type().name() == "redshift::StandardMaterial":
                 output_mapping={
                     "Color": "outColor",
+                }
+
+            elif from_node.type().name() == "redshift::BumpMap":
+                output_mapping={
+                    "Normal": "out",
                 }
             
             elif from_node.type().name() == "redshift::RSRamp":              
@@ -272,17 +284,11 @@ def import_ir_json():
                 print(f"Input {input_name} not found in Redshift's equivalent node")
                    
 
-            if from_node.type().name() == "Redshift::TextureRamp":
-                # the output might be "outColor" or "out"
-                pass
-
             # The exact approach to hooking up is heavily dependent on how Redshift nodes
             # are exposed in Houdini’s interface. 
             # For now, we'll just do a placeholder:
             pass
 
-    # Layout the nodes so they’re not all stacked
-    print("aaa")
     parent_node.layoutChildren()
     print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
 

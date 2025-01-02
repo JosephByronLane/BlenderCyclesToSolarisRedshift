@@ -89,7 +89,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
-            #special function
             #color ramp node
             elif node.bl_idname == 'ShaderNodeValToRGB':
                 ir_node = IRNode(node_id=new_id("ColorRamp"),
@@ -173,6 +172,29 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
+            #normal map
+            elif node.bl_idname == 'ShaderNodeNormalMap':
+                ir_node = IRNode(node_id=new_id("BumpMap"),
+                                 node_type="BumpMap")
+                print(node.space)
+                if node.space != 'TANGENT' and node.space != 'OBJECT':
+                    self.report({'ERROR'}, "Normal map node only supports tangent/object space")
+                    return {'CANCELLED'}
+
+                ir_node.properties["scale"] = node.inputs["Strength"].default_value
+                if(node.space == 'TANGENT'):
+                    space=1
+                elif(node.space == 'OBJECT'):
+                    space=2
+                else:
+                    space=0
+                #houdini wants a string for the input type
+                ir_node.properties["inputType"] = str(space)
+
+                ir_nodes.append(ir_node)
+                blender_node_to_id[node] = ir_node.id
+
+            
 
             else:
                 pass
