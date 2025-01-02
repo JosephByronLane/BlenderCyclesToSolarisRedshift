@@ -91,7 +91,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
             #color ramp node
             elif node.bl_idname == 'ShaderNodeValToRGB':
                 ir_node = IRNode(node_id=new_id("ColorRamp"),
-                                 node_type="ColorRamp")
+                                 node_type="RSRamp")
                 color_ramp = node.color_ramp
                 stops = []
                 for elt in color_ramp.elements:
@@ -110,15 +110,15 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
             #mix node
             elif node.bl_idname == 'ShaderNodeMix':
-                mixType = "RGBA" #RBGA default
+                mixType = "RSColorMix" #RBGA default
                 if node.data_type == 'FLOAT':
-                    mixType = "FLOAT"
+                    mixType = "RSMathMix"
                 elif node.data_type == 'VECTOR':
                     #TODO: figure out a way to do non uniform factor_mode
                     if node.factor_mode == "NON_UNIFORM":
                         self.report({'ERROR'}, "Non uniform factor mode not supported in vector mix node")
                         return {'CANCELLED'}
-                    mixType = "VECTOR"
+                    mixType = "RSMathVectorMix"
                 elif node.data_type == 'ROTATION':
                     #throw blender error cause idfk what rotation mix type is and idk if redshift has an equivalent lmao
 
