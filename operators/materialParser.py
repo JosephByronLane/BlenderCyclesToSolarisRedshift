@@ -107,8 +107,21 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
+            elif node.bl_idname == 'ShaderNodeCombineColor':
 
-            #generic node handler
+                if(node.mode != 'RGB'):
+                    self.report({'ERROR'}, "Color combine node only supports RGB mode")
+                    return {'CANCELLED'}
+
+                ir_node = IRNode(node_id=new_id("CombineColor"),
+                                 node_type="RSColorMaker")
+                ir_node.properties["red"] = node.inputs["Red"].default_value
+                ir_node.properties["green"] = node.inputs["Green"].default_value
+                ir_node.properties["blue"] = node.inputs["Blue"].default_value
+                ir_node.properties["alpha"] = 1 #blender node doesn't have an alpha input
+
+                ir_nodes.append(ir_node)
+                blender_node_to_id[node] = ir_node.id
 
             #mix node
             elif node.bl_idname == 'ShaderNodeMix':
