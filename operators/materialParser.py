@@ -33,6 +33,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
         new_id.counter = 0
 
         #  nodes
+
+        # generic node handler
         for node in node_tree.nodes:
             if node.bl_idname == 'ShaderNodeBsdfPrincipled':
 
@@ -58,7 +60,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 # "Thin Film Thickness": "thinfilm_thickness",
                 # "Thin Film IOR": "thinfilm_ior"     
 
-                ir_node = IRNode(node_id=new_id("PrincipledBSDF"),  node_type="PrincipledBSDF")
+                ir_node = IRNode(node_id=new_id("PrincipledBSDF"),  node_type="StandardMaterial")
 
                 ir_node.properties["base_color"] = tuple(node.inputs["Base Color"].default_value)
                 ir_node.properties["metalness"] = node.inputs["Metallic"].default_value
@@ -85,6 +87,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
+            #special function
+            #color ramp node
             elif node.bl_idname == 'ShaderNodeValToRGB':
                 ir_node = IRNode(node_id=new_id("ColorRamp"),
                                  node_type="ColorRamp")
@@ -100,6 +104,45 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
+
+
+            #generic node handler
+
+            #mix node
+            elif node.bl_idname == 'ShaderNodeMix':
+                mixType = "RGBA" #RBGA default
+                if node.data_type == 'FLOAT':
+                    mixType = "FLOAT"
+                elif node.data_type == 'VECTOR':
+                    #TODO: figure out a way to do non uniform factor_mode
+                    if node.factor_mode == "NON_UNIFORM":
+                        self.report({'ERROR'}, "Non uniform factor mode not supported in vector mix node")
+                        return {'CANCELLED'}
+                    mixType = "VECTOR"
+                elif node.data_type == 'ROTATION':
+                    #throw blender error cause idfk what rotation mix type is and idk if redshift has an equivalent lmao
+
+                    #TODO: investigate what rotation mix type is
+                    self.report({'ERROR'}, "Rotation mix type not supported in vector mix node")
+                    return {'CANCELLED'}
+                ir_node = IRNode(node_id=new_id("Mix"),
+                                    node_type=mixType)
+                if mixType in ["VECTOR", "RGBA"]:
+                    ir_node.properties["input1"] = tuple(node.inputs["A"].default_value)
+                    ir_node.properties["input2"] = tuple(node.inputs["B"].default_value)
+
+                else:
+                    ir_node.properties["input1"] = node.inputs["A"].default_value
+                    ir_node.properties["input2"] = node.inputs["B"].default_value
+
+                ir_node.properties["mixAmount"] = node.inputs["Factor"].default_value
+                ir_nodes.append(ir_node)
+                blender_node_to_id[node] = ir_node.id
+
+
+            
+
+
             else:
                 pass
 
