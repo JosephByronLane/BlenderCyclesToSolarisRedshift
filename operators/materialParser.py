@@ -195,7 +195,28 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
-            
+            #math node
+            elif node.bl_idname == 'ShaderNodeMath':
+                if node.operation == 'ADD':
+                    node_type = "RSMathAdd"
+                elif node.operation == 'SUBTRACT':
+                    node_type = "RSMathSub"
+                elif node.operation == 'MULTIPLY':
+                    node_type = "RSMathMul"
+                elif node.operation == 'DIVIDE':
+                    node_type = "RSMathDiv"
+                else:
+                    self.report({'ERROR'}, "Unsupported math node operation")
+                    return {'CANCELLED'}
+                
+                ir_node = IRNode(node_id=new_id("Math"),
+                                 node_type=node_type)
+                #we use numbered outputs here since blender doesn't have a way to name them
+                ir_node.properties["input1"] = node.inputs[0].default_value
+                ir_node.properties["input2"] = node.inputs[1].default_value
+
+                ir_nodes.append(ir_node)
+                blender_node_to_id[node] = ir_node.id
 
             else:
                 pass

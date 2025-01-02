@@ -126,7 +126,7 @@ def import_ir_json():
             
             created_nodes[node_id] = new_node
         
-            
+        
         #Generic node handler    
         else:
             node_to_create_type = "redshift::" + node_type
@@ -236,6 +236,13 @@ def import_ir_json():
                     "Strength": "scale",
                 }
 
+            #math nodes
+            elif this_node.type().name() == "redshift::RSMathMul" or this_node.type().name() == "redshift::RSMathAdd" or this_node.type().name() == "redshift::RSMathSub" or this_node.type().name() == "redshift::RSMathDiv":
+                Input_mapping= {
+                    "input1": "input1",
+                    "input2": "input2",
+                }
+
             #OUTPUTS
             if from_node.type().name() == "redshift::StandardMaterial":
                 output_mapping={
@@ -271,6 +278,14 @@ def import_ir_json():
                     "Green": "outG",
                     "Blue": "outB"
                 }
+
+            elif from_node.type().name() == "redshift::RSMathMul" or from_node.type().name() == "redshift::RSMathAdd" or from_node.type().name() == "redshift::RSMathSub" or from_node.type().name() == "redshift::RSMathDiv":
+                output_mapping={
+                    "Value": "out"
+                }
+
+
+            
 
             if input_name in Input_mapping:
                 print(f"Connecting {from_node.name()}'s {from_output_name} to {this_node.name()}'s {input_name}")
