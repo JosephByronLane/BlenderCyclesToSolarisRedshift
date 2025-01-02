@@ -183,12 +183,11 @@ def import_ir_json():
                 }
                 
                 if input_name in mapping:
-                    this_node.setNamedInput(mapping[input_name], from_node, "outColor")
+                    out_name = from_node.outputNames()[0]   
+                    this_node.setNamedInput(mapping[input_name], from_node, out_name)
                 else:
                     print(f"Input {input_name} not found in Redshift's equivalent node")
                    
-                    
-
 
             if from_node.type().name() == "Redshift::TextureRamp":
                 # the output might be "outColor" or "out"
