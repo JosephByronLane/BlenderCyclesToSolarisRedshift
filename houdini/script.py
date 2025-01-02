@@ -106,20 +106,20 @@ def import_ir_json():
             created_nodes[node_id] = new_node
         
         #RSMathMixVector
-        #for some fucking reason you can address the node's iputs as a tuple,  instead needing to set them per-element
+        #for some fucking reason you can set the node's iputs as a tuple,  instead needing to set them per-element
         elif node_type == "RSMathMixVector":
             node_to_create_type = "redshift::" + node_type
             print("Creating node of type", node_to_create_type)
             new_node = parent_node.createNode(node_to_create_type, node_name=node_id)
             for name, value in props.items():
                 try:
-                    for j in range(1, 3):
-                        for i in range(1, 4):
-                            parm = new_node.parm(f"input{j}{i}")
-                            if parm:
-                                parm.set(value[(i-1)])
-                            else:
-                                print(f"Parameter '{name}' not found on node '{node_id}'.")
+                    for i in range(1, 4):
+                        parm_name = f"{name}{i}"  # 'input11', 'input12', 'input13'
+                        parm = new_node.parm(parm_name)
+                        if parm:
+                            parm.set(value[i-1])
+                        else:
+                            print(f"Parameter '{parm_name}' not found on node '{node_id}'.")
 
                 except Exception as e:
                     print(f"Failed to set parameter '{name}' on node '{node_id}': {e}")
@@ -129,7 +129,6 @@ def import_ir_json():
             
         #Generic node handler    
         else:
-            # Create a generic Redshift node
             node_to_create_type = "redshift::" + node_type
             print("Creating node of type", node_to_create_type)
             new_node = parent_node.createNode(node_to_create_type, node_name=node_id)

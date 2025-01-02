@@ -125,7 +125,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
             #mix node
             elif node.bl_idname == 'ShaderNodeMix':
 
-                tupleMix = False
+                isNonUniform = False
                 mixType = "RSColorMix" #RBGA default
                 if node.data_type == 'FLOAT':
                     mixType = "RSMathMix"
@@ -133,7 +133,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 elif node.data_type == 'VECTOR':                        
                     mixType = "RSMathMixVector"
                     if(node.factor_mode == "NON_UNIFORM"):
-                        tupleMix = True
+                        isNonUniform = True
 
                 elif node.data_type == 'ROTATION':
                     #throw blender error cause idfk what rotation mix type is and idk if redshift has an equivalent lmao
@@ -151,10 +151,11 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                     ir_node.properties["input1"] = node.inputs["A"].default_value
                     ir_node.properties["input2"] = node.inputs["B"].default_value
 
-                if (tupleMix):
+                if (isNonUniform):
                     ir_node.properties["mixAmount"] = tuple(node.inputs["Factor"].default_value)
                 else:
-                    ir_node.properties["mixAmount"] = node.inputs["Factor"].default_value
+                    default_val = node.inputs["Factor"].default_value
+                    ir_node.properties["mixAmount"] = (default_val, default_val, default_val)
 
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
