@@ -66,8 +66,11 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_node.properties["metalness"] = node.inputs["Metallic"].default_value
                 ir_node.properties["refl_roughness"] = node.inputs["Roughness"].default_value
                 ir_node.properties["diffuse_roughness"] = node.inputs["Diffuse Roughness"].default_value
-                ir_node.properties["opacity_color"] = node.inputs["Alpha"].default_value
-                ir_node.properties["bump_input"] = tuple(node.inputs["Normal"].default_value)
+                ir_node.properties["opacity_color"] = (
+                    node.inputs["Alpha"].default_value,
+                    node.inputs["Alpha"].default_value,
+                    node.inputs["Alpha"].default_value
+                )
                 ir_node.properties["ms_amount"] = node.inputs["Subsurface Weight"].default_value
                 ir_node.properties["ms_radius"] = tuple(node.inputs["Subsurface Radius"].default_value)
                 ir_node.properties["ms_phase"] = node.inputs["Subsurface Anisotropy"].default_value
@@ -76,7 +79,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_node.properties["coat_roughness"] = node.inputs["Coat Roughness"].default_value
                 ir_node.properties["coat_ior"] = node.inputs["Coat IOR"].default_value
                 ir_node.properties["coat_color"] = tuple(node.inputs["Coat Tint"].default_value)
-                ir_node.properties["coat_bump_input"] = tuple(node.inputs["Coat Normal"].default_value)
                 ir_node.properties["sheen_weight"] = node.inputs["Sheen Weight"].default_value
                 ir_node.properties["sheen_roughness"] = node.inputs["Sheen Roughness"].default_value
                 ir_node.properties["sheen_color"] = tuple(node.inputs["Sheen Tint"].default_value)

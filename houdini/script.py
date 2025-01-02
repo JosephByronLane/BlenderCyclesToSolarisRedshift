@@ -90,17 +90,17 @@ def import_ir_json():
                         if parm:
                             parm.set(rgb)
                         else:
-                            print(f"Parameter '{name}' not found on node '{node_id}'.")
+                            print(f"Parameter '{name}' not found on node '{node_type}'.")
                     else:
                         # Single value parameter
                         parm = new_node.parm(name)
                         if parm:
                             parm.set(value)
                         else:
-                            print(f"Parameter '{name}' not found on node '{node_id}'.")
+                            print(f"Parameter '{name}' not found on node '{node_type}'.")
                             
                 except Exception as e:
-                    print(f"Failed to set parameter '{name}' on node '{node_id}': {e}")
+                    print(f"Failed to set parameter '{name}' on node '{node_type}': {e}")
             
           
             created_nodes[node_id] = new_node
