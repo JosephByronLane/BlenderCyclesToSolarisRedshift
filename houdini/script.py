@@ -177,9 +177,8 @@ def import_ir_json():
             from_node = created_nodes[from_id]
 
             if this_node.type().name() == "redshift::StandardMaterial":
-
                
-                mapping= {
+                Input_mapping= {
                     "Base Color":         "base_color",
                     "Metallic":           "metalness",  
                     "Roughness":          "refl_roughness",
@@ -202,12 +201,63 @@ def import_ir_json():
                     "Thin Film Thickness": "thinfilm_thickness",
                     "Thin Film IOR": "thinfilm_ior"                    
                 }
-                
-                if input_name in mapping:
-                    out_name = from_node.outputNames()[0]   
-                    this_node.setNamedInput(mapping[input_name], from_node, out_name)
-                else:
-                    print(f"Input {input_name} not found in Redshift's equivalent node")
+
+
+            elif this_node.type().name() == "redshift::RSRamp":
+                Input_mapping= {
+                    "Fac": "input"
+                }
+
+            elif this_node.type().name() == "redshift::RSMathMixVector" or this_node.type().name() == "redshift::RSColorMix" or this_node.type().name() == "redshift::RSMathMix":
+                Input_mapping= {
+                    "A": "input1",
+                    "B": "input2",
+                    "Factor": "mix"
+                }
+
+
+            elif this_node.type().name() == "redshift::RSColorMaker":
+                Input_mapping= {
+                    "Red": "red",
+                    "Green": "green",
+                    "Blue": "blue",
+                }
+
+
+            if from_node.type().name() == "redshift::StandardMaterial":
+                output_mapping={
+                    "Color": "outColor",
+                }
+            
+            elif from_node.type().name() == "redshift::RSRamp":              
+                output_mapping={
+                    "Color": "outColor"
+                }
+
+            elif from_node.type().name() == "redshift::RSColorMix" :
+                output_mapping = {
+                    "Result": "outColor" 
+                }
+            elif from_node.type().name() == "redshift::RSMathMix" or  from_node.type().name() =="redshift::RSMathMixVector":
+                output_mapping = {
+                    "Result": "out" 
+                }
+
+            elif from_node.type().name() == "redshift::RSColorMaker":
+                output_mapping={
+                    "Color": "outColor"
+                }
+
+
+            if input_name in Input_mapping:
+                print(f"Connecting {from_node.name()}'s {from_output_name} to {this_node.name()}'s {input_name}")
+                print(f"{input_name}, {from_node.name()}, {from_output_name}")
+
+                #setNamedInput("refl_roughness", inputNode, "outColor")
+                this_node.setNamedInput(Input_mapping[input_name], from_node, output_mapping[from_output_name])
+
+            else:
+                print(f"Input {input_name} not found in Redshift's equivalent node")
                    
 
             if from_node.type().name() == "Redshift::TextureRamp":

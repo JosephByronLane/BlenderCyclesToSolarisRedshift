@@ -125,6 +125,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
             #mix node
             elif node.bl_idname == 'ShaderNodeMix':
+
+                tupleMix = False
                 mixType = "RSColorMix" #RBGA default
                 if node.data_type == 'FLOAT':
                     mixType = "RSMathMix"
@@ -149,9 +151,9 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 else:
                     ir_node.properties["input1"] = node.inputs["A"].default_value
                     ir_node.properties["input2"] = node.inputs["B"].default_value
+
                 if (tupleMix):
                     ir_node.properties["mixAmount"] = tuple(node.inputs["Factor"].default_value)
-
                 else:
                     ir_node.properties["mixAmount"] = node.inputs["Factor"].default_value
 
