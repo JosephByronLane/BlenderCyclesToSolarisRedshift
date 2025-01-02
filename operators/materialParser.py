@@ -113,12 +113,12 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 mixType = "RSColorMix" #RBGA default
                 if node.data_type == 'FLOAT':
                     mixType = "RSMathMix"
-                elif node.data_type == 'VECTOR':
-                    #TODO: figure out a way to do non uniform factor_mode
-                    if node.factor_mode == "NON_UNIFORM":
-                        self.report({'ERROR'}, "Non uniform factor mode not supported in vector mix node")
-                        return {'CANCELLED'}
+
+                elif node.data_type == 'VECTOR':                        
                     mixType = "RSMathMixVector"
+                    if(node.factor_mode == "NON_UNIFORM"):
+                        tupleMix = True
+
                 elif node.data_type == 'ROTATION':
                     #throw blender error cause idfk what rotation mix type is and idk if redshift has an equivalent lmao
 
@@ -134,8 +134,12 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 else:
                     ir_node.properties["input1"] = node.inputs["A"].default_value
                     ir_node.properties["input2"] = node.inputs["B"].default_value
+                if (tupleMix):
+                    ir_node.properties["mixAmount"] = tuple(node.inputs["Factor"].default_value)
 
-                ir_node.properties["mixAmount"] = node.inputs["Factor"].default_value
+                else:
+                    ir_node.properties["mixAmount"] = node.inputs["Factor"].default_value
+
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
