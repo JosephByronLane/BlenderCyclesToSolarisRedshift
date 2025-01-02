@@ -4,7 +4,7 @@ from bpy.types import Panel, Operator
 
 class VIEW3D_PT_MaterialExporter(Panel):
     """TODO: add description"""
-    bl_label = "RuneFX Utils"
+    bl_label = "aaaaaaaaaaa"
     bl_idname = "RFXUTILS_PT_panel"
     bl_space_type = 'VIEW_3D'     
     bl_region_type = 'UI'         

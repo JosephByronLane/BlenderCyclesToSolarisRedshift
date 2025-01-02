@@ -218,6 +218,20 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                 ir_nodes.append(ir_node)
                 blender_node_to_id[node] = ir_node.id
 
+            #texture node
+            elif node.bl_idname == 'ShaderNodeTexImage':
+                ir_node = IRNode(node_id=new_id("Texture"),
+                                 node_type="TextureSampler")
+                ir_node.properties["tex0"] = node.image.filepath
+
+                if node.image.colorspace_settings.name == 'Non-Color':
+                    ir_node.properties["tex0_colorSpace"] = "Raw"
+                if node.image.colorspace_settings.name == 'sRGB':
+                    ir_node.properties["tex0_colorSpace"] = "AgX Base sRGB"
+
+                ir_nodes.append(ir_node)
+                blender_node_to_id[node] = ir_node.id
+
             else:
                 pass
 
