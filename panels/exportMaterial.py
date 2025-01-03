@@ -13,8 +13,8 @@ class VIEW3D_PT_MaterialExporter(Panel):
     def draw(self, context):
         layout = self.layout
 
-        layout.label(text="Export Materials to Houdini project")
-
+        layout.label(text="Cleanup and export and shit")
+        
         layout.operator("rfxutils.material_parser", text="Export Materials")
 
 def register():
