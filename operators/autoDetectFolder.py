@@ -1,4 +1,4 @@
-import os
+import os, stat
 import bpy
 
 class RFX_OT_AutoDetectFolder(bpy.types.Operator):
@@ -14,12 +14,11 @@ class RFX_OT_AutoDetectFolder(bpy.types.Operator):
             return {'CANCELLED'}
         
         try:
-            entries = os.listdir(h_drive)
             visible_folders = []
             
-            for entry in entries:
+            for entry in os.listdir(h_drive):
                 full_path = os.path.join(h_drive, entry)
-                if os.path.isdir(full_path):
+                if not self.has_hidden_attribute(full_path) and os.path.isdir(full_path):
                     visible_folders.append(full_path)
             
             if not visible_folders:
@@ -35,6 +34,11 @@ class RFX_OT_AutoDetectFolder(bpy.types.Operator):
         except Exception as e:
             self.report({'ERROR'}, f"Error during auto-detection: {e}")
             return {'CANCELLED'}    
+    
+    #from https://stackoverflow.com/questions/284115/cross-platform-hidden-file-detection
+    def has_hidden_attribute(self, filepath):
+        return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+    
 def register():
     bpy.utils.register_class(RFX_OT_AutoDetectFolder)
 
