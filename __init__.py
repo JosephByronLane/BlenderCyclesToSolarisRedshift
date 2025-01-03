@@ -3,8 +3,14 @@ if "bpy" in locals():
     import importlib
     importlib.reload(exportMaterial)
     importlib.reload(materialParser)
+    importlib.reload(projectFolder)
+    importlib.reload(autoDetectFolder)
+    importlib.reload(selectFolder)
 
+#even though we dont use it we need to use bpy for hot reload to work
 import bpy
+
+
 bl_info = {
     "name": "RFXUtils",
     "author": "Rune",
@@ -17,16 +23,27 @@ bl_info = {
     "category": "Import-Export",
 }
 from .panels import exportMaterial
+from .panels import projectFolder
 from .operators import materialParser
-
-
+from .operators import autoDetectFolder
+from .operators import selectFolder
+from .proprieties import customFolder
 def register():
     exportMaterial.register()
     materialParser.register()
+    projectFolder.register()
+    autoDetectFolder.register()
+    selectFolder.register()
+    customFolder.register()
 
 def unregister():
     exportMaterial.unregister()
     materialParser.unregister()
+    projectFolder.unregister()
+    autoDetectFolder.unregister()
+    selectFolder.unregister()
+    customFolder.unregister()
+
 
 if __name__ == "__main__":
     register()

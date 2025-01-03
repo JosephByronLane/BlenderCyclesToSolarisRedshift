@@ -297,6 +297,7 @@ def import_ir_json():
 
                 #setNamedInput("refl_roughness", inputNode, "outColor")
                 this_node.setNamedInput(Input_mapping[input_name], from_node, output_mapping[from_output_name])
+            
             else:
                 print(f"Input {input_name} not found in Redshift's equivalent node")
                    

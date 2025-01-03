@@ -7,7 +7,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
     bl_idname = "rfxutils.material_parser"
     bl_label = "Export Selected Material"
 
-    # Optional: Let the user pick a file path via Blender's file browser
     filepath: bpy.props.StringProperty(
         name="File Path",
         description="Where to save the IR JSON file",

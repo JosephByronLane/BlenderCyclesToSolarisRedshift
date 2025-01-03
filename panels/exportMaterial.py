@@ -4,7 +4,7 @@ from bpy.types import Panel, Operator
 
 class VIEW3D_PT_MaterialExporter(Panel):
     """TODO: add description"""
-    bl_label = "aaaaaaaaaaa"
+    bl_label = "Material Parser"
     bl_idname = "RFXUTILS_PT_panel"
     bl_space_type = 'VIEW_3D'     
     bl_region_type = 'UI'         
@@ -13,9 +13,9 @@ class VIEW3D_PT_MaterialExporter(Panel):
     def draw(self, context):
         layout = self.layout
 
-        layout.label(text="omg asdfasdf please appear.")
+        layout.label(text="Export Materials to Houdini project")
 
-        layout.operator("rfxutils.material_parser", text="test")
+        layout.operator("rfxutils.material_parser", text="Export Materials")
 
 def register():
     bpy.utils.register_class(VIEW3D_PT_MaterialExporter)
