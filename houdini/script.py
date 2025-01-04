@@ -2,20 +2,19 @@ import hou
 import json
 import os, stat
 
-def import_ir_json(filepath, matlibName = "RuneMatlib",):
+def import_ir_json(filepath, matlibNode=None):
     """Create Redshift nodes under parent_node from IR JSON."""
             
+    if matlibNode is None:
+        raise RuntimeError("Error getting material library node")
+
+    
     # Read JSON
     with open(filepath, 'r') as f:
-        ir_data = json.load(f)
-    stage = hou.node("/stage")
-    if not stage:
-        raise RuntimeError("Could not find /stage node!")
-    
-    matlib = stage.createNode('materiallibrary', node_name=matlibName)
+        ir_data = json.load(f)  
 
     matname = filepath.split("/")[-1].split(".")[0]
-    parent_node = matlib.createNode('rs_usd_material_builder', node_name=matname)
+    parent_node = matlibNode.createNode('rs_usd_material_builder', node_name=matname)
 
     created_nodes = {}
     
@@ -73,7 +72,7 @@ def import_ir_json(filepath, matlibName = "RuneMatlib",):
 
 
             #TODO: use relative paths for this
-            new_node = hou.node('/stage/' + matlibName + '/' + matname + '/StandardMaterial1')
+            new_node = hou.node('/stage/' + matlibNode.name() + '/' + matname + '/StandardMaterial1')
             if not new_node:
                 print("didnt fid base material")                
             print("found base material")
@@ -149,9 +148,9 @@ def import_ir_json(filepath, matlibName = "RuneMatlib",):
                     print(f"Failed to set parameter '{name}' on node '{node_id}': {e}")
             
             created_nodes[node_id] = new_node
+            print(f"Created node {new_node} with id {node_id}")
     
-    # Now handle connections
-    # We'll do a second pass to read node_info["connections"] and wire them up
+
     for node_info in ir_data:
         node_id  = node_info["id"]
         conns    = node_info["connections"]  # e.g. {"Base Color": "ColorRamp_2:Color"}        
@@ -315,6 +314,8 @@ def import_ir_json(filepath, matlibName = "RuneMatlib",):
             pass
 
     parent_node.layoutChildren()
+    matlibNode.layoutChildren()
+    
     print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
 
 def has_hidden_attribute(filepath):
@@ -355,6 +356,12 @@ def findAllJson(projectDirectory):
 
 projectFolder = autoDetectFolder()
 jsonFiles = findAllJson(projectFolder)
+stage = hou.node("/stage")
+if not stage:
+    raise RuntimeError("Could not find /stage!")  
+
+matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
+
 for file in jsonFiles:
-    import_ir_json(file)
+    import_ir_json(file, matlibNode)
 
