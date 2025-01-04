@@ -242,8 +242,18 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
+                        elif node.bl_idname == 'ShaderNodeValue':
+                            ir_node = IRNode(node_id=new_id("Value"),
+                                            node_type="RSScalarConstant")
+                            ir_node.properties["val"] = node.outputs[0].default_value
+
+                            ir_nodes.append(ir_node)
+                            blender_node_to_id[node] = ir_node.id
+                            
                         else:
-                            pass
+                                self.report({'ERROR'}, "Unsupported detected: " + node.bl_idname)
+                                return {'CANCELLED'}
+
 
                     # TODO: make sure that it errors on speuclar nodes, i dont wanna deal with it.
                     # connections

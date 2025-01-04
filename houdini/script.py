@@ -243,6 +243,15 @@ def import_ir_json():
                     "input2": "input2",
                 }
 
+            elif this_node.type().name() == "redshift::RSScalarConstant":
+                Input_mapping= {
+                    "Value": "val",
+                }
+
+
+
+
+
             #OUTPUTS
             if from_node.type().name() == "redshift::StandardMaterial":
                 output_mapping={
@@ -289,7 +298,10 @@ def import_ir_json():
                     "Color": "outColor"
                 }
 
-            
+            elif from_node.type().name() == "redshift::RSScalarConstant":
+                output_mapping={
+                    "Value": "out"
+                }
 
             if input_name in Input_mapping:
                 print(f"Connecting {from_node.name()}'s {from_output_name} to {this_node.name()}'s {input_name}")
@@ -311,6 +323,5 @@ def import_ir_json():
     print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
 
 
-# Example usage in Houdini's Python shell (assuming you have a Material Network node at /mat):
-# matnet = hou.node("/mat")
+
 import_ir_json()
