@@ -1,35 +1,56 @@
+
+if "bpy" in locals():
+    import importlib
+    importlib.reload(exportMaterial)
+    importlib.reload(materialParser)
+    importlib.reload(projectFolder)
+    importlib.reload(autoDetectFolder)
+    importlib.reload(selectFolder)
+    importlib.reload(degruopNodes)
+
+#even though we dont use it we need to use bpy for hot reload to work
+import bpy
+
+
 bl_info = {
     "name": "RFXUtils",
     "author": "Rune",
     "version": (0, 1),
     "blender": (4, 3, 0), 
-    "location": "3D View > Sidebar",
+    "location": "3D View > N-panel",
     "description": "Utils for RFX workflow",
     "warning": "",
     "doc_url": "",
-    "category": "3D View",
+    "category": "Import-Export",
 }
+from .panels import exportMaterial
+from .panels import projectFolder
 
-import bpy
+from .operators import materialParser
+from .operators import autoDetectFolder
+from .operators import selectFolder
+from .operators import degruopNodes
 
-class MYEXAMPLEADDON_PT_panel(bpy.types.Panel):
-    """Creates a Panel in the 3D View's Sidebar (N-Panel)"""
-    bl_label = "RuneFX Utils"
-    bl_idname = "RFXUTILS_PT_panel"
-    bl_space_type = 'VIEW_3D'     
-    bl_region_type = 'UI'          
-    bl_category = "RuneFX Utils" 
-
-    def draw(self, context):
-        layout = self.layout
-        layout.label(text="Helasdfasdfasdfasdflo World from My Addon!")
-        layout.operator("mesh.primitive_cube_add", text="Add Cube")
-
+from .proprieties import customFolder
 def register():
-    bpy.utils.register_class(MYEXAMPLEADDON_PT_panel)
+    exportMaterial.register()
+    materialParser.register()
+    projectFolder.register()
+    autoDetectFolder.register()
+    selectFolder.register()
+    customFolder.register()
+    degruopNodes.register()
 
 def unregister():
-    bpy.utils.unregister_class(MYEXAMPLEADDON_PT_panel)
+    exportMaterial.unregister()
+    materialParser.unregister()
+    projectFolder.unregister()
+    autoDetectFolder.unregister()
+    selectFolder.unregister()
+    customFolder.unregister()
+    degruopNodes.unregister()
+
 
 if __name__ == "__main__":
     register()
+
