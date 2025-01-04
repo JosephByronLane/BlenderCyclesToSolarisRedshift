@@ -6,6 +6,7 @@ if "bpy" in locals():
     importlib.reload(projectFolder)
     importlib.reload(autoDetectFolder)
     importlib.reload(selectFolder)
+    importlib.reload(degruopNodes)
 
 #even though we dont use it we need to use bpy for hot reload to work
 import bpy
@@ -24,9 +25,12 @@ bl_info = {
 }
 from .panels import exportMaterial
 from .panels import projectFolder
+
 from .operators import materialParser
 from .operators import autoDetectFolder
 from .operators import selectFolder
+from .operators import degruopNodes
+
 from .proprieties import customFolder
 def register():
     exportMaterial.register()
@@ -35,6 +39,7 @@ def register():
     autoDetectFolder.register()
     selectFolder.register()
     customFolder.register()
+    degruopNodes.register()
 
 def unregister():
     exportMaterial.unregister()
@@ -43,6 +48,7 @@ def unregister():
     autoDetectFolder.unregister()
     selectFolder.unregister()
     customFolder.unregister()
+    degruopNodes.unregister()
 
 
 if __name__ == "__main__":

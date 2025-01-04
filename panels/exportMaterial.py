@@ -14,7 +14,7 @@ class VIEW3D_PT_MaterialExporter(Panel):
         layout = self.layout
 
         layout.label(text="Cleanup and export and shit")
-        
+        layout.operator("rfxutils.ungroup_scene_modal", text="Remove Group Nodes")
         layout.operator("rfxutils.material_parser", text="Export Materials")
 
 def register():
