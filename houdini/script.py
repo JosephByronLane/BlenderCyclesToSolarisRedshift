@@ -1,5 +1,3 @@
-# houdini_import.py
-
 import hou
 import json
 import os, stat
@@ -17,7 +15,6 @@ def import_ir_json(filepath):
     matlib = stage.createNode('materiallibrary', node_name="CharaMatlib")
     parent_node = matlib.createNode('rs_usd_material_builder', node_name="test2")
 
-    # Build a dictionary: node_id -> the newly created Hou node
     created_nodes = {}
     
     for node_info in ir_data:
@@ -31,8 +28,7 @@ def import_ir_json(filepath):
         
         #RSRamp
         if node_type == "RSRamp":
-            # Create a Redshift Ramp node
-            # Redshift has a couple of ramp-like nodes, such as "RSColorRamp" or "Redshift::TextureRamp"
+
             new_node = parent_node.createNode("redshift::RSRamp", node_name=node_id)
             
             stops = props.get("stops", [])
@@ -313,9 +309,7 @@ def import_ir_json(filepath):
                 print(f"Input {input_name} not found in Redshift's equivalent node")
                    
 
-            # The exact approach to hooking up is heavily dependent on how Redshift nodes
-            # are exposed in Houdini’s interface. 
-            # For now, we'll just do a placeholder:
+
             pass
 
     parent_node.layoutChildren()
@@ -346,6 +340,19 @@ def autoDetectFolder(autoDetectDrive='H:/'):
     except Exception as e:
         raise Exception(f"Error during auto-detection: {e}")
 
-# Example usage in Houdini's Python shell (assuming you have a Material Network node at /mat):
-# matnet = hou.node("/mat")
-import_ir_json()
+def findAllJson(projectDirectory):
+    foundFiles=[]
+    for root, dirs, files in os.walk(projectDirectory + '/tex/'):
+    # select file name
+        for file in files:
+            # check the extension of files
+            if file.endswith('.json'):
+                foundFiles.append(os.path.join(root, file))
+
+    return foundFiles
+
+projectFolder = autoDetectFolder()
+jsonFiles = findAllJson(projectFolder)
+for file in jsonFiles:
+    import_ir_json(file)
+
