@@ -244,6 +244,11 @@ def import_ir_json(filepath, matlibNode=None):
                     "Value": "val",
                 }
 
+            elif this_node.type().name() == "redshift::RSColorConstant":
+                Input_mapping= {
+                    "Color": "color",
+                }
+
 
 
 
@@ -294,6 +299,11 @@ def import_ir_json(filepath, matlibNode=None):
                     "Color": "outColor"
                 }
 
+            elif from_node.type().name() == "redshift::RSColorConstant":
+                output_mapping={
+                    "Color": "outColor"
+                }
+
             elif from_node.type().name() == "redshift::RSScalarConstant":
                 output_mapping={
                     "Value": "out"
@@ -315,7 +325,7 @@ def import_ir_json(filepath, matlibNode=None):
 
     parent_node.layoutChildren()
     matlibNode.layoutChildren()
-    
+
     print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
 
 def has_hidden_attribute(filepath):

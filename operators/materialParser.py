@@ -242,6 +242,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
+
+                        #value node
                         elif node.bl_idname == 'ShaderNodeValue':
                             ir_node = IRNode(node_id=new_id("Value"),
                                             node_type="RSScalarConstant")
@@ -250,6 +252,17 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
                             
+                        #rgb node
+                        elif node.bl_idname == 'ShaderNodeRGB':
+                            ir_node = IRNode(node_id=new_id("RGB"),
+                                            node_type="RSColorConstant")
+                            ir_node.properties["color"] = tuple(node.outputs[0].default_value)
+
+                            ir_nodes.append(ir_node)
+                            blender_node_to_id[node] = ir_node.id
+
+
+
                         elif node.bl_idname == 'ShaderNodeOutputMaterial':
                             pass
 
