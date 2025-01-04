@@ -266,7 +266,14 @@ def import_ir_json(filepath, matlibNode=None):
                     "Contrast": "contrast",
                     "Gamma": "gamma",
                 }
-
+            elif this_node.type().name() == "redshift::RSMathRange":
+                Input_mapping= {
+                    "Value": "input",
+                    "From Min": "old_min",
+                    "From Max": "old_max",
+                    "To Min": "new_min",
+                    "To Max": "new_max",
+                }
 
             #OUTPUTS
             if from_node.type().name() == "redshift::StandardMaterial":
@@ -332,6 +339,10 @@ def import_ir_json(filepath, matlibNode=None):
             elif from_node.type().name() == "redshift::RSColorCorrection":
                 output_mapping={
                     "Color": "outColor"
+                }
+            elif from_node.type().name() == "redshift::RSMathRange":
+                output_mapping={
+                    "Result": "out"
                 }
 
             if input_name in Input_mapping:

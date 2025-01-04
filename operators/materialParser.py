@@ -83,7 +83,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             )
                             ir_node.properties["ms_amount"] = node.inputs["Subsurface Weight"].default_value
                             ir_node.properties["ms_radius"] = tuple(node.inputs["Subsurface Radius"].default_value)
-                            ir_node.properties["ms_phase"] = node.inputs["Subsurface Anisotropy"].default_value
                             ir_node.properties["refr_weight"] = node.inputs["Transmission Weight"].default_value
                             ir_node.properties["coat_weight"] = node.inputs["Coat Weight"].default_value
                             ir_node.properties["coat_roughness"] = node.inputs["Coat Roughness"].default_value
@@ -290,6 +289,25 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
+                        #range node
+                        elif node.bl_idname == 'ShaderNodeMapRange':
+                            ir_node = IRNode(node_id=new_id("MapRange"),
+                                            node_type="RSMathRange")
+                            
+                            if node.data_type=='FLOAT_VECTOR':
+                                self.report({'ERROR'}, "Vector Map Range isn't supported")
+                                return {'CANCELLED'}
+                            
+                            ir_node.properties["input"] = node.inputs["Value"].default_value
+                            ir_node.properties["old_min"] = node.inputs[1].default_value
+                            ir_node.properties["old_max"] = node.inputs[2].default_value
+                            ir_node.properties["new_min"] = node.inputs[3].default_value
+                            ir_node.properties["new_max"] = node.inputs[4].default_value
+                            
+
+                            ir_nodes.append(ir_node)
+                            blender_node_to_id[node] = ir_node.id
+
                         #math node
                         elif node.bl_idname == 'ShaderNodeMath':
                             if node.operation == 'ADD':
@@ -307,7 +325,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_node = IRNode(node_id=new_id("Math"),
                                             node_type=node_type)
                             #we use numbered outputs here since blender doesn't have a way to name them
-                            ir_node.properties["input1"] = node.inputs[0].default_value
+                            ir_node.properties["input1"] = node.inputs[0].default_valuegi
                             ir_node.properties["input2"] = node.inputs[1].default_value
 
                             ir_nodes.append(ir_node)
@@ -346,7 +364,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
-                        #gamma node
                                   
 
                         elif node.bl_idname == 'ShaderNodeOutputMaterial':
