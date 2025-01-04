@@ -2,7 +2,7 @@ import hou
 import json
 import os, stat
 
-def import_ir_json(filepath):
+def import_ir_json(filepath, matlibName = "RuneMatlib",):
     """Create Redshift nodes under parent_node from IR JSON."""
             
     # Read JSON
@@ -12,8 +12,10 @@ def import_ir_json(filepath):
     if not stage:
         raise RuntimeError("Could not find /stage node!")
     
-    matlib = stage.createNode('materiallibrary', node_name="CharaMatlib")
-    parent_node = matlib.createNode('rs_usd_material_builder', node_name="test2")
+    matlib = stage.createNode('materiallibrary', node_name=matlibName)
+
+    matname = filepath.split("/")[-1].split(".")[0]
+    parent_node = matlib.createNode('rs_usd_material_builder', node_name=matname)
 
     created_nodes = {}
     
@@ -71,7 +73,7 @@ def import_ir_json(filepath):
 
 
             #TODO: use relative paths for this
-            new_node = hou.node('/stage/CharaMatlib/test2/StandardMaterial1')
+            new_node = hou.node('/stage/' + matlibName + '/' + matname + '/StandardMaterial1')
             if not new_node:
                 print("didnt fid base material")                
             print("found base material")
