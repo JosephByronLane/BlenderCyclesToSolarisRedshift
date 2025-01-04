@@ -257,8 +257,15 @@ def import_ir_json(filepath, matlibNode=None):
                     "Factor": "layer1_mask",
                 }
 
-
-
+            elif this_node.type().name() == "redshift::RSColorCorrection":
+                Input_mapping= {
+                    "Color": "input",
+                    "Hue": "hue",
+                    "Saturation": "saturation",
+                    "Value": "level",
+                    "Contrast": "contrast",
+                    "Gamma": "gamma",
+                }
 
 
             #OUTPUTS
@@ -320,6 +327,11 @@ def import_ir_json(filepath, matlibNode=None):
             elif from_node.type().name() == "redshift::RSColorLayer":
                 output_mapping={
                     "Result": "outColor"
+                }
+
+            elif from_node.type().name() == "redshift::RSColorCorrection":
+                output_mapping={
+                    "Color": "outColor"
                 }
 
             if input_name in Input_mapping:

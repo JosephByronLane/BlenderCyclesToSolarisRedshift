@@ -270,6 +270,26 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
+                        #HSV node
+                        elif node.bl_idname == 'ShaderNodeHueSaturation':
+                            ir_node = IRNode(node_id=new_id("HueSaturation"),
+                                            node_type="RSColorCorrection")
+                            ir_node.properties["hue"] = node.inputs["Hue"].default_value
+                            ir_node.properties["saturation"] = node.inputs["Saturation"].default_value
+                            ir_node.properties["level"] = node.inputs["Value"].default_value
+
+                            ir_nodes.append(ir_node)
+                            blender_node_to_id[node] = ir_node.id
+
+                        #gamma node
+                        elif node.bl_idname == 'ShaderNodeGamma':
+                            ir_node = IRNode(node_id=new_id("Gamma"),
+                                            node_type="RSColorCorrection")
+                            ir_node.properties["gamma"] = node.inputs["Gamma"].default_value
+
+                            ir_nodes.append(ir_node)
+                            blender_node_to_id[node] = ir_node.id
+
                         #math node
                         elif node.bl_idname == 'ShaderNodeMath':
                             if node.operation == 'ADD':
@@ -326,7 +346,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
-                        
+                        #gamma node
+                                  
 
                         elif node.bl_idname == 'ShaderNodeOutputMaterial':
                             pass
