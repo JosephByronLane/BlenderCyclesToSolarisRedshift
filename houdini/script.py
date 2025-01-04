@@ -2,12 +2,11 @@
 
 import hou
 import json
+import os, stat
 
-def import_ir_json():
+def import_ir_json(filepath):
     """Create Redshift nodes under parent_node from IR JSON."""
-    
-    filepath = "E:\Steam\steamapps\common\Blender\my_material.json"
-    
+            
     # Read JSON
     with open(filepath, 'r') as f:
         ir_data = json.load(f)
@@ -322,6 +321,31 @@ def import_ir_json():
     parent_node.layoutChildren()
     print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
 
+def has_hidden_attribute(filepath):
+    return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
 
+def autoDetectFolder(autoDetectDrive='H:/'):
+    try: 
+        if not os.path.exists(autoDetectDrive):
+            raise Exception("Auto Detect directory doesn't exist") 
+    
+        visible_folders = []
+        
+        for entry in os.listdir(autoDetectDrive):
+            full_path = os.path.join(autoDetectDrive, entry)
+            if not has_hidden_attribute(full_path) and os.path.isdir(full_path):
+                visible_folders.append(full_path)
+        
+        if not visible_folders:
+            raise Exception( "No visible folders found in H: drive.")
+        
+        #select the first folder, since there should one be one ($ACTIVE) 
+        selected_folder = visible_folders[0]
+        return selected_folder
+    
+    except Exception as e:
+        raise Exception(f"Error during auto-detection: {e}")
 
+# Example usage in Houdini's Python shell (assuming you have a Material Network node at /mat):
+# matnet = hou.node("/mat")
 import_ir_json()

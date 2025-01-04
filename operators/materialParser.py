@@ -250,9 +250,12 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
                             
+                        elif node.bl_idname == 'ShaderNodeOutputMaterial':
+                            pass
+
                         else:
-                                self.report({'ERROR'}, "Unsupported detected: " + node.bl_idname)
-                                return {'CANCELLED'}
+                            self.report({'INFO'}, "Unsupported detected: " + node.bl_idname)
+                            pass
 
 
                     # TODO: make sure that it errors on speuclar nodes, i dont wanna deal with it.
