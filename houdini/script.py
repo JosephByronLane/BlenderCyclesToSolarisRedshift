@@ -180,6 +180,7 @@ def import_ir_json(filepath, matlibNode=None):
                     "Base Color":         "base_color",
                     "Metallic":           "metalness",  
                     "Roughness":          "refl_roughness",
+                    "IOR":                "refl_ior",
                     "Diffuse Roughness":  "diffuse_roughness",
                     "Alpha":              "opacity_color",
                     "Normal": "bump_input",
@@ -248,6 +249,13 @@ def import_ir_json(filepath, matlibNode=None):
                 Input_mapping= {
                     "Color": "color",
                 }
+            
+            elif this_node.type().name() == "redshift::RSColorLayer":
+                Input_mapping= {
+                    "A": "base_color",
+                    "B": "layer1_color",
+                    "Factor": "layer1_mask",
+                }
 
 
 
@@ -309,8 +317,14 @@ def import_ir_json(filepath, matlibNode=None):
                     "Value": "out"
                 }
 
+            elif from_node.type().name() == "redshift::RSColorLayer":
+                output_mapping={
+                    "Result": "outColor"
+                }
+
             if input_name in Input_mapping:
                 print(f"Connecting {from_node.name()}'s {from_output_name} to {this_node.name()}'s {input_name}")
+                print(output_mapping)
                 print(f"{Input_mapping[input_name]}, {from_node.name()}, {output_mapping[from_output_name]}")
 
                 #setNamedInput("refl_roughness", inputNode, "outColor")

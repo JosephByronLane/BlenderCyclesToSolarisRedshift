@@ -136,7 +136,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                         elif node.bl_idname == 'ShaderNodeMix':
 
                             isNonUniform = False
-                            mixType = "RSColorMix" #RBGA default
                             if node.data_type == 'FLOAT':
                                 mixType = "RSMathMix"
 
@@ -151,21 +150,87 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                 #TODO: investigate what rotation mix type is
                                 self.report({'ERROR'}, "Rotation mix type not supported in vector mix node")
                                 return {'CANCELLED'}
+                            
+                            elif node.data_type == 'RGBA':
+                                if node.blend_type=='MIX':
+                                    mixType = "RSColorMix"
+                                else:
+                                    #we use colorLayer rather than colorComposite because ColorComposite doesn't support mask blending.
+                                    mixType = "RSColorLayer"
+                            
+
                             ir_node = IRNode(node_id=new_id("Mix"),
                                                 node_type=mixType)
-                            if node.data_type == 'RGBA' or node.data_type == 'VECTOR':
-                                ir_node.properties["input1"] = tuple(node.inputs["A"].default_value)
-                                ir_node.properties["input2"] = tuple(node.inputs["B"].default_value)
+                            
+                            inputA = node.inputs["A"].default_value
+                            inputB = node.inputs["B"].default_value
 
+                            if node.data_type in ('RGBA', 'VECTOR'):
+                                if mixType != "RSColorLayer":
+                                    ir_node.properties["input1"] = tuple(inputA)
+                                    ir_node.properties["input2"] = tuple(inputB)
+                                else:
+                                    ir_node.properties["base_color"] = tuple(inputA)
+                                    ir_node.properties["layer1_color"] = tuple(inputB)
                             else:
-                                ir_node.properties["input1"] = node.inputs["A"].default_value
-                                ir_node.properties["input2"] = node.inputs["B"].default_value
+                                ir_node.properties["input1"] = inputA
+                                ir_node.properties["input2"] = inputB
 
-                            if (isNonUniform):
-                                ir_node.properties["mixAmount"] = tuple(node.inputs["Factor"].default_value)
+
+                            if mixType != "RSColorLayer":
+                                if (isNonUniform):
+                                    ir_node.properties["mixAmount"] = tuple(node.inputs["Factor"].default_value)
+                                else:
+                                    default_val = node.inputs["Factor"].default_value
+                                    ir_node.properties["mixAmount"] = (default_val, default_val, default_val)
                             else:
-                                default_val = node.inputs["Factor"].default_value
-                                ir_node.properties["mixAmount"] = (default_val, default_val, default_val)
+                                ir_node.properties["layer1_mask"] = node.inputs["Factor"].default_value
+
+                            #composite nodes
+                            if node.blend_type != 'MIX':
+
+                                if node.blend_type == 'DARKEN':
+                                    blendType = "7"
+                                elif node.blend_type == 'MULTIPLY':
+                                    blendType = "4"
+                                elif node.blend_type == 'BURN':
+                                    blendType = "11"
+                                    
+                                elif node.blend_type == 'LIGHTEN':
+                                    blendType = "6"
+                                elif node.blend_type == 'SCREEN':
+                                    blendType = "8"
+                                elif node.blend_type == 'DODGE':
+                                    blendType = "12"
+                                elif node.blend_type == 'ADD':
+                                    blendType = "2"
+
+                                elif node.blend_type == 'OVERLAY':
+                                    blendType = "13"
+                                elif node.blend_type == 'SOFT_LIGHT':
+                                    blendType = "10"
+                                #linear light doesn't exist in redshift
+
+                                elif node.blend_type == 'DIFFERENCE':
+                                    blendType = "5"
+                                elif node.blend_type == 'EXCLUSION':
+                                    blendType = "14"
+                                elif node.blend_type == 'SUBTRACT':
+                                    blendType = "3"
+                                elif node.blend_type == 'DIVIDE':
+                                    blendType = "15"
+
+                                #hue doesnt exist in redshift
+                                #saturation doesnt exist in redshift
+                                #color doesnt exist in redshift
+                                #value doesnt exist in redshift lmao what the fuck
+
+                                else:
+                                    self.report({'ERROR'}, f"Color composite mode selected not supported {node.blend_type}")
+                                    return {'CANCELLED'}     
+
+                                ir_node.properties["layer1_blend_mode"] = blendType
+
 
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
@@ -261,7 +326,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_nodes.append(ir_node)
                             blender_node_to_id[node] = ir_node.id
 
-
+                        
 
                         elif node.bl_idname == 'ShaderNodeOutputMaterial':
                             pass
