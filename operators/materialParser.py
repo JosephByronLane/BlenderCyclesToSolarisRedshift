@@ -1,7 +1,7 @@
 import bpy
 import json
 import os
-from ..structs.irData import IRNode
+from ..structs.RSIRNode import IRNode
 
 class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
     """Export the active material's node tree to IR JSON."""
@@ -325,7 +325,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             ir_node = IRNode(node_id=new_id("Math"),
                                             node_type=node_type)
                             #we use numbered outputs here since blender doesn't have a way to name them
-                            ir_node.properties["input1"] = node.inputs[0].default_valuegi
+                            ir_node.properties["input1"] = node.inputs[0].default_value
                             ir_node.properties["input2"] = node.inputs[1].default_value
 
                             ir_nodes.append(ir_node)
