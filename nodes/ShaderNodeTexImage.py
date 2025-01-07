@@ -4,7 +4,7 @@ from ..data.RSIRGraph import RSIRGraph
 from ..data.RSIRNode import RSIRNode
 
 from ..utils.uniqueDict import generateNodeName
-
+from ..utils.redshiftPrefix import prefixRedhisftNode
 @registerNode('ShaderNodeTexImage')
 def defineImageTexture(node, errors):
 
@@ -16,9 +16,9 @@ def defineImageTexture(node, errors):
     colorSplitterName= generateNodeName(colorSplitterString)
     colorMakerName= generateNodeName(colorMakerString)
 
-    texSamplerNode = RSIRNode(node_id=texSamplerName,  node_type=texSamplerString)
-    colorSplitterNode = RSIRNode(node_id=colorSplitterName,  node_type=colorSplitterString)
-    colorMakerNode = RSIRNode(node_id=colorMakerName,  node_type=colorMakerString)
+    texSamplerNode = RSIRNode(node_id=texSamplerName,  node_type= prefixRedhisftNode(texSamplerString))
+    colorSplitterNode = RSIRNode(node_id=colorSplitterName,  node_type= prefixRedhisftNode(colorSplitterString))
+    colorMakerNode = RSIRNode(node_id=colorMakerName,  node_type= prefixRedhisftNode(colorMakerString))
 
     texSamplerNode.properties["tex0"] = node.image.filepath
     

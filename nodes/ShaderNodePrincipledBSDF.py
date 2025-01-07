@@ -4,13 +4,14 @@ from ..data.RSIRGraph import RSIRGraph
 from ..data.RSIRNode import RSIRNode
 
 from ..utils.uniqueDict import generateNodeName
+from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNodeBsdfPrincipled')
 def definePrincipledBsdf(node, errors):
 
     nodeName= generateNodeName("StandardMaterial")
 
-    rsirNode = RSIRNode(node_id=nodeName,  node_type="StandardMaterial")
+    rsirNode = RSIRNode(node_id=nodeName,  node_type=prefixRedhisftNode("StandardMaterial"))
 
     rsirNode.properties["base_color"] = tuple(node.inputs["Base Color"].default_value)
     rsirNode.properties["metalness"] = node.inputs["Metallic"].default_value
@@ -26,7 +27,7 @@ def definePrincipledBsdf(node, errors):
 
     if node.subsurface_method == 'RANDOM_WALK':
        rsirNode.properties["ms_phase"] = node.inputs["Subsurface Anisotropy"].default_value
-       
+
     rsirNode.properties["ms_scale"] = node.inputs["Subsurface Scale"].default_value
 
     if node.subsurface_method != 'RANDOM_WALK':

@@ -12,6 +12,7 @@ def defineOutputMaterial(node, errors):
 
     nodeName= generateNodeName(redshiftNodeName)
 
+    #doesnt need redshift:: prefix for some fucking reason dont ask me why
     rsirNode = RSIRNode(node_id=nodeName,  node_type=redshiftNodeName)
 
     

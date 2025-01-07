@@ -2,143 +2,62 @@ import hou
 import json
 import os, stat
 
-def import_ir_json(filepath, matlibNode=None):
-    """Create Redshift nodes under parent_node from IR JSON."""
-            
+def import_rsir_json(filepath, matlibNode=None):
+    """Creates redshift nodes based on input json data
+
+    :param filepath: file path containing the JSON RSIRGraph data
+    :type filepath: str
+    :param matlibNode: material library node to create the new material in
+    :type matlibNode: hou.Node
+    :raises RuntimeError: Material library node not found
+    """
     if matlibNode is None:
         raise RuntimeError("Error getting material library node")
 
     
     # Read JSON
     with open(filepath, 'r') as f:
-        ir_data = json.load(f)  
+        rsirGraphs = json.load(f)  
 
     matname = filepath.split("/")[-1].split(".")[0]
     parent_node = matlibNode.createNode('rs_usd_material_builder', node_name=matname)
 
     created_nodes = {}
     
-    for node_info in ir_data:
-        node_id   = node_info["id"]
-        node_type = node_info["type"]
-        props     = node_info["properties"]
+    #before we do anything we delete the existing standardMaterial and redshift_usd_material nodes
+    #since we will be creating our own nodes
+    existingStandardMaterialNode = parent_node.node("StandardMaterial1")
+    exitinggRedshiftUsdMaterialNode = parent_node.node("redshift_usd_material1")
+
+    if existingStandardMaterialNode:            
+            existingStandardMaterialNode.destroy()
+
+    if exitinggRedshiftUsdMaterialNode:
+        exitinggRedshiftUsdMaterialNode.destroy()
+
+
+    for graph in rsirGraphs:
+
+        #first we create the RS Nodes based on the RSIRGraph children
         
-        
-        #first we handle the nodes which require special handling (E.g RSRamp/ColorRamp)
-        
-        
-        #RSRamp
-        if node_type == "RSRamp":
+        children = graph["children"]
 
-            new_node = parent_node.createNode("redshift::RSRamp", node_name=node_id)
-            
-            stops = props.get("stops", [])
-            interpolationValue = props.get("interpolation", "CONSTANT")  
-            
-            interpolation = {
-                "LINEAR":    hou.rampBasis.Linear,
-                "EASE":      hou.rampBasis.CatmullRom,  
-                "CONSTANT":  hou.rampBasis.Constant,
-                "CARDINAL":  hou.rampBasis.Bezier,
-                "B_SPLINE":  hou.rampBasis.BSpline
-            }            
-
-            ramp_basis = interpolation.get(interpolationValue)
-            
-            positions = []
-            values = []
-            for stop in stops:
-                positions.append(stop["position"])
-                r, g, b, a = stop["color"]  # ignoring alpha
-                values.append((r, g, b))
-                
-            num_stops = len(stops)
-            bases = tuple(ramp_basis for _ in range(num_stops))
-            
-            
-            ramp_data = hou.Ramp(bases, tuple(positions), tuple(values))      
-            
-            # For interpolation, if Redshift ramp has a parameter for that:
-            # new_node.parm("interpolation").set(interpolation)
-            rampParm = new_node.parm('ramp')
-            rampParm.set(ramp_data)
-            created_nodes[node_id] = new_node
-
-        
-
-        #StandardMaterial
-        #we need a separate function for the standard material because we aren't creating a new one, rather simply referencing the existing one
-        elif node_type == "StandardMaterial":
-
-
-            #TODO: use relative paths for this
-            new_node = hou.node('/stage/' + matlibNode.name() + '/' + matname + '/StandardMaterial1')
-            if not new_node:
-                print("didnt fid base material")                
-            print("found base material")
-            
-            for name, value in props.items():
+        for child in children:
+            nodeType = child["type"]
+            nodeName = child["id"]
+            nodeProps = child["properties"]
+            print(nodeName)
+            createdNode = parent_node.createNode("redshift::" + nodeType, node_name=nodeName)
+            for name, value in nodeProps.items():
                 try:
                     if isinstance(value, (list, tuple)) and len(value) == 4:
-                        # Assume RGBA; set only RGB
-                        rgb = (value[0], value[1], value[2])
-                        parm = new_node.parmTuple(name)
-                        if parm:
-                            parm.set(rgb)
-                        else:
-                            print(f"Parameter '{name}' not found on node '{node_type}'.")
-                    else:
-                        # Single value parameter
-                        parm = new_node.parm(name)
-                        if parm:
-                            parm.set(value)
-                        else:
-                            print(f"Parameter '{name}' not found on node '{node_type}'.")
-                            
-                except Exception as e:
-                    print(f"Failed to set parameter '{name}' on node '{node_type}': {e}")
-            
-          
-            created_nodes[node_id] = new_node
-        
-        #RSMathMixVector
-        #for some fucking reason you can set the node's iputs as a tuple,  instead needing to set them per-element
-        elif node_type == "RSMathMixVector":
-            node_to_create_type = "redshift::" + node_type
-            print("Creating node of type", node_to_create_type)
-            new_node = parent_node.createNode(node_to_create_type, node_name=node_id)
-            for name, value in props.items():
-                try:
-                    for i in range(1, 4):
-                        parm_name = f"{name}{i}"  # 'input11', 'input12', 'input13'
-                        parm = new_node.parm(parm_name)
-                        if parm:
-                            parm.set(value[i-1])
-                        else:
-                            print(f"Parameter '{parm_name}' not found on node '{node_id}'.")
-
-                except Exception as e:
-                    print(f"Failed to set parameter '{name}' on node '{node_id}': {e}")
-            
-            created_nodes[node_id] = new_node
-        
-        
-        #Generic node handler    
-        else:
-            node_to_create_type = "redshift::" + node_type
-            print("Creating node of type", node_to_create_type)
-            new_node = parent_node.createNode(node_to_create_type, node_name=node_id)
-            
-            for name, value in props.items():
-                try:
-                    if isinstance(value, (list, tuple)) and len(value) == 4:
-                        parm = new_node.parmTuple(name)
+                        parm = createdNode.parmTuple(name)
                         if parm:
                             parm.set(value)
                         else:
                             print(f"Parameter '{name}' not found on node '{node_id}'.")
                     else:
-                        parm = new_node.parm(name)
+                        parm = createdNode.parm(name)
                         if parm:
                             parm.set(value)
                         else:
@@ -147,218 +66,25 @@ def import_ir_json(filepath, matlibNode=None):
                 except Exception as e:
                     print(f"Failed to set parameter '{name}' on node '{node_id}': {e}")
             
-            created_nodes[node_id] = new_node
-            print(f"Created node {new_node} with id {node_id}")
-    
+        #after graph the child nodes, we wire them up
+        internalConnections = graph["internalConnections"]
+        for connection in internalConnections:
+            nodeMakingConnectionName = connection.split(":")[0]
+            nodeMakingConnectionOutoutSocker = connection.split(":")[1]
+            
+            nodeTakingConnectionName = internalConnections[connection].split(":")[0]
+            nodeTakingConnectingInputSocket = internalConnections[connection].split(":")[1]
 
-    for node_info in ir_data:
-        node_id  = node_info["id"]
-        conns    = node_info["connections"]  # e.g. {"Base Color": "ColorRamp_2:Color"}        
+
+            #TODO: use pyside to make panels to check if user wants to import into stage or /mat/
+            nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
+            nodeMakingInputConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
+
+            #setNamedInput("refl_roughness", inputNode, "outColor")
+            nodeTakingConnection.setNamedInput(nodeTakingConnectingInputSocket, nodeMakingInputConnection, nodeMakingConnectionOutoutSocker)
+
         
-        if node_id not in created_nodes:
-            continue  # skip unimplemented node types
-        
-        for input_name, from_str in conns.items():            
-         
-            # from_str might look like "ColorRamp_2:Color"
-            
-            from_id, from_output_name = from_str.split(":")
-            
-            if from_id not in created_nodes:
-                print(f"Connection from {from_id} not found in created nodes.")
-                continue
-            
-            this_node = created_nodes[node_id]
-            from_node = created_nodes[from_id]
 
-            print(f"Iterating over connections: {input_name} -> {from_str} on {from_node} -> {this_node}")
-
-            #INPUTS
-            if this_node.type().name() == "redshift::StandardMaterial":
-               
-                Input_mapping= {
-                    "Base Color":         "base_color",
-                    "Metallic":           "metalness",  
-                    "Roughness":          "refl_roughness",
-                    "IOR":                "refl_ior",
-                    "Diffuse Roughness":  "diffuse_roughness",
-                    "Alpha":              "opacity_color",
-                    "Normal": "bump_input",
-                    "Subsurface Weight": "ms_amount",
-                    "Subsurface Radius": "ms_radius",
-                    "Subsurface Anisotropy": "ms_phase",
-                    "Transmission Weight": "refr_weight",
-                    "Coat Weight": "coat_weight",
-                    "Coat Roughness": "coat_roughness",
-                    "Coat IOR": "coat_ior",
-                    "Coat Tint": "coat_color",
-                    "Coat Normal": "coat_bump_input",
-                    "Sheen Weight": "sheen_weight",
-                    "Sheen Roughness": "sheen_roughness",
-                    "Sheen Tint": "sheen_color",
-                    "Emission Color": "emission_color",
-                    "Thin Film Thickness": "thinfilm_thickness",
-                    "Thin Film IOR": "thinfilm_ior"                    
-                }
-
-
-            elif this_node.type().name() == "redshift::RSRamp":
-                Input_mapping= {
-                    "Fac": "input"
-                }
-
-            elif this_node.type().name() == "redshift::RSMathMixVector" or this_node.type().name() == "redshift::RSColorMix" or this_node.type().name() == "redshift::RSMathMix":
-                Input_mapping= {
-                    "A": "input1",
-                    "B": "input2",
-                    "Factor": "mixAmount"
-                }
-
-
-            elif this_node.type().name() == "redshift::RSColorMaker":
-                Input_mapping= {
-                    "Red": "red",
-                    "Green": "green",
-                    "Blue": "blue",
-                }
-
-            elif this_node.type().name() == "redshift::RSColorSplitter":
-                Input_mapping= {
-                    "Color": "input",
-                }
-            
-            elif this_node.type().name() == "redshift::BumpMap":
-                Input_mapping= {
-                    "Color": "input",
-                    "Strength": "scale",
-                }
-
-            #math nodes
-            elif this_node.type().name() == "redshift::RSMathMul" or this_node.type().name() == "redshift::RSMathAdd" or this_node.type().name() == "redshift::RSMathSub" or this_node.type().name() == "redshift::RSMathDiv":
-                Input_mapping= {
-                    "input1": "input1",
-                    "input2": "input2",
-                }
-
-            elif this_node.type().name() == "redshift::RSScalarConstant":
-                Input_mapping= {
-                    "Value": "val",
-                }
-
-            elif this_node.type().name() == "redshift::RSColorConstant":
-                Input_mapping= {
-                    "Color": "color",
-                }
-            
-            elif this_node.type().name() == "redshift::RSColorLayer":
-                Input_mapping= {
-                    "A": "base_color",
-                    "B": "layer1_color",
-                    "Factor": "layer1_mask",
-                }
-
-            elif this_node.type().name() == "redshift::RSColorCorrection":
-                Input_mapping= {
-                    "Color": "input",
-                    "Hue": "hue",
-                    "Saturation": "saturation",
-                    "Value": "level",
-                    "Contrast": "contrast",
-                    "Gamma": "gamma",
-                }
-            elif this_node.type().name() == "redshift::RSMathRange":
-                Input_mapping= {
-                    "Value": "input",
-                    "From Min": "old_min",
-                    "From Max": "old_max",
-                    "To Min": "new_min",
-                    "To Max": "new_max",
-                }
-
-            #OUTPUTS
-            if from_node.type().name() == "redshift::StandardMaterial":
-                output_mapping={
-                    "Color": "outColor",
-                }
-
-            elif from_node.type().name() == "redshift::BumpMap":
-                output_mapping={
-                    "Normal": "out",
-                }
-            
-            elif from_node.type().name() == "redshift::RSRamp":              
-                output_mapping={
-                    "Color": "outColor"
-                }
-
-            elif from_node.type().name() == "redshift::RSColorMix" :
-                output_mapping = {
-                    "Result": "outColor" 
-                }
-            elif from_node.type().name() == "redshift::RSMathMix" or  from_node.type().name() =="redshift::RSMathMixVector":
-                output_mapping = {
-                    "Result": "out" 
-                }
-
-            elif from_node.type().name() == "redshift::RSColorMaker":
-                output_mapping={
-                    "Color": "outColor"
-                }
-            elif from_node.type().name() == "redshift::RSColorSplitter":
-                output_mapping={
-                    "Red": "outR",
-                    "Green": "outG",
-                    "Blue": "outB"
-                }
-
-            elif from_node.type().name() == "redshift::RSMathMul" or from_node.type().name() == "redshift::RSMathAdd" or from_node.type().name() == "redshift::RSMathSub" or from_node.type().name() == "redshift::RSMathDiv":
-                output_mapping={
-                    "Value": "out"
-                }
-
-            elif from_node.type().name() == "redshift::TextureSampler":
-                output_mapping={
-                    "Color": "outColor"
-                }
-
-            elif from_node.type().name() == "redshift::RSColorConstant":
-                output_mapping={
-                    "Color": "outColor"
-                }
-
-            elif from_node.type().name() == "redshift::RSScalarConstant":
-                output_mapping={
-                    "Value": "out"
-                }
-
-            elif from_node.type().name() == "redshift::RSColorLayer":
-                output_mapping={
-                    "Result": "outColor"
-                }
-
-            elif from_node.type().name() == "redshift::RSColorCorrection":
-                output_mapping={
-                    "Color": "outColor"
-                }
-            elif from_node.type().name() == "redshift::RSMathRange":
-                output_mapping={
-                    "Result": "out"
-                }
-
-            if input_name in Input_mapping:
-                print(f"Connecting {from_node.name()}'s {from_output_name} to {this_node.name()}'s {input_name}")
-                print(output_mapping)
-                print(f"{Input_mapping[input_name]}, {from_node.name()}, {output_mapping[from_output_name]}")
-
-                #setNamedInput("refl_roughness", inputNode, "outColor")
-                this_node.setNamedInput(Input_mapping[input_name], from_node, output_mapping[from_output_name])
-            
-            else:
-                print(f"Input {input_name} not found in Redshift's equivalent node")
-                   
-
-
-            pass
 
     parent_node.layoutChildren()
     matlibNode.layoutChildren()
@@ -407,8 +133,13 @@ stage = hou.node("/stage")
 if not stage:
     raise RuntimeError("Could not find /stage!")  
 
+#before creating a new node we delete the old one if it exists
+existingMatLibNode = stage.node("RuneMatLib")
+if existingMatLibNode:            
+    existingMatLibNode.destroy()
+    
 matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
 
 for file in jsonFiles:
-    import_ir_json(file, matlibNode)
+    import_rsir_json(file, matlibNode)
 
