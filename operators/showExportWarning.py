@@ -18,6 +18,7 @@ from bpy.types import (Operator,
 
 # shamelessly airlifted from 
 # https://blender.stackexchange.com/questions/160859/is-there-a-way-to-display-a-multi-lines-message-in-panel-popup
+# though i did edit it a little bit to suit my needs
 
 ###############################
 
