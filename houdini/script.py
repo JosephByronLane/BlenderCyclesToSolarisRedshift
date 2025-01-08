@@ -103,11 +103,37 @@ def import_rsir_json(filepath, matlibNode=None):
         print("************")
         print("Connecting graphs")
         #now we wire the connections between graphs
-        
+    for graph in rsirGraphs:
+        inputConnections = graph["inputConnections"]
 
 
-    parent_node.layoutChildren()
-    matlibNode.layoutChildren()
+
+        for connection in inputConnections:
+            try:    
+                nodeMakingConnectionName = connection.split(":")[0]
+                nodeMakingConnectionInputSocketName = connection.split(":")[1]
+
+                print(f"Node making input: {nodeMakingConnectionName} and input socket: {nodeMakingConnectionInputSocketName} ")
+
+                nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
+
+
+                nodeTakingConnectionName = inputConnections[connection].split(":")[0]
+                nodeTakingConnectionSocketName = inputConnections[connection].split(":")[1]
+
+                print(f"Node taking connection: {nodeTakingConnectionName} and output socket: {nodeTakingConnectionSocketName} ")
+
+                nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
+
+
+                print(f"{nodeTakingConnection.name()}, {nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName} ")
+                nodeTakingConnection.setNamedInput(nodeTakingConnectionSocketName, nodeMakingConnection, nodeMakingConnectionInputSocketName)
+                
+            except Exception as e:
+                print(f"Error connecting graphs: {e}")
+
+        parent_node.layoutChildren()
+        matlibNode.layoutChildren()
 
     print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
 

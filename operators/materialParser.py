@@ -164,7 +164,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                 inputNodeSocketName = input_socket.links[0].from_socket.name
                                 inputNodeRedshiftTranslatedSocket = connectingGraphOutboundConnectors[f"{connectingNodeBlId}:{inputNodeSocketName}"]
 
-                                currentGraphInputConnections[currentNodeRedshiftTranslatedSocket] = f"{inputNodeRedshiftTranslatedSocket}"
+                                currentGraphInputConnections[inputNodeRedshiftTranslatedSocket] = f"{currentNodeRedshiftTranslatedSocket}"
 
                     if totalErrors:
                         print("Errors found")
