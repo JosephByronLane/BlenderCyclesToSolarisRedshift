@@ -86,7 +86,7 @@ def import_rsir_json(filepath, matlibNode=None):
                 #TODO: use pyside to make panels to check if user wants to import into stage or /mat/
                 nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
                 if nodeTakingConnection is None:
-                    raise NodeNotfoundError(f"Node {nodeTakingConnectionName} not found in the graph")
+                    raise Exception(f"Node {nodeTakingConnectionName} not found in the graph")
 
 
                 nodeMakingInputConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
@@ -132,10 +132,25 @@ def import_rsir_json(filepath, matlibNode=None):
             except Exception as e:
                 print(f"Error connecting graphs: {e}")
 
-        parent_node.layoutChildren()
-        matlibNode.layoutChildren()
 
-    print(f"Imported {len(created_nodes)} IR nodes into {parent_node.path()}")
+
+    #now we connect the suboutput
+    subOutputNode = hou.node(f"/stage/{matlibNode.name()}/{matname}/suboutput1")
+    if subOutputNode is None:
+        raise Exception(f"Node suboutput1 not found in the graph")
+    
+    #NOTE if we want to support principled material blending we need to programatically set the output node rather than just assuming its the first standard material
+    # to do this we could simply find the MaterialLayer or MaterialBlender  (depending on the approach we take) with the highest number at the end of their name.
+    standardMaterialNode = hou.node(f"/stage/{matlibNode.name()}/{matname}/redshift_usd_material1")
+    if standardMaterialNode is None:
+        raise Exception(f"Node StandardMaterial1 not found in the graph")
+    
+
+    print(f"{subOutputNode.name()}, {standardMaterialNode.name()}")
+    subOutputNode.setInput(0,standardMaterialNode, 0)
+
+    parent_node.layoutChildren()
+    matlibNode.layoutChildren()
 
 def has_hidden_attribute(filepath):
     return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
