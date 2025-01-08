@@ -52,7 +52,7 @@ def definePrincipledBsdf(node, errors):
 
     #TODO: if has inbound connections in the specular tab we need to return an error
     inboundConnectors = {
-        f"{node.bl_idname}:Color":                f"{nodeName}:base_color",
+        f"{node.bl_idname}:Base Color":                f"{nodeName}:base_color",
         f"{node.bl_idname}:Metallic":             f"{nodeName}:metalness",  
         f"{node.bl_idname}:Roughness":            f"{nodeName}:refl_roughness",
         f"{node.bl_idname}:IOR":                  f"{nodeName}:refl_ior",

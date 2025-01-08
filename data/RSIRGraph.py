@@ -57,6 +57,14 @@ class RSIRGraph:
         # and so it writes them for the parser.
         self.inputConnections = inputConnections or {}
 
+    def __getitem__(self, uId):
+        """
+        Allows querying the RSIRGraph by uId using square brackets.
+        """
+        if uId == self.uId:
+            return self
+        
+
     def to_dict(self): 
         """Turns the RSIRGraph into a dictionary.
 

@@ -109,19 +109,18 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             continue
 
                     # now we fil out the inputConnections field
-                    for node in mat.node_tree.nodes:
-                        
+                    for node in mat.node_tree.nodes:                        
 
                         #since RSIRGraphs is a list of  custom objects and not data, we cant just use the .index() function, we need to manually search it
                         currentNodeRSIRGraph = None
                         for rsirGraph in RSIRGraphs:
-                            if rsirGraph["uId"] == node.name:
+                            if rsirGraph.uId == node.name:
                                 currentNodeRSIRGraph = rsirGraph
                                 break
-                        
-                        if currentNodeRSIRGraph is  None:
-                            self.report({'ERROR'}, "There was an error hooking up node conections")
-
+                                
+                        if currentNodeRSIRGraph is None:
+                            self.report({'ERROR'}, "There was an error hooking up node conections: Couldnt find current node's RSIRGraph")
+                            return {'CANCELLED'}
 
                         
                         for input_socket in node.inputs:
@@ -138,22 +137,32 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                                 connectingNode = input_socket.links[0].from_node     
 
-                                connectingNodeRSIRGraph = RSIRGraphs[connectingNode.name]
-                                connectingGraphOutboundConnectors = connectingNodeRSIRGraph["outboundConnectors"]
-                                
+                                connectingNodeRSIRGraph = None
+                                for rsirGraph in RSIRGraphs:
+                                    if rsirGraph.uId == connectingNode.name:
+                                        connectingNodeRSIRGraph = rsirGraph
+                                        break
+
+                                if connectingNodeRSIRGraph is None:
+                                    self.report({'ERROR'}, "There was an error hooking up node conections: Couldnt find connecting node's RSIRGraph")
+                                    return {'CANCELLED'}
+
+
+                                connectingGraphOutboundConnectors = connectingNodeRSIRGraph.outboundConnectors                                    
                                 
                                 #we get the connectors to do the  blender -> redshift name translation
-                                currentGraphInboundConnectors = currentNodeRSIRGraph["inboundConnectors"]
-                                currentGraphInputConnections = currentNodeRSIRGraph["inputConnections"]
+                                currentGraphInboundConnectors = currentNodeRSIRGraph.inboundConnectors
+                                currentGraphInputConnections = currentNodeRSIRGraph.inputConnections
 
                                 currentNodeBlId = node.bl_idname
                                 currentNodeConnectedSocketName = input_socket.name
+                                print(currentGraphInboundConnectors.keys())
+
                                 currentNodeRedshiftTranslatedSocket = currentGraphInboundConnectors[f"{currentNodeBlId}:{currentNodeConnectedSocketName}"]
 
                                 connectingNodeBlId = connectingNode.bl_idname
                                 inputNodeSocketName = input_socket.links[0].from_socket.name
                                 inputNodeRedshiftTranslatedSocket = connectingGraphOutboundConnectors[f"{connectingNodeBlId}:{inputNodeSocketName}"]
-
 
                                 currentGraphInputConnections[currentNodeRedshiftTranslatedSocket] = f"{inputNodeRedshiftTranslatedSocket}"
 
