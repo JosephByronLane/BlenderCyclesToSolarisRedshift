@@ -13,7 +13,7 @@ def definePrincipledBsdf(node, errors):
 
     rsirNode = RSIRNode(node_id=nodeName,  node_type=prefixRedhisftNode("StandardMaterial"))
 
-    rsirNode.properties["base_color"] = tuple(node.inputs["Base Color"].default_value)
+    rsirNode.properties["base_color"] = tuple(node.inputs["Base Color"].default_value[:3])
     rsirNode.properties["metalness"] = node.inputs["Metallic"].default_value
     rsirNode.properties["refl_roughness"] = node.inputs["Roughness"].default_value
     rsirNode.properties["diffuse_roughness"] = node.inputs["Diffuse Roughness"].default_value
@@ -37,11 +37,11 @@ def definePrincipledBsdf(node, errors):
     rsirNode.properties["coat_weight"] = node.inputs["Coat Weight"].default_value
     rsirNode.properties["coat_roughness"] = node.inputs["Coat Roughness"].default_value
     rsirNode.properties["coat_ior"] = node.inputs["Coat IOR"].default_value
-    rsirNode.properties["coat_color"] = tuple(node.inputs["Coat Tint"].default_value)
+    rsirNode.properties["coat_color"] = tuple(node.inputs["Coat Tint"].default_value[:3])
     rsirNode.properties["sheen_weight"] = node.inputs["Sheen Weight"].default_value
     rsirNode.properties["sheen_roughness"] = node.inputs["Sheen Roughness"].default_value
-    rsirNode.properties["sheen_color"] = tuple(node.inputs["Sheen Tint"].default_value)
-    rsirNode.properties["emission_color"] = tuple(node.inputs["Emission Color"].default_value)
+    rsirNode.properties["sheen_color"] = tuple(node.inputs["Sheen Tint"].default_value[3])
+    rsirNode.properties["emission_color"] = tuple(node.inputs["Emission Color"].default_value[:3])
     rsirNode.properties["thinfilm_thickness"] = node.inputs["Thin Film Thickness"].default_value
     rsirNode.properties["thinfilm_ior"] = node.inputs["Thin Film IOR"].default_value 
 
