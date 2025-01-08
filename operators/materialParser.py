@@ -55,7 +55,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                     self.clearErrorsFromCustomList()
                     errors = []
                     nodesToParse = mat.node_tree.nodes
-                    
+
                     #  nodes
                     for node in mat.node_tree.nodes:
                         totalErrors = []
@@ -107,6 +107,55 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                             print(misc)
                             continue
+
+                    # now we fil out the inputConnections field
+                    for node in mat.node_tree.nodes:
+                        
+
+                        #since RSIRGraphs is a list of  custom objects and not data, we cant just use the .index() function, we need to manually search it
+                        currentNodeRSIRGraph = None
+                        for rsirGraph in RSIRGraphs:
+                            if rsirGraph["uId"] == node.name:
+                                currentNodeRSIRGraph = rsirGraph
+                                break
+                        
+                        if currentNodeRSIRGraph is  None:
+                            self.report({'ERROR'}, "There was an error hooking up node conections")
+
+
+                        
+                        for input_socket in node.inputs:
+                            if input_socket.is_linked:
+                                # These are in RS nodes, since they're pased to the houdini parser.
+                                # 
+                                # To find these connectors, its going to query the blender node and ask:
+                                # "Hey, I see you are connected to my ShaderNodeMix input A through your Texture1 color output,
+                                # My actual ShaderNodeMix input A is actually inboundConnectors["ShaderNodeMix:A"] (RScolorMix1:input1), 
+                                # and I see your Texture1 color output is actually inputNode.outboundConnectors["Texture1:Color"] (RSColorMaker1:outColor)
+                                # and so it writes them for the parser.
+                                #
+                                # "RSMathRange1:input" : "RSColorSplitter1:outA",
+
+                                connectingNode = input_socket.links[0].from_node     
+
+                                connectingNodeRSIRGraph = RSIRGraphs[connectingNode.name]
+                                connectingGraphOutboundConnectors = connectingNodeRSIRGraph["outboundConnectors"]
+                                
+                                
+                                #we get the connectors to do the  blender -> redshift name translation
+                                currentGraphInboundConnectors = currentNodeRSIRGraph["inboundConnectors"]
+                                currentGraphInputConnections = currentNodeRSIRGraph["inputConnections"]
+
+                                currentNodeBlId = node.bl_idname
+                                currentNodeConnectedSocketName = input_socket.name
+                                currentNodeRedshiftTranslatedSocket = currentGraphInboundConnectors[f"{currentNodeBlId}:{currentNodeConnectedSocketName}"]
+
+                                connectingNodeBlId = connectingNode.bl_idname
+                                inputNodeSocketName = input_socket.links[0].from_socket.name
+                                inputNodeRedshiftTranslatedSocket = connectingGraphOutboundConnectors[f"{connectingNodeBlId}:{inputNodeSocketName}"]
+
+
+                                currentGraphInputConnections[currentNodeRedshiftTranslatedSocket] = f"{inputNodeRedshiftTranslatedSocket}"
 
                     if totalErrors:
                         print("Errors found")

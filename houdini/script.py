@@ -67,7 +67,7 @@ def import_rsir_json(filepath, matlibNode=None):
                 except Exception as e:
                     print(f"Failed to set parameter '{name}' on node '{nodeName}': {e}")
             
-        #after graph the child nodes, we wire them up
+        #after graph the child nodes, we wire the individual graphs up
         internalConnections = graph["internalConnections"]
         print("************")
         print("Connecting nodes")   
@@ -98,6 +98,12 @@ def import_rsir_json(filepath, matlibNode=None):
                 print("#########")
             except Exception as e:
                 print(f"Error connecting nodes: {e}")
+
+
+        print("************")
+        print("Connecting graphs")
+        #now we wire the connections between graphs
+        
 
 
     parent_node.layoutChildren()
