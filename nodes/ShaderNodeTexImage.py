@@ -33,7 +33,7 @@ def defineImageTexture(node, errors):
         texSamplerNode.properties["tex0_colorSpace"] = "AgX Base sRGB"
 
     internalConnections={
-        f"{texSamplerName}:outColor": f"{colorSplitterName}:inColor",
+        f"{texSamplerName}:outColor": f"{colorSplitterName}:input",
         f"{colorSplitterName}:outR": f"{colorMakerName}:red",
         f"{colorSplitterName}:outG": f"{colorMakerName}:green",
         f"{colorSplitterName}:outB": f"{colorMakerName}:blue",

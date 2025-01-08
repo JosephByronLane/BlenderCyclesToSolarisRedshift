@@ -46,8 +46,9 @@ def import_rsir_json(filepath, matlibNode=None):
             nodeType = child["type"]
             nodeName = child["id"]
             nodeProps = child["properties"]
-            print(nodeName)
-            createdNode = parent_node.createNode("redshift::" + nodeType, node_name=nodeName)
+            print("-----------------------------------------------------")
+            print(f"Creating node: {nodeName} of type {nodeType}")
+            createdNode = parent_node.createNode(nodeType, node_name=nodeName)
             for name, value in nodeProps.items():
                 try:
                     if isinstance(value, (list, tuple)) and len(value) == 4:
@@ -55,35 +56,48 @@ def import_rsir_json(filepath, matlibNode=None):
                         if parm:
                             parm.set(value)
                         else:
-                            print(f"Parameter '{name}' not found on node '{node_id}'.")
+                            print(f"Parameter '{name}' not found on node '{nodeName}'.")
                     else:
                         parm = createdNode.parm(name)
                         if parm:
                             parm.set(value)
                         else:
-                            print(f"Parameter '{name}' not found on node '{node_id}'.")
+                            print(f"Parameter '{name}' not found on node '{nodeName}'.")
                             
                 except Exception as e:
-                    print(f"Failed to set parameter '{name}' on node '{node_id}': {e}")
+                    print(f"Failed to set parameter '{name}' on node '{nodeName}': {e}")
             
         #after graph the child nodes, we wire them up
         internalConnections = graph["internalConnections"]
-        for connection in internalConnections:
-            nodeMakingConnectionName = connection.split(":")[0]
-            nodeMakingConnectionOutoutSocker = connection.split(":")[1]
-            
-            nodeTakingConnectionName = internalConnections[connection].split(":")[0]
-            nodeTakingConnectingInputSocket = internalConnections[connection].split(":")[1]
-
-
-            #TODO: use pyside to make panels to check if user wants to import into stage or /mat/
-            nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
-            nodeMakingInputConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
-
-            #setNamedInput("refl_roughness", inputNode, "outColor")
-            nodeTakingConnection.setNamedInput(nodeTakingConnectingInputSocket, nodeMakingInputConnection, nodeMakingConnectionOutoutSocker)
-
+        print("************")
+        print("Connecting nodes")   
         
+        for connection in internalConnections:
+            try:    
+                nodeMakingConnectionName = connection.split(":")[0]
+                nodeMakingConnectionOutoutSocker = connection.split(":")[1]
+                print(f"Node making connection: {nodeMakingConnectionName} and output socket: {nodeMakingConnectionOutoutSocker} ")
+
+                nodeTakingConnectionName = internalConnections[connection].split(":")[0]
+                nodeTakingConnectingInputSocket = internalConnections[connection].split(":")[1]
+                print(f"Node taking input: {nodeTakingConnectionName} and input socket: {nodeTakingConnectingInputSocket} ")
+
+
+                #TODO: use pyside to make panels to check if user wants to import into stage or /mat/
+                nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
+                if nodeTakingConnection is None:
+                    raise NodeNotfoundError(f"Node {nodeTakingConnectionName} not found in the graph")
+
+
+                nodeMakingInputConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
+
+
+                #setNamedInput("refl_roughness", inputNode, "outColor")
+                print(f"{nodeTakingConnection.name()}, {nodeTakingConnectingInputSocket}, {nodeMakingInputConnection.name()}, {nodeMakingConnectionOutoutSocker} ")
+                nodeTakingConnection.setNamedInput(nodeTakingConnectingInputSocket, nodeMakingInputConnection, nodeMakingConnectionOutoutSocker)
+                print("#########")
+            except Exception as e:
+                print(f"Error connecting nodes: {e}")
 
 
     parent_node.layoutChildren()
@@ -133,11 +147,11 @@ stage = hou.node("/stage")
 if not stage:
     raise RuntimeError("Could not find /stage!")  
 
-#before creating a new node we delete the old one if it exists
-existingMatLibNode = stage.node("RuneMatLib")
-if existingMatLibNode:            
-    existingMatLibNode.destroy()
-    
+# #before creating a new node we delete the old one if it exists
+# existingMatLibNode = stage.node("RuneMatLib")
+# if existingMatLibNode:            
+#     existingMatLibNode.destroy()
+
 matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
 
 for file in jsonFiles:

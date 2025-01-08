@@ -17,7 +17,6 @@ def defineOutputMaterial(node, errors):
 
     
 
-
     #single node, no internal connections
     internalConnections={
 
