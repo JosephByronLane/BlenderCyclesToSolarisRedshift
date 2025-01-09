@@ -53,7 +53,7 @@ def import_rsir_json(filepath, matlibNode=None):
             nodeName = child["id"]
             nodeProps = child["properties"]
             print("-----------------------------------------------------------")
-            print(f"Creating node: {nodeName} of type {nodeType} on graph {graph.uId}")
+            print(f"Creating node: {nodeName} of type {nodeType} on graph {graph['uId']}")
             createdNode = parent_node.createNode(nodeType, node_name=nodeName)
             for name, value in nodeProps.items():
                 try:
@@ -105,7 +105,7 @@ def import_rsir_json(filepath, matlibNode=None):
 
 
                 #setNamedInput("refl_roughness", inputNode, "outColor")
-                print(f"Data info:{nodeTakingConnection.name()}.setNamedInput( {nodeTakingConnectingInputSocket}, {nodeMakingInputConnection.name()}, {nodeMakingConnectionOutoutSocker}) ")
+                print(f"Connection info: {nodeTakingConnection.name()}.setNamedInput( {nodeTakingConnectingInputSocket}, {nodeMakingInputConnection.name()}, {nodeMakingConnectionOutoutSocker}) ")
                 nodeTakingConnection.setNamedInput(nodeTakingConnectingInputSocket, nodeMakingInputConnection, nodeMakingConnectionOutoutSocker)
                 print("#########")
             except Exception as e:
@@ -124,16 +124,19 @@ def import_rsir_json(filepath, matlibNode=None):
 
         for connection in inputConnections:
             try:    
+                #this returns the first keys of the dictionary
+                #ej, "RSColorSplitter1:outA": "RSColorMix1:mixAmount" -> "RSColorSplitter1:outA"
                 nodeMakingConnectionName = connection.split(":")[0]
                 nodeMakingConnectionInputSocketName = connection.split(":")[1]
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                print(f"Node making input: {nodeMakingConnectionName} and input socket: {nodeMakingConnectionInputSocketName} ")
+
 
                 nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
 
 
                 allNodesTakingConnectionsNames = inputConnections[connection].split("&&")
                 for i in range(len(allNodesTakingConnectionsNames)):  
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                    print(f"Node making input: {nodeMakingConnectionName} and input socket: {nodeMakingConnectionInputSocketName} ")
                     nNodeConnection = allNodesTakingConnectionsNames[i]          
                     
                     nodeTakingConnectionName = nNodeConnection.split(":")[0]        
@@ -144,8 +147,8 @@ def import_rsir_json(filepath, matlibNode=None):
                     nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
 
 
-                    print(f"{nodeTakingConnection.name()}, {nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName} ")
-                nodeTakingConnection.setNamedInput(nodeTakingConnectionSocketName, nodeMakingConnection, nodeMakingConnectionInputSocketName)
+                    print(f"{nodeTakingConnection.name()}.setNamedInput({nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName})")
+                    nodeTakingConnection.setNamedInput(nodeTakingConnectionSocketName, nodeMakingConnection, nodeMakingConnectionInputSocketName)
                 
             except Exception as e:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -154,6 +157,8 @@ def import_rsir_json(filepath, matlibNode=None):
 
 
     try:
+        print("******************************************************")
+        print("Connecting suboutput")
         #now we connect the suboutput
         subOutputNode = hou.node(f"/stage/{matlibNode.name()}/{matname}/suboutput1")
         if subOutputNode is None:
@@ -171,6 +176,11 @@ def import_rsir_json(filepath, matlibNode=None):
 
         parent_node.layoutChildren()
         matlibNode.layoutChildren()
+
+        print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
+        print("Script has finished executing succesffuly")
+        print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
+
     except Exception as e:
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print(f"Error connecting suboutput: {e}")
