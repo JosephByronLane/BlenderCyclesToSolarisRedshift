@@ -28,7 +28,7 @@ def definePrincipledBsdf(node, errors):
     if node.subsurface_method == 'RANDOM_WALK':
        rsirNode.properties["ms_phase"] = node.inputs["Subsurface Anisotropy"].default_value
 
-    rsirNode.properties["ms_scale"] = node.inputs["Subsurface Scale"].default_value
+    rsirNode.properties["ms_radius_scale"] = node.inputs["Subsurface Scale"].default_value
 
     if node.subsurface_method != 'RANDOM_WALK':
         errors.append(f"Subsurface method not supported on node: {node.name} will default to Random Walk")
@@ -40,7 +40,7 @@ def definePrincipledBsdf(node, errors):
     rsirNode.properties["coat_color"] = tuple(node.inputs["Coat Tint"].default_value[:3])
     rsirNode.properties["sheen_weight"] = node.inputs["Sheen Weight"].default_value
     rsirNode.properties["sheen_roughness"] = node.inputs["Sheen Roughness"].default_value
-    rsirNode.properties["sheen_color"] = tuple(node.inputs["Sheen Tint"].default_value[3])
+    rsirNode.properties["sheen_color"] = tuple(node.inputs["Sheen Tint"].default_value[:3])
     rsirNode.properties["emission_color"] = tuple(node.inputs["Emission Color"].default_value[:3])
     rsirNode.properties["thinfilm_thickness"] = node.inputs["Thin Film Thickness"].default_value
     rsirNode.properties["thinfilm_ior"] = node.inputs["Thin Film IOR"].default_value 

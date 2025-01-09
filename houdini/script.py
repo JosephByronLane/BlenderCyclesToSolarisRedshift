@@ -51,7 +51,7 @@ def import_rsir_json(filepath, matlibNode=None):
             createdNode = parent_node.createNode(nodeType, node_name=nodeName)
             for name, value in nodeProps.items():
                 try:
-                    if isinstance(value, (list, tuple)) and len(value) == 4:
+                    if isinstance(value, (list, tuple)) and len(value) > 1:
                         parm = createdNode.parmTuple(name)
                         if parm:
                             parm.set(value)
