@@ -30,7 +30,7 @@ def import_rsir_json(filepath, matlibNode=None):
     exitinggRedshiftUsdMaterialNode = parent_node.node("redshift_usd_material1")
 
     if existingStandardMaterialNode:            
-            existingStandardMaterialNode.destroy()
+        existingStandardMaterialNode.destroy()
 
     if exitinggRedshiftUsdMaterialNode:
         exitinggRedshiftUsdMaterialNode.destroy()
@@ -118,15 +118,19 @@ def import_rsir_json(filepath, matlibNode=None):
                 nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
 
 
-                nodeTakingConnectionName = inputConnections[connection].split(":")[0]
-                nodeTakingConnectionSocketName = inputConnections[connection].split(":")[1]
+                allNodesTakingConnectionsNames = inputConnections[connection].split("&&")
+                for i in range(len(allNodesTakingConnectionsNames)):  
+                    nNodeConnection = allNodesTakingConnectionsNames[i]          
+                    
+                    nodeTakingConnectionName = nNodeConnection.split(":")[0]        
+                    nodeTakingConnectionSocketName = nNodeConnection.split(":")[1]
 
-                print(f"Node taking connection: {nodeTakingConnectionName} and output socket: {nodeTakingConnectionSocketName} ")
+                    print(f"Node taking connection: {nodeTakingConnectionName} and output socket: {nodeTakingConnectionSocketName} ")
 
-                nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
+                    nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
 
 
-                print(f"{nodeTakingConnection.name()}, {nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName} ")
+                    print(f"{nodeTakingConnection.name()}, {nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName} ")
                 nodeTakingConnection.setNamedInput(nodeTakingConnectionSocketName, nodeMakingConnection, nodeMakingConnectionInputSocketName)
                 
             except Exception as e:

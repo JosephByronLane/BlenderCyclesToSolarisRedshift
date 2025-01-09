@@ -11,9 +11,9 @@ def defineMixNode(node, errors):
     #is used for the factor on the vector mix
     isNonUniform = False
 
-    mixString=""
-    clampResultString= ""
-    clampFactorString = ""
+    mixString="RSColorMix"
+    clampResultString= "RSColorRange"
+    clampFactorString = "RSMathRange"
 
     #a list of all the children that the RSIRGraph will need
     graphChildren = []
@@ -25,16 +25,13 @@ def defineMixNode(node, errors):
 
     elif node.data_type == 'RGBA':
         clampResultString = "RSColorRange"
-        if node.blend_type == 'MIX':
-            mixString = 'RSmix'
-        else:
-            mixString = 'RSColorComposite'
+        mixString = 'RSColorMix'
 
     elif node.data_type == 'VECTOR':
         clampResultString = "RSMathRangeVector"
         mixString = 'RSVectorMix'
         if node.factor_mode == 'NON_UNIFORM':
-            isNonUnivorm = True
+            isNonUniform = True
             clampFactorString = "RSMathRangeVector"
 
     elif node.data_type == 'ROTATION':
@@ -174,20 +171,21 @@ def defineMixNode(node, errors):
     if node.blend_type != 'MIX':
         internalConnections[f"{colorCompositeName}:outColor"] = f"{mixName}:input1"
    
-    #the only thing that stays the same is input2, because no matter if we factor mix or whatever the fuck nothing ends up connected to it.
     inboundConnectors = {  
-        f"{node.bl_idname}:B": f"{mixName}:input2",
     }
 
     if node.clamp_factor:
         inboundConnectors[f"{node.bl_idname}:Factor"] = f"{clampFactorName}:input"
     else:
-        inboundConnectors[f"{node.bl_idname}:Factor"] = f"{mixName}:mixAmmount"
+        inboundConnectors[f"{node.bl_idname}:Factor"] = f"{mixName}:mixAmount"
 
     if node.blend_type != 'MIX':
-        inboundConnectors[f"{node.bl_idname}:A"] = f"{colorCompositeName}:base_color&&{mixName}:input2"
+        inboundConnectors[f"{node.bl_idname}:A"] = f"{colorCompositeName}:base_color"
+        inboundConnectors[f"{node.bl_idname}:B"] = f"{colorCompositeName}:blend_color&&{mixName}:input2"
+
     else:
         inboundConnectors[f"{node.bl_idname}:A"] = f"{mixName}:input1"
+        inboundConnectors[f"{node.bl_idname}:B"] = f"{mixName}:input2"
 
 
     #setting outbound conectors

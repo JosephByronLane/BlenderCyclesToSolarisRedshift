@@ -3,6 +3,7 @@ from ..nodes import nodeRegistry
 from ..nodes.nodeRegistry import getRegistry
 from ..data.tempStorage import GLOBAL_DATA_STORE
 import uuid
+from ..utils.uniqueDict import resetNodeNames 
 class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
     """Export the active material's node tree to IR JSON."""
     bl_idname = "rfxutils.material_parser"
@@ -48,6 +49,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
             if obj.type != 'MESH':
                 continue
             for mat in obj.data.materials:
+                resetNodeNames()
                 if mat and mat.use_nodes and mat.name not in alreadyExportedMmaterials:
                     alreadyExportedMmaterials.add(mat.name)
         
