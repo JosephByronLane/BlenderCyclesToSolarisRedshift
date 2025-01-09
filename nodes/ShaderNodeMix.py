@@ -29,7 +29,7 @@ def defineMixNode(node, errors):
 
     elif node.data_type == 'VECTOR':
         clampResultString = "RSMathRangeVector"
-        mixString = 'RSVectorMix'
+        mixString = 'RSMathMixVector'
         if node.factor_mode == 'NON_UNIFORM':
             isNonUniform = True
             clampFactorString = "RSMathRangeVector"
@@ -79,12 +79,13 @@ def defineMixNode(node, errors):
 
     if node.data_type in ('RGBA', 'VECTOR'):
         #we make tuples since theyre 4 values (RGBA) or 3 (XYZ)
-        if mixType != "RSColorLayer":
+        if node.blend_type == "MIX" or node.data_type == 'VECTOR':
+            #meaning it 
             mixNode.properties["input1"] = tuple(inputA)
             mixNode.properties["input2"] = tuple(inputB)
         else:
-            mixNode.properties["base_color"] = tuple(inputA)
-            mixNode.properties["layer1_color"] = tuple(inputB)
+            colorCompositeNode.properties["base_color"] = tuple(inputA)
+            colorCompositeNode.properties["blend_color"] = tuple(inputB)
     else:
         mixNode.properties["input1"] = inputA
         mixNode.properties["input2"] = inputB
@@ -93,19 +94,19 @@ def defineMixNode(node, errors):
     #we could switch to a RSColorLayer but that would be a bit overkill since we'd have 7 empty inputs.
     #TODO: make this scale so that if it detects many ShaderNodeMix with composite type it switches to RSColorLayer
 
-    if mixType != "RSColorLayer":
+    if node.data_type == "VECTOR":
         if (isNonUniform):
             mixNode.properties["mixAmount"] = tuple(node.inputs["Factor"].default_value)
         else:
             default_val = node.inputs["Factor"].default_value
             mixNode.properties["mixAmount"] = (default_val, default_val, default_val)
     else:
-        colorCompositeNode.properties["mixAmount"] = node.inputs["Factor"].default_value
+        mixNode.properties["mixAmount"] = node.inputs["Factor"].default_value
 
 
     #then we set the composite node's color proprieties if the node isn't in mix mode
      #composite nodes
-    if node.blend_type != 'MIX':
+    if node.blend_type != 'MIX' and node.data_type == 'RGBA':
         if node.blend_type == 'DARKEN':
             blendType = "8"
         elif node.blend_type == 'MULTIPLY':
@@ -142,6 +143,8 @@ def defineMixNode(node, errors):
         #color doesnt exist in redshift
         #value doesnt exist in redshift lmao what the fuck
 
+        #TODO: custom hsl????
+
         else:
             errors.append(f"Blend type on node: {node.name} is not supported. Will default to Screen")
             blendType ="9"     
@@ -168,7 +171,7 @@ def defineMixNode(node, errors):
     if node.clamp_result:
         internalConnections[f"{mixName}:{mixOutputSocketName}"] = f"{clampResultName}:input"
 
-    if node.blend_type != 'MIX':
+    if node.blend_type != 'MIX' and node.data_type == 'RGBA':
         internalConnections[f"{colorCompositeName}:outColor"] = f"{mixName}:input1"
    
     inboundConnectors = {  
@@ -179,7 +182,7 @@ def defineMixNode(node, errors):
     else:
         inboundConnectors[f"{node.bl_idname}:Factor"] = f"{mixName}:mixAmount"
 
-    if node.blend_type != 'MIX':
+    if node.blend_type != 'MIX' and node.data_type == 'RGBA':
         inboundConnectors[f"{node.bl_idname}:A"] = f"{colorCompositeName}:base_color"
         inboundConnectors[f"{node.bl_idname}:B"] = f"{colorCompositeName}:blend_color&&{mixName}:input2"
 
@@ -206,7 +209,7 @@ def defineMixNode(node, errors):
     if node.clamp_factor:
         graphChildren.append(clampFactorNode)
 
-    if node.blend_type != 'MIX':
+    if node.blend_type != 'MIX' and node.data_type == 'RGBA':
         graphChildren.append(colorCompositeNode)
 
     graphChildren.append(mixNode)
