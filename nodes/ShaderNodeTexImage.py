@@ -22,6 +22,7 @@ def defineImageTexture(node, errors):
 
     texSamplerNode.properties["tex0"] = node.image.filepath
     
+    #colorspace parameters
     if node.image.colorspace_settings.name != 'Non-Color' and  node.image.colorspace_settings.name != 'sRGB':
         errors.append(f"Color space not supported on node: {node.name} will default to sRGB")
         texSamplerNode.properties["tex0_colorSpace"] = "AgX Base sRGB"
@@ -39,7 +40,7 @@ def defineImageTexture(node, errors):
         f"{colorSplitterName}:outB": f"{colorMakerName}:blue",
     }
 
-    #NOTE: need to add truncation support of mapping node is connected to UV input in blender node
+    #NOTE: need to add truncation support of mapping node if it is connected to UV input in blender node
     # and map it to the RS Node's 'scale', 'offset', and 'rotation' inputs.
     inboundConnectors = {
        

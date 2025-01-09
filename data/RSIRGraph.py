@@ -63,7 +63,7 @@ class RSIRGraph:
         """
         if uId == self.uId:
             return self
-        
+
 
     def to_dict(self): 
         """Turns the RSIRGraph into a dictionary.
