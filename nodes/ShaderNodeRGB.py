@@ -6,40 +6,41 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
-@registerNode('ShaderNameHere')
-def defineShaderName(node, errors):
+@registerNode('ShaderNodeRGB')
+def defineShaderNodeRGB(node, errors):
 
     #raw strings of nodes
-    exampleString = "asdf"
+    colorConstantString = "RSColorConstant"
 
     #generate names
-    texSamplerName= generateNodeName(texSamplerName)
+    colorConstantName= generateNodeName(colorConstantString)
 
     #make the redshift type names
-    clampResultType = prefixRedhisftNode(texSamplerName)
+    colorConstantType = prefixRedhisftNode(colorConstantString)
 
      #make the redshift type nodes
-    texSamplerNode = RSIRNode(node_id=texSamplerName,  node_type= clampResultType)
+    colorConstantNode = RSIRNode(node_id=colorConstantName,  node_type= colorConstantType)
 
     #proprieties
+    colorConstantNode.properties["color"] = tuple(node.outputs[0].default_value)
 
-
+    #single node, no internal connections
     internalConnections={
     }
 
-
+    #RGB node has no inbound connections
     inboundConnectors = {
        
     }
 
     outboundConnectors = {
-
+        f"{node.bl_idname}:Color": f"{colorConstantName}:outColor"
     }
 
 
     rsirGraph = RSIRGraph(
         uId=node.name,
-        children=[],
+        children=[colorConstantNode],
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
