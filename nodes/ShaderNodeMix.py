@@ -160,7 +160,7 @@ def defineMixNode(node, errors):
 
     internalConnections = {}
 
-    if node.clamp_factor:
+    if node.clamp_factor and node.inputs["Factor"].is_linked:
         #we can hardcode here because we will either use a MathRangeVector or a MathRange(float) which both have 'out' as the output name
         #we will never use the RSColorMix as theclamp for the factor.
         #the clamp for the result however, is another story lmao
@@ -177,7 +177,7 @@ def defineMixNode(node, errors):
     inboundConnectors = {  
     }
 
-    if node.clamp_factor:
+    if node.clamp_factor and node.inputs["Factor"].is_linked:
         inboundConnectors[f"{node.bl_idname}:Factor"] = f"{clampFactorName}:input"
     else:
         inboundConnectors[f"{node.bl_idname}:Factor"] = f"{mixName}:mixAmount"
@@ -206,7 +206,7 @@ def defineMixNode(node, errors):
     if node.clamp_result:
         graphChildren.append(clampResultNode)
     
-    if node.clamp_factor:
+    if node.clamp_factor and node.inputs["Factor"].is_linked:
         graphChildren.append(clampFactorNode)
 
     if node.blend_type != 'MIX' and node.data_type == 'RGBA':
