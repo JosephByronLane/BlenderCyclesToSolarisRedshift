@@ -16,7 +16,7 @@ def defineShaderNodeValue(node, errors):
     scalarConstantName= generateNodeName(scalarConstantString)
 
     #make the redshift type names
-    scalarConstantType = prefixRedhisftNode(scalarConstantName)
+    scalarConstantType = prefixRedhisftNode(scalarConstantString)
 
      #make the redshift type nodes
     scalarConstantNode = RSIRNode(node_id=scalarConstantName,  node_type= scalarConstantType)

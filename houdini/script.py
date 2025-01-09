@@ -49,12 +49,25 @@ def import_rsir_json(filepath, matlibNode=None):
         print("Creating individual graphs")   
 
         for child in children:
-            nodeType = child["type"]
-            nodeName = child["id"]
-            nodeProps = child["properties"]
+            try:
+                nodeType = child["type"]
+                nodeName = child["id"]
+                nodeProps = child["properties"]
+            except Exception as e:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print(f"Error finding proprieties: {e}")
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            
             print("-----------------------------------------------------------")
             print(f"Creating node: {nodeName} of type {nodeType} on graph {graph['uId']}")
-            createdNode = parent_node.createNode(nodeType, node_name=nodeName)
+
+            try:
+                createdNode = parent_node.createNode(nodeType, node_name=nodeName)
+            except Exception as e:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print(f"Error creating node {nodeType}: {e}")
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
             for name, value in nodeProps.items():
                 try:
                     print(f"Setting parameter '{name}' to '{value}' on node '{nodeName}'")
@@ -128,7 +141,6 @@ def import_rsir_json(filepath, matlibNode=None):
                 #ej, "RSColorSplitter1:outA": "RSColorMix1:mixAmount" -> "RSColorSplitter1:outA"
                 nodeMakingConnectionName = connection.split(":")[0]
                 nodeMakingConnectionInputSocketName = connection.split(":")[1]
-
 
                 nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
 
@@ -231,10 +243,10 @@ stage = hou.node("/stage")
 if not stage:
     raise RuntimeError("Could not find /stage!")  
 
-# #before creating a new node we delete the old one if it exists
-# existingMatLibNode = stage.node("RuneMatLib")
-# if existingMatLibNode:            
-#     existingMatLibNode.destroy()
+#before creating a new node we delete the old one if it exists
+existingMatLibNode = stage.node("RuneMatLib")
+if existingMatLibNode:            
+    existingMatLibNode.destroy()
 
 matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
 
