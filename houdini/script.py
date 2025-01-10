@@ -1,6 +1,7 @@
 import hou
 import json
 import os, stat
+import ptvsd
 
 def import_rsir_json(filepath, matlibNode=None):
     """Creates redshift nodes based on input json data
@@ -39,14 +40,17 @@ def import_rsir_json(filepath, matlibNode=None):
     except Exception as e:
         print(f"Error deleting existing nodes: {e}")
 
-
+    print("******************************************************")
+    print("Creating individual graphs")   
     for graph in rsirGraphs:
 
         #first we create the RS Nodes based on the RSIRGraph children
         
         children = graph["children"]
-        print("******************************************************")
-        print("Creating individual graphs")   
+
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        print(f"Creating graph {graph['uId']} with {len(children)} children")
+
 
         for child in children:
             try:
@@ -70,20 +74,56 @@ def import_rsir_json(filepath, matlibNode=None):
 
             for name, value in nodeProps.items():
                 try:
-                    print(f"Setting parameter '{name}' to '{value}' on node '{nodeName}'")
-                    if isinstance(value, (list, tuple)) and len(value) > 1:
+
+                    if isinstance(value, (list, tuple)) and len(value) > 1 and all(isinstance(v, (int, float)) for v in value):
+                        print(f"Setting tuple parameter '{name}' to '{value}' on node '{nodeName}'")
+
                         parm = createdNode.parmTuple(name)
                         if parm is not None:
                             parm.set(value)
                         else:
-                            raise Exception(f"Tuple parameter '{name}' not found on node '{nodeName}'.")
+                            raise Exception(f"Tuple parameter '{name}' not found on node '{nodeName}'")
 
-                    else:
+                    elif isinstance(value, (int, float)):
+                        print(f"Setting float parameter '{name}' to '{value}' on node '{nodeName}'")
+
                         parm = createdNode.parm(name)
                         if parm is not None:
                             parm.set(value)
                         else:
                             raise Exception(f"Float parameter '{name}' not found on node '{nodeName}'.")
+                        
+                    elif isinstance(value, dict) and name == "ramp":
+                        print(f"Setting ramp parameter '{name}' to '{value}' on node '{nodeName}'")
+
+                        stops = value["stops"]
+                        interpolationValue = value.get("interpolation", "CONSTANT")  
+                        
+                        interpolation = {
+                            "LINEAR":    hou.rampBasis.Linear,
+                            "EASE":      hou.rampBasis.CatmullRom,  
+                            "CONSTANT":  hou.rampBasis.Constant,
+                            "CARDINAL":  hou.rampBasis.Bezier,
+                            "B_SPLINE":  hou.rampBasis.BSpline
+                        }      
+
+                        ramp_basis = interpolation[interpolationValue]
+            
+                        positions = []
+                        values = []
+                        for stop in stops:
+                            positions.append(stop["position"])
+                            values.append(stop["color"])
+                            
+                        num_stops = len(stops)
+                        bases = tuple(ramp_basis for _ in range(num_stops)) #blender only supports one interpolation type for all stops                
+                        
+                        ramp_data = hou.Ramp(bases, tuple(positions), tuple(values))    
+
+                        createdNode.parm('ramp').set(ramp_data)
+                    else:
+                        raise Exception(f"Unsupported parameter type for '{name}' on node '{nodeName}'")
+
 
                 except Exception as e:
                     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -127,9 +167,9 @@ def import_rsir_json(filepath, matlibNode=None):
                 print(f"Error connecting nodes: {e}")
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-        print("******************************************************")
-        print("Connecting graphs between each other")
-        #now we wire the connections between graphs
+    print("******************************************************")
+    print("Connecting graphs between each other")
+    #now we wire the connections between graphs
     for graph in rsirGraphs:
         inputConnections = graph["inputConnections"]
 
