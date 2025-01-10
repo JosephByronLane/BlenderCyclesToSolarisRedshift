@@ -52,7 +52,7 @@ def import_rsir_json(filepath, matlibNode=None):
             
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print(f"Error no children gound on graph {graph["uId"]}: {e}")
+            print(f"Error no children found on graph {graph['uId']}: {e}")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
@@ -128,6 +128,14 @@ def import_rsir_json(filepath, matlibNode=None):
                         ramp_data = hou.Ramp(bases, tuple(positions), tuple(values))    
 
                         createdNode.parm('ramp').set(ramp_data)
+                    elif isinstance(value, str):
+                        print(f"Setting string parameter '{name}' to '{value}' on node '{nodeName}'")
+
+                        parm = createdNode.parm(name)
+                        if parm is not None:
+                            parm.set(value)
+                        else:
+                            raise Exception(f"String parameter '{name}' not found on node '{nodeName}'")
                     else:
                         raise Exception(f"Unsupported parameter type for '{name}' on node '{nodeName}'")
 
