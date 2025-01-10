@@ -39,7 +39,7 @@ def defineShaderNodeCombineColor(node, errors):
 
     }
     if node.mode !=  "RGB":
-        internalConnections[ f"{combineColorName}:color"] = f"{hsvToColorName}:outColor"
+        internalConnections[ f"{combineColorName}:outColor"] = f"{hsvToColorName}:input"
 
 
     inboundConnectors = {
