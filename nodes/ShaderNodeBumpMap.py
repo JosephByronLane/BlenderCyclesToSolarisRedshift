@@ -44,8 +44,14 @@ def defineShaderNodeBumpMap(node, errors, parsedNodes):
     bumpBlenderNode = RSIRNode(node_id=bumpBlenderName,  node_type= bumpBlenderType)
 
     #proprieties
-    
-    
+
+    bumpMapNode.properties["inputType"] = "0"
+    bumpMapNode.properties["scale"] = node.inputs["Distance"].default_value
+
+
+
+    bumpBlenderNode.properties["bumpWeight0"] = 1
+    bumpBlenderNode.properties["additive"] = 1
     
     
     
@@ -53,20 +59,41 @@ def defineShaderNodeBumpMap(node, errors, parsedNodes):
     }
 
     if isNormalMapConnected:
-        internalConnections[f"{normalMapName}:out"] = f"{bumpMapName}:normalMap"
+        internalConnections[f"{normalMapName}:out"] = f"{bumpBlenderName}:bumpInput0"
+        internalConnections[f"{bumpMapName}:out"] = f"{bumpBlenderName}:baseInput"
     
     inboundConnectors = {
        
     }
 
-    outboundConnectors = {
+    if isNormalMapConnected:
+        inboundConnectors[f"{inputNormalMapNode.bl_idname}:Color"] = f"{normalMapName}:input"
+        inboundConnectors[f"{inputNormalMapNode.bl_idname}:Strength"] = f"{normalMapName}:scale"
 
+    inboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpMapName}:input"
+    inboundConnectors[f"{node.bl_idname}:Distance"] = f"{bumpMapName}:scale"
+
+
+    outboundConnectors = {
     }
 
+    if isNormalMapConnected:
+        outboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpBlenderName}:outDisplacement"
+    else:
+        outboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpMapName}:out"
+
+
+
+
+    if isNormalMapConnected:
+        graphChildren.append(normalMapNode)
+        graphChildren.append(bumpBlenderNode)
+    
+    graphChildren.append(bumpMapNode)
 
     rsirGraph = RSIRGraph(
         uId=node.name,
-        children=[],
+        children=graphChildren,
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
