@@ -9,6 +9,13 @@ from ..utils.redshiftPrefix import prefixRedhisftNode
 @registerNode('ShaderNodeNormalMap')
 def defineShaderNodeNormalMap(node, errors, parsedNodes):
 
+    isConnectedToBumpMap = node.outputs["Normal"].links[0].to_node.bl_idname == 'ShaderNodeBump'
+
+    if isConnectedToBumpMap:
+        #if its connected to a bump map, we will handle it in the bump map node
+        return None
+
+
     #raw strings of nodes
     normalString = "BumpMap"
 
@@ -27,14 +34,14 @@ def defineShaderNodeNormalMap(node, errors, parsedNodes):
 
     normalNode.properties["scale"] = node.inputs["Strength"].default_value
     if(node.space == 'TANGENT'):
-        space=1
+        space="1"
     elif(node.space == 'OBJECT'):
-        space=2
+        space="2"
     else:
-        space=1
+        space="1"
 
     #houdini wants a string for the input type
-    normalNode.properties["inputType"] = str(space)
+    normalNode.properties["inputType"] = space
 
     internalConnections={
     }
@@ -54,7 +61,7 @@ def defineShaderNodeNormalMap(node, errors, parsedNodes):
 
     rsirGraph = RSIRGraph(
         uId=node.name,
-        children=[normalName],
+        children=[normalNode],
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors

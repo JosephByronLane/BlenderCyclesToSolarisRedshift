@@ -64,6 +64,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                     errors = []
 
                     #TODO: rewrite error handling cause its really finnicky and not very good
+                    #i think we can move allErrors saving to addErrorsToCustomList?
+
                     #  nodes
                     for node in mat.node_tree.nodes:
                         errors = []
@@ -73,9 +75,17 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                         if nodeRegistry:
                             #errors is  passed by reference
+                            #same with parsedNodes
                             nodeFunction = nodeRegistry(node, errors, parsedNodes)
 
-                            print("Parsing node", node.bl_idname)
+                            print("Parsing node ", node.bl_idname)
+                            if nodeFunction is None:
+                                print("????????????????????????????????????????????????")
+                                print(f"Parsing of node {node.bl_idname} returned null.")
+                                print(f"Make sure that the node is parsed at another point in the code")
+                                print("????????????????????????????????????????????????")
+
+                                continue
 
                             RSIRGraphs.append(nodeFunction) 
                             
