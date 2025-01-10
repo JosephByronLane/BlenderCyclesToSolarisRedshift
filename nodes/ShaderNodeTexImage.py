@@ -6,7 +6,7 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 @registerNode('ShaderNodeTexImage')
-def defineImageTexture(node, errors):
+def defineImageTexture(node, errors, parsedNodes):
 
     texSamplerString = "TextureSampler"
     colorSplitterString = "RSColorSplitter"
@@ -59,6 +59,7 @@ def defineImageTexture(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

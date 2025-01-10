@@ -73,8 +73,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                         if nodeRegistry:
                             #errors is  passed by reference
-                            misc = []
-                            nodeFunction = nodeRegistry(node, errors)
+                            nodeFunction = nodeRegistry(node, errors, parsedNodes)
 
                             print("Parsing node", node.bl_idname)
 
@@ -90,7 +89,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                                 
                             print(f"Node {node.name} parsed successfully")
-                            parsedNodes.append(node.name)
                             uniqueId = mat.name  #uuid because why not lmao       
                             GLOBAL_DATA_STORE[uniqueId] = {
                                 "mat": mat,

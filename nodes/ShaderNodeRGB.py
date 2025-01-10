@@ -7,7 +7,7 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNodeRGB')
-def defineShaderNodeRGB(node, errors):
+def defineShaderNodeRGB(node, errors, parsedNodes):
 
     #raw strings of nodes
     colorConstantString = "RSColorConstant"
@@ -45,6 +45,7 @@ def defineShaderNodeRGB(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

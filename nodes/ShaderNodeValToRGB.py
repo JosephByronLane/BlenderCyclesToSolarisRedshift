@@ -7,7 +7,7 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNodeValToRGB')
-def defineShaderNodeValToRGB(node, errors):
+def defineShaderNodeValToRGB(node, errors, parsedNodes):
 
     #raw strings of nodes
     rampString = "RSRamp"
@@ -58,6 +58,7 @@ def defineShaderNodeValToRGB(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

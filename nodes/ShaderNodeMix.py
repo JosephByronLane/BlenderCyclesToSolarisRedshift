@@ -6,7 +6,7 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 @registerNode('ShaderNodeMix')
-def defineMixNode(node, errors):
+def defineMixNode(node, errors, parsedNodes):
 
     #is used for the factor on the vector mix
     isNonUniform = False
@@ -221,6 +221,7 @@ def defineMixNode(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

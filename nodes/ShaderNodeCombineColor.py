@@ -7,7 +7,7 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNodeCombineColor')
-def defineShaderNodeCombineColor(node, errors):
+def defineShaderNodeCombineColor(node, errors, parsedNodes):
 
     graphChildren = []
 
@@ -76,6 +76,7 @@ def defineShaderNodeCombineColor(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

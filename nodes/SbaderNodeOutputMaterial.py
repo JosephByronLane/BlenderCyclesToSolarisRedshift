@@ -6,7 +6,7 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 
 @registerNode('ShaderNodeOutputMaterial')
-def defineOutputMaterial(node, errors):
+def defineOutputMaterial(node, errors, parsedNodes):
 
     redshiftNodeName = "redshift_usd_material"
 
@@ -49,6 +49,7 @@ def defineOutputMaterial(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

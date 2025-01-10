@@ -7,7 +7,7 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNodeValue')
-def defineShaderNodeValue(node, errors):
+def defineShaderNodeValue(node, errors, parsedNodes):
 
     #raw strings of nodes
     scalarConstantString = "RSScalarConstant"
@@ -45,6 +45,7 @@ def defineShaderNodeValue(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

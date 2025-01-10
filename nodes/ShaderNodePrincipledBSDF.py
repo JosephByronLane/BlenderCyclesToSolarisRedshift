@@ -7,7 +7,7 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNodeBsdfPrincipled')
-def definePrincipledBsdf(node, errors):
+def definePrincipledBsdf(node, errors, parsedNodes):
 
     nodeName= generateNodeName("StandardMaterial")
 
@@ -106,6 +106,7 @@ def definePrincipledBsdf(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 

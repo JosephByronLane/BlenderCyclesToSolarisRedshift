@@ -7,7 +7,7 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 @registerNode('ShaderNameHere')
-def defineShaderName(node, errors):
+def defineShaderName(node, errors, parsedNodes):
 
     #raw strings of nodes
     exampleString = "asdf"
@@ -44,6 +44,7 @@ def defineShaderName(node, errors):
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
+    parsedNodes.append(node.name)
 
     return rsirGraph
 
