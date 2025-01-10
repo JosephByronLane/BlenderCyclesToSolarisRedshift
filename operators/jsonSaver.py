@@ -1,6 +1,6 @@
 import json
 import os
-import bpy
+import bpy  # type: ignore
 from ..data.tempStorage import GLOBAL_DATA_STORE
 
 

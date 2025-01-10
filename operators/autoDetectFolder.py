@@ -1,5 +1,6 @@
 import os, stat
-import bpy
+import bpy # type: ignore
+
 
 class RFX_OT_AutoDetectFolder(bpy.types.Operator):
     """Automatically detect a visible folder in H: drive"""

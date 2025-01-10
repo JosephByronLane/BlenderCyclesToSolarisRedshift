@@ -1,4 +1,4 @@
-import bpy
+import bpy  # type: ignore
 from ..nodes import nodeRegistry 
 from ..nodes.nodeRegistry import getRegistry
 from ..data.tempStorage import GLOBAL_DATA_STORE

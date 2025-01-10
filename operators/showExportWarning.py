@@ -1,12 +1,12 @@
-import bpy
+import bpy # type: ignore 
 
-from bpy.props import (IntProperty,
+from bpy.props import (IntProperty, # type: ignore
                        BoolProperty,
                        StringProperty,
                        EnumProperty,
-                       CollectionProperty)
+                       CollectionProperty)  
 
-from bpy.types import (Operator,
+from bpy.types import (Operator, # type: ignore
                        Panel,
                        PropertyGroup,
                        UIList)

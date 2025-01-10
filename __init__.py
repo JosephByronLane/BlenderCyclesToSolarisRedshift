@@ -11,7 +11,7 @@ if "bpy" in locals():
     importlib.reload(nodes)
     importlib.reload(jsonSaver)
     importlib.reload(showExportWarning)
-    
+
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
@@ -28,7 +28,7 @@ if "bpy" in locals():
     
 
 #even though we dont use it we need to use bpy for hot reload to work
-import bpy
+import bpy  # type: ignore
 
 
 bl_info = {

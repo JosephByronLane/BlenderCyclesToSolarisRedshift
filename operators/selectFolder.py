@@ -1,6 +1,6 @@
-import bpy
-from bpy.props import StringProperty
-from bpy_extras.io_utils import ImportHelper
+import bpy  # type: ignore
+from bpy.props import StringProperty  # type: ignore
+from bpy_extras.io_utils import ImportHelper  # type: ignore
 
 class RFXUTILS_OT_SelectFolder(bpy.types.Operator, ImportHelper):
     """Select a folder using Blender's file browser"""
