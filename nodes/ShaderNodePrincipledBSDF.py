@@ -95,6 +95,8 @@ def definePrincipledBsdf(node, errors):
     if node.inputs["Tangent"].is_linked:
         errors.append(f"Specular Tangent input not supported on node: {node.name}") 
 
+    if node.inputs["Subsurface Scale"].is_linked:
+        errors.append(f"Subsurface Scale input not supported as a connectable input on node: {node.name}")
     
 
     rsirGraph = RSIRGraph(

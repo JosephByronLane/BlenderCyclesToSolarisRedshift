@@ -49,10 +49,16 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
             if obj.type != 'MESH':
                 continue
             for mat in obj.data.materials:
+
+
+
                 resetNodeNames()
                 if mat and mat.use_nodes and mat.name not in alreadyExportedMmaterials:
                     alreadyExportedMmaterials.add(mat.name)
-        
+
+                    print("####################################################")
+                    print(f"Processing material {mat.name}")
+
                     RSIRGraphs= []
                     self.clearErrorsFromCustomList()
                     errors = []
@@ -63,6 +69,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                         errors = []
 
                         nodeRegistry = getRegistry(node.bl_idname)
+                        print("-------------------------------------------------------------")
+
                         if nodeRegistry:
                             #errors is  passed by reference
                             misc = []
@@ -75,10 +83,12 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             if errors:           
                                 for error in errors:
                                     allErrors.append(error)
+                                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                     print(f"Found error in node {node.name}: {error}")
+                                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                     self.addErrorsToCustomList(error, mat.name)        
 
-                                continue
+                                
                             print(f"Node {node.name} parsed successfully")
                             parsedNodes.append(node.name)
                             uniqueId = mat.name  #uuid because why not lmao       
@@ -89,13 +99,21 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                         else:
                             error = f"Node {node.bl_idname} not supported "
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                            print(error)
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                             self.addErrorsToCustomList(error, mat.name)  
                             allErrors.append(error)
                             continue
 
+                    print("INFO INFO INFO INFO INFO INFO INFO INFO INFO INFO INFO")
+                    print(f"Total parsed nodes: {parsedNodes}")
+                    print("INFO INFO INFO INFO INFO INFO INFO INFO INFO INFO INFO")
+
                     # now we fil out the inputConnections field
                     for node in mat.node_tree.nodes:                        
                         if node.name in parsedNodes:
+                            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                             print("Parsing connections for node", node.name)
                             #since RSIRGraphs is a list of  custom objects and not data, we cant just use the .index() function, we need to manually search it
                             currentNodeRSIRGraph = None
@@ -112,6 +130,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             for input_socket in node.inputs:
                                 if input_socket.is_linked:
                                     try:
+                                        print(f"Input socket {input_socket.name} is linked, parsing...")
                                         # These are in RS nodes, since they're pased to the houdini parser.
                                         # 
                                         # To find these connectors, its going to query the blender node and ask:
@@ -142,7 +161,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
 
                                         connectingGraphOutboundConnectors = connectingNodeRSIRGraph.outboundConnectors                                    
-                                        
                                         #we get the connectors to do the  blender -> redshift name translation
                                         currentGraphInboundConnectors = currentNodeRSIRGraph.inboundConnectors
                                         currentGraphInputConnections = currentNodeRSIRGraph.inputConnections
@@ -156,8 +174,19 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         inputNodeSocketName = input_socket.links[0].from_socket.name
                                         inputNodeRedshiftTranslatedSocket = connectingGraphOutboundConnectors.get(f"{connectingNodeBlId}:{inputNodeSocketName}")
 
-                                        if currentNodeRedshiftTranslatedSocket is None or inputNodeRedshiftTranslatedSocket is None:
-                                            error = f"Error hooking up node connections: Couldnt find redshift translated socket for {currentNodeBlId}"
+                                        if currentNodeRedshiftTranslatedSocket is None :
+                                            error = f"Error hooking up node connections: Couldnt find translated socket for {currentNodeBlId}: {currentNodeConnectedSocketName}"
+                                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                            print(error)
+                                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                            self.addErrorsToCustomList(error, mat.name)  
+                                            allErrors.append(error)
+                                        elif inputNodeRedshiftTranslatedSocket is None:
+                                        
+                                            error = f"Error hooking up node connections: Couldnt find translated socket for {connectingNode.name}: {inputNodeSocketName}"
+                                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                            print(error)
+                                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                             self.addErrorsToCustomList(error, mat.name)  
                                             allErrors.append(error)
                                         else:
@@ -166,6 +195,10 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                     except Exception as e:
                                         self.report({'ERROR'}, f"Error hooking up node connections: {e}")
                                         return {'CANCELLED'}
+                        else:
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                            print(f"Node {node.name} was not parsed, skipping connections")
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
                     if allErrors:
                         print("Errors found")

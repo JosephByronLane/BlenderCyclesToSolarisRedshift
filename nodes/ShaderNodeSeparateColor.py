@@ -12,10 +12,10 @@ def defineShaderNodeSeparateColor(node, errors):
     graphChildren = []
 
     #raw strings of nodes
-    separateColorString = "RSSeparateColor"
+    separateColorString = "RSColorSplitter"
 
     #might of might not be used d depending on the configuration of the node
-    colorToHSLString = "RSColor2HSL"
+    colorToHSLString = "RSColor2HSV"
 
 
 
@@ -42,16 +42,15 @@ def defineShaderNodeSeparateColor(node, errors):
 
 
     #proprieties
-    separateColorNode.properties["input"] = tuple(node.inputs["Color"].default_value)
-
+    separateColorNode.properties["input"] = tuple(node.inputs["Color"].default_value) 
 
 
 
     internalConnections={     
 
     }
-    if node.mode== 'HSV':
-        errors.append(f"HSV mode not supported on node: {node.name}. Will default to HSV")
+    if node.mode== 'HSL':
+        errors.append(f"HSL mode not supported on node: {node.name}. Will default to HSV")
 
 
     if node.mode == 'HSL' or node.mode == 'HSV':
@@ -72,12 +71,27 @@ def defineShaderNodeSeparateColor(node, errors):
                           
 
 
+    if node.mode == 'RGB':
+        outboundConnectors = {
+            f"{node.bl_idname}:Red": f"{separateColorName}:outR",
+            f"{node.bl_idname}:Green": f"{separateColorName}:outG",
+            f"{node.bl_idname}:Blue": f"{separateColorName}:outB",
+        }
+    elif node.mode == 'HSV':
+        outboundConnectors = {
+            f"{node.bl_idname}:Red": f"{separateColorName}:outR",
+            f"{node.bl_idname}:Green": f"{separateColorName}:outG",
+            f"{node.bl_idname}:Blue": f"{separateColorName}:outB",
+        }
+    elif node.mode == 'HSL':
+        outboundConnectors = {
+            #???? for some reason the HSL output nodes are RGB rather than HSL
+            f"{node.bl_idname}:Red": f"{separateColorName}:outR",
+            f"{node.bl_idname}:Green": f"{separateColorName}:outG",
+            f"{node.bl_idname}:Blue": f"{separateColorName}:outB",
+        }
 
-    outboundConnectors = {
-        f"{node.bl_idname}:R": f"{separateColorName}:outR",
-        f"{node.bl_idname}:G": f"{separateColorName}:outG",
-        f"{node.bl_idname}:B": f"{separateColorName}:outB",
-    }
+
 
 
     if node.mode == 'HSL' or node.mode == 'HSV':

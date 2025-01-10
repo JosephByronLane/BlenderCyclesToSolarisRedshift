@@ -29,7 +29,7 @@ from bpy.types import (Operator,
 
 class CUSTOM_UL_items(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
-        split = layout.split(factor=0.2)
+        split = layout.split(factor=0.15)
 
         #if item.mat exists then output it if not "null"
         split.label(text=item.mat if item.mat else "null") # avoids renaming the item by accident
@@ -61,7 +61,7 @@ class CUSTOM_OT_popup(Operator):
         return True
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, width=500)
+        return context.window_manager.invoke_props_dialog(self, width=1000)
 
     def draw(self, context):
         layout = self.layout
