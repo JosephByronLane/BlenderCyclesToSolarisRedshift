@@ -193,21 +193,22 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         inputNodeRedshiftTranslatedSocket = connectingGraphOutboundConnectors.get(f"{connectingNodeBlId}:{inputNodeSocketName}")
 
                                         #TODO: cleanup if-else logic here because its a mess
+                                        #assuming that all non-supported socket name are already warned about at the filtering stage, these shouldnt be necesary....
                                         if currentNodeRedshiftTranslatedSocket is None :
-                                            error = f"Error hooking up node connections: Couldnt find translated socket for {currentNodeBlId}: {currentNodeConnectedSocketName}"
+                                            error = f"Error hooking up node connections: Couldnt find translated socket for current node {currentNodeBlId}: {currentNodeConnectedSocketName}"
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                             print(error)
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                            self.addErrorsToCustomList(error, mat.name)  
-                                            allErrors.append(error)
+                                            #self.addErrorsToCustomList(error, mat.name)  
+                                            #allErrors.append(error)
                                         elif inputNodeRedshiftTranslatedSocket is None:
                                         
-                                            error = f"Error hooking up node connections: Couldnt find translated socket for {connectingNode.name}: {inputNodeSocketName}"
+                                            error = f"Error hooking up node connections: Couldnt find translated socket for input node {connectingNode.name}: {inputNodeSocketName}"
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                             print(error)
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                            self.addErrorsToCustomList(error, mat.name)  
-                                            allErrors.append(error)
+                                            #self.addErrorsToCustomList(error, mat.name)  
+                                            #allErrors.append(error)
                                         else:
                                             print(f"Connecting {currentNodeRedshiftTranslatedSocket} to {inputNodeRedshiftTranslatedSocket}...")
                                             if currentGraphInputConnections.get(inputNodeRedshiftTranslatedSocket):
