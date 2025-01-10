@@ -6,13 +6,13 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
-@registerNode('ShaderNodeBumpMap')
-def defineShaderNodeBumpMap(node, errors, parsedNodes):
+@registerNode('ShaderNodeBump')
+def defineShaderNodeBump(node, errors, parsedNodes):
 
 
     graphChildren = []
 
-    isNormalMapConnected = node.inputs["Normal"].is_linked and node.inputs["Normal"].links[0].to_node.type == "ShaderNodeNormalMap"
+    isNormalMapConnected = node.inputs["Normal"].is_linked and node.inputs["Normal"].links[0].from_node.bl_idname == "ShaderNodeNormalMap"
 
     if isNormalMapConnected:
         inputNormalMapNode = node.inputs["Normal"].links[0].from_node
@@ -70,7 +70,7 @@ def defineShaderNodeBumpMap(node, errors, parsedNodes):
         inboundConnectors[f"{inputNormalMapNode.bl_idname}:Color"] = f"{normalMapName}:input"
         inboundConnectors[f"{inputNormalMapNode.bl_idname}:Strength"] = f"{normalMapName}:scale"
 
-    inboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpMapName}:input"
+    inboundConnectors[f"{node.bl_idname}:Height"] = f"{bumpMapName}:input"
     inboundConnectors[f"{node.bl_idname}:Distance"] = f"{bumpMapName}:scale"
 
 
@@ -78,7 +78,7 @@ def defineShaderNodeBumpMap(node, errors, parsedNodes):
     }
 
     if isNormalMapConnected:
-        outboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpBlenderName}:outDisplacement"
+        outboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpBlenderName}:outDisplacementVector"
     else:
         outboundConnectors[f"{node.bl_idname}:Normal"] = f"{bumpMapName}:out"
 
@@ -91,15 +91,20 @@ def defineShaderNodeBumpMap(node, errors, parsedNodes):
     
     graphChildren.append(bumpMapNode)
 
+    graphUid = node.name
+    if isNormalMapConnected:
+        graphUid = f"{node.name}&&{inputNormalMapNode.name}"
+
     rsirGraph = RSIRGraph(
-        uId=node.name,
+        uId=graphUid,
         children=graphChildren,
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
     )
     parsedNodes.append(node.name)
-    parsedNodes.append(inputNormalMapNode.name)
+    if isNormalMapConnected:
+        parsedNodes.append(inputNormalMapNode.name)
     
     return rsirGraph
 

@@ -126,9 +126,14 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             #since RSIRGraphs is a list of  custom objects and not data, we cant just use the .index() function, we need to manually search it
                             currentNodeRSIRGraph = None
                             for rsirGraph in RSIRGraphs:
-                                if rsirGraph.uId == node.name:
-                                    currentNodeRSIRGraph = rsirGraph
-                                    break
+                                print(f"Checking RSIRGraph {rsirGraph.uId}")
+                                rsirGraphUids = rsirGraph.uId.split("&&")
+                                for uid in rsirGraphUids:
+                                    print(f"Checking uid {uid}")
+                                    if uid == node.name:
+                                        print(f"Found RSIRGraph {rsirGraph.uId} for node {node.name}")
+                                        currentNodeRSIRGraph = rsirGraph
+                                        break
                                     
                             if currentNodeRSIRGraph is None:
                                 self.report({'ERROR'}, "There was an error hooking up node conections: Couldnt find current node's RSIRGraph")
@@ -153,14 +158,19 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                                         connectingNodeRSIRGraph = None
                                         for rsirGraph in RSIRGraphs:
-                                            if rsirGraph.uId == connectingNode.name:
-                                                if rsirGraph.uId in parsedNodes:
-                                                    connectingNodeRSIRGraph = rsirGraph
-                                                    break
-
+                                            print(f"Checking RSIRGraph {rsirGraph.uId}")
+                                            print(f"Connecting node {connectingNode.name}")
+                                            rsirGraphUids = rsirGraph.uId.split("&&")
+                                            for uid in rsirGraphUids:
+                                                print(f"Checking uid {uid}")
+                                                if uid == connectingNode.name:
+                                                    if uid in parsedNodes:
+                                                        print(f"Found RSIRGraph {rsirGraph.uId} for node {connectingNode.name}")
+                                                        connectingNodeRSIRGraph = rsirGraph
+                                                        break
                                         #if the RSIRGraph is not found, in the connecting inputs, means its graph was never greated, and thus never parsed. AKA isn't supported
                                         if connectingNodeRSIRGraph is None:
-
+                                            print(f"Unsuported node {connectingNode.name} found. Will be ignored")
                                             #these errors can be ignored, as they are already reported in the node parsing stage
 
                                             # self.addErrorsToCustomList(f"Unsuported node {connectingNode.name} found. Will be ignored", mat.name)  
@@ -199,11 +209,14 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                             self.addErrorsToCustomList(error, mat.name)  
                                             allErrors.append(error)
                                         else:
+                                            print(f"Connecting {currentNodeRedshiftTranslatedSocket} to {inputNodeRedshiftTranslatedSocket}...")
                                             if currentGraphInputConnections.get(inputNodeRedshiftTranslatedSocket):
+                                                print(f"Key {inputNodeRedshiftTranslatedSocket} already in dict")
                                                 #if the key is already in the dict, we need to append the new value to the existing one separated by &&'s
                                                 alreadyExistingConnection = currentGraphInputConnections[inputNodeRedshiftTranslatedSocket]
                                                 currentGraphInputConnections[inputNodeRedshiftTranslatedSocket] = f"{alreadyExistingConnection}&&{currentNodeRedshiftTranslatedSocket}"
                                             else:
+                                                print(f"Key {inputNodeRedshiftTranslatedSocket} not in dict")
                                                 currentGraphInputConnections[inputNodeRedshiftTranslatedSocket] = f"{currentNodeRedshiftTranslatedSocket}"
                                         continue
                                     except Exception as e:
