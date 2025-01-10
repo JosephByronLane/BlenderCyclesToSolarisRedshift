@@ -46,7 +46,7 @@ class CUSTOM_OT_popup(Operator):
     bl_label = "There were warning while exporting materials"
     bl_options = {'REGISTER'}
 
-    key: StringProperty()
+    key: StringProperty()  # type: ignore
 
     @classmethod
     def poll(cls, context):
@@ -79,9 +79,9 @@ class CUSTOM_OT_popup(Operator):
 
 class CUSTOM_objectCollection(PropertyGroup):
     #name: StringProperty() -> Instantiated by default
-    coll_type: StringProperty()
-    coll_id: IntProperty()
-    mat: StringProperty()
+    coll_type: StringProperty()  # type: ignore
+    coll_id: IntProperty()  # type: ignore
+    mat: StringProperty()  # type: ignore
 
 # -------------------------------------------------------------------
 #   Register & Unregister
@@ -94,7 +94,7 @@ classes = (
 )
 
 def register():
-    from bpy.utils import register_class
+    from bpy.utils import register_class  # type: ignore
     for cls in classes:
         register_class(cls)
 
@@ -104,7 +104,7 @@ def register():
 
 
 def unregister():
-    from bpy.utils import unregister_class
+    from bpy.utils import unregister_class  # type: ignore
     for cls in reversed(classes):
         unregister_class(cls)
 

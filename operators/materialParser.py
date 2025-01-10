@@ -9,7 +9,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
     bl_idname = "rfxutils.material_parser"
     bl_label = "Export Selected Material"
 
-    filepath: bpy.props.StringProperty(
+    filepath: bpy.props.StringProperty(  # type: ignore
         name="File Path",
         description="Where to save the IR JSON file",
         default="my_material.json",

@@ -10,7 +10,7 @@ class RFXUTILS_OT_JsonSaver(bpy.types.Operator):
     bl_description = "Saves the all selected node trees"
     bl_options = {"REGISTER"}
 
-    key: bpy.props.StringProperty()
+    key: bpy.props.StringProperty()  # type: ignore
 
     def execute(self, context):   
         data = GLOBAL_DATA_STORE.get(self.key)
