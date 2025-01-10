@@ -40,7 +40,6 @@ def defineShaderNodeSeparateColor(node, errors):
     colorToHSLNode = RSIRNode(node_id=colorToHSLName,  node_type= colorToHSLType)
 
 
-
     #proprieties
     separateColorNode.properties["input"] = tuple(node.inputs["Color"].default_value) 
 

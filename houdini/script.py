@@ -45,8 +45,15 @@ def import_rsir_json(filepath, matlibNode=None):
     for graph in rsirGraphs:
 
         #first we create the RS Nodes based on the RSIRGraph children
-        
-        children = graph["children"]
+        try:
+            children = graph["children"]
+            if len(children) == 0:
+                raise Exception("No children found on graph")
+            
+        except Exception as e:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(f"Error no children gound on graph {graph["uId"]}: {e}")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         print(f"Creating graph {graph['uId']} with {len(children)} children")
