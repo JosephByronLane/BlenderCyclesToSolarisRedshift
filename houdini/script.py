@@ -144,6 +144,10 @@ def import_rsir_json(filepath, matlibNode=None):
         
         for connection in internalConnections:
             try:    
+
+                #while we could add the loop to check if a graph as many inputs, truth is we dont since we can define all those inputs on the blender sript.
+                #though ideally perhaps it would be better to standarize both functions here and below, so:
+                #TODO: make this function similar to the one below to check if &&'s are present and loop through them
                 print("##############################################################")
                 nodeMakingConnectionName = connection.split(":")[0]
                 nodeMakingConnectionOutoutSocker = connection.split(":")[1]

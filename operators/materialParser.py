@@ -174,6 +174,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         inputNodeSocketName = input_socket.links[0].from_socket.name
                                         inputNodeRedshiftTranslatedSocket = connectingGraphOutboundConnectors.get(f"{connectingNodeBlId}:{inputNodeSocketName}")
 
+                                        #TODO: cleanup if-else logic here because its a mess
                                         if currentNodeRedshiftTranslatedSocket is None :
                                             error = f"Error hooking up node connections: Couldnt find translated socket for {currentNodeBlId}: {currentNodeConnectedSocketName}"
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -190,7 +191,12 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                             self.addErrorsToCustomList(error, mat.name)  
                                             allErrors.append(error)
                                         else:
-                                            currentGraphInputConnections[inputNodeRedshiftTranslatedSocket] = f"{currentNodeRedshiftTranslatedSocket}"
+                                            if currentGraphInputConnections.get(inputNodeRedshiftTranslatedSocket):
+                                                #if the key is already in the dict, we need to append the new value to the existing one separated by &&'s
+                                                alreadyExistingConnection = currentGraphInputConnections[inputNodeRedshiftTranslatedSocket]
+                                                currentGraphInputConnections[inputNodeRedshiftTranslatedSocket] = f"{alreadyExistingConnection}&&{currentNodeRedshiftTranslatedSocket}"
+                                            else:
+                                                currentGraphInputConnections[inputNodeRedshiftTranslatedSocket] = f"{currentNodeRedshiftTranslatedSocket}"
                                         continue
                                     except Exception as e:
                                         self.report({'ERROR'}, f"Error hooking up node connections: {e}")
