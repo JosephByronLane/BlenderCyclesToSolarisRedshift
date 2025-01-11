@@ -58,6 +58,9 @@ def defineShaderNodeMapRange(node, errors, parsedNodes):
     if node.interpolation_type != "LINEAR":
         errors.append(f"Node {node.name} only supports Linear interpolation. Will default to LINEAR")
 
+    if not node.clamp:
+        errors.append(f"Node {node.name} only supports clamped values. Will default to clamped")
+
     rsirGraph = RSIRGraph(
         uId=node.name,
         children=[mapRangeNode],
