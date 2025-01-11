@@ -203,7 +203,8 @@ def import_rsir_json(filepath, matlibNode=None):
 
                 nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
 
-                
+                if nodeMakingConnection is None:
+                    raise Exception(f"Node {nodeMakingConnectionName} not found in the graph. Did you export it in the children's list and is the node type correct?")
 
                 allNodesTakingConnectionsNames = inputConnections[connection].split("&&")
                 for i in range(len(allNodesTakingConnectionsNames)):  
