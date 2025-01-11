@@ -23,11 +23,11 @@ def defineShaderNodeGamma(node, errors, parsedNodes):
 
     #proprieties
     gammaNode.properties["gamma"] = node.inputs["Gamma"].default_value
-    gammaNode.properties["input"] = node.inputs["Color"].default_value  
-    internalConnections={
-    
-    }
+    gammaNode.properties["input"] = tuple(node.inputs["Color"].default_value)
 
+    #single node so no internal connection
+    internalConnections={    
+    }
 
     inboundConnectors = {
         f"{node.bl_idname}:Color": f"{gammaName}:input",
@@ -38,10 +38,9 @@ def defineShaderNodeGamma(node, errors, parsedNodes):
         f"{node.bl_idname}:Color": f"{gammaName}:outColor"
     }
 
-
     rsirGraph = RSIRGraph(
         uId=node.name,
-        children=gammaNode,
+        children=[gammaNode],
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors

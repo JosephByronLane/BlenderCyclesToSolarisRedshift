@@ -17,6 +17,9 @@ class RSIRNode:
         self.properties = {}    
 
     def to_dict(self):
+
+        print(f"Serializing cild node {self.id}")
+
         return {
             "id": self.id,
             "type": self.type,

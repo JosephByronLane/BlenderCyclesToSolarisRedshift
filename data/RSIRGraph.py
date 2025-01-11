@@ -73,9 +73,11 @@ class RSIRGraph:
         """
 
 
+        print(f"Serializing RSIRGraph: {self.uId}")
 
-        childrenJson = [n.to_dict() for n in self.children]            
-        print("Serializing RSIRGraph children")
+        childrenJson = [n.to_dict() for n in self.children]   
+
+        print(f"Finished serializing RSIRGraph: {self.uId}")         
         return {
             "uId": self.uId,
             "children": childrenJson,

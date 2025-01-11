@@ -27,7 +27,13 @@ class RFXUTILS_OT_JsonSaver(bpy.types.Operator):
         os.makedirs(texPath, exist_ok=True)
         file_path = os.path.join(texPath, f"{mat.name}.json")
 
+        print("----------------------------------")
+        print("Exporting to: ", file_path)
+        print("----------------------------------")
         data_to_save = [n.to_dict() for n in RSIRGraphs]
+
+        print("Data to save parsed correctly.")
+        print(f"Daa to save: {data_to_save}")
 
         try:
             with open(file_path, 'w') as f:
