@@ -203,6 +203,7 @@ def import_rsir_json(filepath, matlibNode=None):
 
                 nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
 
+                
 
                 allNodesTakingConnectionsNames = inputConnections[connection].split("&&")
                 for i in range(len(allNodesTakingConnectionsNames)):  

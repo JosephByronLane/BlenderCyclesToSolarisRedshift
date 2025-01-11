@@ -11,10 +11,14 @@ def defineShaderNodeMath(node, errors, parsedNodes):
 
     graphChildren =[]
 
+    isClamped = node.use_clamp
+
     #raw strings of nodes
     mathString = "RSMathAdd"
     aux1String = ""
     aux2String = ""
+    clampString = "RSMathClamp"
+
 
     isSingleInput = False
     if node.operation == 'ADD':
@@ -110,16 +114,18 @@ def defineShaderNodeMath(node, errors, parsedNodes):
     mathName= generateNodeName(mathString)
     aux1Name= generateNodeName(aux1String)
     aux2Name= generateNodeName(aux2String)
-
+    clampName = generateNodeName(clampString)
 
     #make the redshift type names
     mathType = prefixRedhisftNode(mathString)
     aux1Type = prefixRedhisftNode(aux1String)
     aux2Type = prefixRedhisftNode(aux2String)
+    clampType = prefixRedhisftNode(clampString)
 
     mathNode = RSIRNode(node_id=mathName,  node_type= mathType)
     aux1Node = RSIRNode(node_id=aux1Name,  node_type= aux1Type)
     aux2Node = RSIRNode(node_id=aux2Name,  node_type= aux2Type)
+    clampNode = RSIRNode(node_id=clampName,  node_type= clampType)
 
     #proprieties
     if isSingleInput:
@@ -149,6 +155,8 @@ def defineShaderNodeMath(node, errors, parsedNodes):
 
     }         
 
+    if isClamped:
+        internalConnections[f"{mathName}:out"] = f"{clampName}:input"
 
     inboundConnectors = {}
     
@@ -181,13 +189,19 @@ def defineShaderNodeMath(node, errors, parsedNodes):
 
 
     outboundConnectors = {
-        f"{node.bl_idname}:Value" : f"{mathName}:out"
     }
+
+    if isClamped:
+        outboundConnectors[f"{node.bl_idname}:Value"] = f"{clampName}:out"
+    else:
+        outboundConnectors[f"{node.bl_idname}:Value" : f"{mathName}:out"]
 
 
 
     graphChildren.append(mathNode)
-
+    
+    if isClamped:
+        graphChildren.append(clampNode)
 
     rsirGraph = RSIRGraph(
         uId=node.name,
