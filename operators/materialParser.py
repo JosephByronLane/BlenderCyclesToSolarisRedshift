@@ -128,7 +128,9 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             for rsirGraph in RSIRGraphs:
                                 print(f"Checking RSIRGraph {rsirGraph.uId}")
                                 rsirGraphUids = rsirGraph.uId.split("&&")
+                                counter = 0
                                 for uid in rsirGraphUids:
+                                    counter  = counter + 1
                                     print(f"Checking uid {uid}")
                                     if uid == node.name:
                                         print(f"Found RSIRGraph {rsirGraph.uId} for node {node.name}")
@@ -173,8 +175,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                             print(f"Unsuported node {connectingNode.name} found. Will be ignored")
                                             #these errors can be ignored, as they are already reported in the node parsing stage
 
-                                            # self.addErrorsToCustomList(f"Unsuported node {connectingNode.name} found. Will be ignored", mat.name)  
-                                            # allErrors.append(f"Unsuported node {connectingNode.name} found. Will be ignored")
+                                            self.addErrorsToCustomList(f"Unsuported node {connectingNode.name} found. Will be ignored", mat.name)  
+                                            allErrors.append(f"Unsuported node {connectingNode.name} found. Will be ignored")
                                             continue
 
 
@@ -195,20 +197,29 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         #TODO: cleanup if-else logic here because its a mess
                                         #assuming that all non-supported socket name are already warned about at the filtering stage, these shouldnt be necesary....
                                         if currentNodeRedshiftTranslatedSocket is None :
+
+                                            #if the object is none, we first check that the node its connected to is inside of parsed nodes, cause that means that its a compound node
+                                            #and that its OK for it to find a none.
+                                            #TODO: rework RSIRGraphs to add proper many-to-many node generation rather than this hacky workaround
+
+                                            if connectingNode.name in parsedNodes:
+                                                print(f"Node {node.name} is a compound node, ignoring")
+                                                continue
+
                                             error = f"Error hooking up node connections: Couldnt find translated socket for current node {currentNodeBlId}: {currentNodeConnectedSocketName}"
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                             print(error)
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                            #self.addErrorsToCustomList(error, mat.name)  
-                                            #allErrors.append(error)
+                                            self.addErrorsToCustomList(error, mat.name)  
+                                            allErrors.append(error)
                                         elif inputNodeRedshiftTranslatedSocket is None:
                                         
                                             error = f"Error hooking up node connections: Couldnt find translated socket for input node {connectingNode.name}: {inputNodeSocketName}"
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                             print(error)
                                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                            #self.addErrorsToCustomList(error, mat.name)  
-                                            #allErrors.append(error)
+                                            self.addErrorsToCustomList(error, mat.name)  
+                                            allErrors.append(error)
                                         else:
                                             print(f"Connecting {currentNodeRedshiftTranslatedSocket} to {inputNodeRedshiftTranslatedSocket}...")
                                             if currentGraphInputConnections.get(inputNodeRedshiftTranslatedSocket):
