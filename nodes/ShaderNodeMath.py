@@ -17,7 +17,7 @@ def defineShaderNodeMath(node, errors, parsedNodes):
     mathString = "RSMathAdd"
     aux1String = ""
     aux2String = ""
-    clampString = "RSMathClamp"
+    clampString = "RSMathRange"
 
 
     isSingleInput = False
