@@ -145,7 +145,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             for input_socket in node.inputs:
                                 if input_socket.is_linked:
                                     try:
-                                        print(f"Input socket {input_socket.name} is linked, parsing...")
+                                        print(f"Input socket {input_socket.identifier} is linked, parsing...")
                                         # These are in RS nodes, since they're pased to the houdini parser.
                                         # 
                                         # To find these connectors, its going to query the blender node and ask:
@@ -186,7 +186,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         currentGraphInputConnections = currentNodeRSIRGraph.inputConnections
 
                                         currentNodeBlId = node.bl_idname
-                                        currentNodeConnectedSocketName = input_socket.name
+                                        currentNodeConnectedSocketName = input_socket.identifier
 
                                         currentNodeRedshiftTranslatedSocket = currentGraphInboundConnectors.get(f"{currentNodeBlId}:{currentNodeConnectedSocketName}")
                                         
