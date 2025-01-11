@@ -21,8 +21,15 @@ def defineShaderNodeHueSaturation(node, errors, parsedNodes):
      #make the redshift type nodes
     hueSaturationNode = RSIRNode(node_id=hueSaturationName,  node_type= hueSaturationType)
 
+
     #proprieties
-    hueSaturationNode.properties["hue"] = node.inputs["Hue"].default_value
+
+    #blenders hue shift is 0-1 while redshifts is degrees (0-360)
+    #so we need to convert the blender default (.5) to redshift default (0)
+
+    RSHueValue = (node.inputs["Hue"].default_value -.5 ) * 360
+
+    hueSaturationNode.properties["hue"] = RSHueValue
     hueSaturationNode.properties["saturation"] = node.inputs["Saturation"].default_value
     hueSaturationNode.properties["level"] = node.inputs["Value"].default_value
 
