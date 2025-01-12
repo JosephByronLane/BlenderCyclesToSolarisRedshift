@@ -128,6 +128,7 @@ def import_rsir_json(filepath, matlibNode=None):
                         ramp_data = hou.Ramp(bases, tuple(positions), tuple(values))    
 
                         createdNode.parm('ramp').set(ramp_data)
+                        
                     elif isinstance(value, str):
                         print(f"Setting string parameter '{name}' to '{value}' on node '{nodeName}'")
 

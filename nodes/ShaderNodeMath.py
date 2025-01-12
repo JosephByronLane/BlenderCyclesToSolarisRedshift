@@ -154,7 +154,11 @@ def defineShaderNodeMath(node, errors, parsedNodes):
 
     elif isOSL:
         mathNode.properties["osl"] = {}
-        mathNode.properties["osl"]["rs_osl_file"] = findOSLShaderDirectory(node.bl_idname, node.operation)
+        oslFileDirectory = findOSLShaderDirectory(node.bl_idname, node.operation)
+
+        print(f"OSL FILE DIRECTORY: {oslFileDirectory}")
+
+        mathNode.properties["osl"]["rs_osl_file"] = oslFileDirectory
         mathNode.properties["osl"]["press_button"] = "0"
         mathNode.properties["osl"]["input1"] = node.inputs[0].default_value
         mathNode.properties["osl"]["input2"] = node.inputs[1].default_value

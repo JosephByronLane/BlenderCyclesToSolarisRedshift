@@ -11,10 +11,15 @@ def findOSLShaderDirectory(nodeBl_id, identifier):
     """
     #osl filepath is under /osl/ directory, we are currently in the /utils/ directory
     oslDirectory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "osl")
-    oslShader = f"{nodeBl_id}_{identifier}.osl"
+    oslShader = f"{nodeBl_id}-{identifier}.osl"
+
+    print(f"OSL SHADER: {oslShader}")
+    print(f"OSL DIRECTORY: {oslDirectory}")
 
     for root, dirs, files in os.walk(oslDirectory):
+        print(f"searching in {root}")
         if oslShader in files:
+
             return os.path.join(root, oslShader)
     
     return None
