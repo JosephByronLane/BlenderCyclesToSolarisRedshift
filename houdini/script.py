@@ -2,6 +2,7 @@ import hou
 import json
 import os, stat
 import ptvsd
+import time
 
 def import_rsir_json(filepath, matlibNode=None):
     """Creates redshift nodes based on input json data
@@ -81,7 +82,6 @@ def import_rsir_json(filepath, matlibNode=None):
 
             for name, value in nodeProps.items():
                 try:
-
                     if isinstance(value, (list, tuple)) and len(value) > 1 and all(isinstance(v, (int, float)) for v in value):
                         print(f"Setting tuple parameter '{name}' to '{value}' on node '{nodeName}'")
 
@@ -128,6 +128,23 @@ def import_rsir_json(filepath, matlibNode=None):
                         ramp_data = hou.Ramp(bases, tuple(positions), tuple(values))    
 
                         createdNode.parm('ramp').set(ramp_data)
+
+                    elif isinstance(value, dict) and name == "osl":
+                        
+                        for prop in value:
+                            print(f"Setting OSL parameter '{prop}' to '{value[prop]}' on node '{nodeName}'")
+
+                            parm = createdNode.parm(prop)                            
+                                
+                            if parm is not None:
+                                parm.set(value[prop])
+
+                            if prop == "RS_osl_file":
+                                print(f"rsl path put, pressing button")
+                                createdNode.parm('RS_osl_compile').pressButton()
+
+                            if parm is None:
+                                raise Exception(f"OSL parameter '{prop}' not found on node '{nodeName}'")
                         
                     elif isinstance(value, str):
                         print(f"Setting string parameter '{name}' to '{value}' on node '{nodeName}'")

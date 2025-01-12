@@ -61,9 +61,9 @@ def defineShaderNodeMath(node, errors, parsedNodes):
     elif node.operation=="LESS_THAN":
         isOSL = True
         mathString = "rsOSL"
-        #TODO: IMPLEMENT CUSTOM OSL NODE. it can be done, i believe
-    # elif node.operation=="GREATER_THAN":
-    #     #TODO: IMPLEMENT CUSTOM OSL NODE. it can be done, i believe
+    elif node.operation=="GREATER_THAN":
+        isOSL = True
+        mathString = "rsOSL"
     elif node.operation=="SIGN":
         mathString = "RSMathSign"
         isSingleInput = True
@@ -158,10 +158,10 @@ def defineShaderNodeMath(node, errors, parsedNodes):
 
         print(f"OSL FILE DIRECTORY: {oslFileDirectory}")
 
-        mathNode.properties["osl"]["rs_osl_file"] = oslFileDirectory
-        mathNode.properties["osl"]["press_button"] = "0"
+        mathNode.properties["osl"]["RS_osl_file"] = oslFileDirectory
         mathNode.properties["osl"]["input1"] = node.inputs[0].default_value
-        mathNode.properties["osl"]["input2"] = node.inputs[1].default_value
+        if not isSingleInput:
+            mathNode.properties["osl"]["input2"] = node.inputs[1].default_value
 
     
     else:
@@ -201,7 +201,7 @@ def defineShaderNodeMath(node, errors, parsedNodes):
         inboundConnectors[f"{node.bl_idname}:X"] = f"{mathName}:x"
         inboundConnectors[f"{node.bl_idname}:Y"] = f"{mathName}:y"
 
-    elif node.operation == "LESS_THAN":
+    elif node.operation == "LESS_THAN" or node.operation == "GREATER_THAN":
         inboundConnectors[f"{node.bl_idname}:Value"] = f"{mathName}:input1"
         inboundConnectors[f"{node.bl_idname}:Threshold"] = f"{mathName}:input2"
 
