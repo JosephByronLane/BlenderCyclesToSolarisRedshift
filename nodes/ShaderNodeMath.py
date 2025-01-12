@@ -6,6 +6,8 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
+from ..utils.findOslShader import findOSLShaderDirectory
+
 @registerNode('ShaderNodeMath')
 def defineShaderNodeMath(node, errors, parsedNodes):
 
@@ -152,8 +154,11 @@ def defineShaderNodeMath(node, errors, parsedNodes):
 
     elif isOSL:
         mathNode.properties["osl"] = {}
+        mathNode.properties["osl"]["rs_osl_file"] = findOSLShaderDirectory(node.bl_idname, node.operation)
+        mathNode.properties["osl"]["press_button"] = "0"
         mathNode.properties["osl"]["input1"] = node.inputs[0].default_value
-        mathNode.properties["osl"]["input2"] = node.inputs[0].default_value
+        mathNode.properties["osl"]["input2"] = node.inputs[1].default_value
+
     
     else:
         mathNode.properties["input1"] = node.inputs[0].default_value
@@ -195,7 +200,6 @@ def defineShaderNodeMath(node, errors, parsedNodes):
     elif node.operation == "LESS_THAN":
         inboundConnectors[f"{node.bl_idname}:Value"] = f"{mathName}:input1"
         inboundConnectors[f"{node.bl_idname}:Threshold"] = f"{mathName}:input2"
-
 
     else:
         inboundConnectors[f"{node.bl_idname}:Value"] = f"{mathName}:input1"
