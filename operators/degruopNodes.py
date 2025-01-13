@@ -1,7 +1,7 @@
-import bpy
+import bpy  # type: ignore
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Set
-from bpy.types import Context, Event, Material, Mesh, Node, NodeSocket, NodeTree, Object, Timer, Operator, Panel
+from bpy.types import Context, Event, Material, Mesh, Node, NodeSocket, NodeTree, Object, Timer, Operator, Panel  # type: ignore
 
 #####################################
 
