@@ -74,7 +74,16 @@ def import_rsir_json(filepath, matlibNode=None):
             print(f"Creating node: {nodeName} of type {nodeType} on graph {graph['uId']}")
 
             try:
-                createdNode = parent_node.createNode(nodeType, node_name=nodeName)
+                #creating network dots doesn't work with the createNode function, so we need to use the createNetworkDot function
+                # on the material node itself.
+
+                #TODO: remove the if-else and make it an elif for the other node types that might spring up
+                if not nodeType ==  "__dot":
+                    createdNode = parent_node.createNode(nodeType, node_name=nodeName)
+                else:
+                    createdNode = parent_node.createNetworkDot()
+
+
             except Exception as e:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 print(f"Error creating node {nodeType}: {e}")
@@ -91,6 +100,7 @@ def import_rsir_json(filepath, matlibNode=None):
                             parm.set(value)
                         else:
                             raise Exception(f"Tuple parameter '{name}' not found on node '{nodeName}'")
+                    
                     #float parameters
                     elif isinstance(value, (int, float)):
                         print(f"Setting float parameter '{name}' to '{value}' on node '{nodeName}'")
@@ -148,7 +158,7 @@ def import_rsir_json(filepath, matlibNode=None):
 
                             if parm is None:
                                 raise Exception(f"OSL parameter '{prop}' not found on node '{nodeName}'")
-                   
+                        
                     #string parameters
                     elif isinstance(value, str):
                         print(f"Setting string parameter '{name}' to '{value}' on node '{nodeName}'")
@@ -190,7 +200,6 @@ def import_rsir_json(filepath, matlibNode=None):
                 nodeTakingConnectingInputSocket = internalConnections[connection].split(":")[1]
                 print(f"Node taking input: {nodeTakingConnectionName} and input socket: {nodeTakingConnectingInputSocket} ")
 
-
                 #TODO: use pyside to make panels to check if user wants to import into stage or /mat/
                 nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
 
@@ -226,7 +235,7 @@ def import_rsir_json(filepath, matlibNode=None):
                 nodeMakingConnectionName = connection.split(":")[0]
                 nodeMakingConnectionInputSocketName = connection.split(":")[1]
 
-                nodeMakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
+                nodeMakingConnection = hou.item(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
 
                 if nodeMakingConnection is None:
                     raise Exception(f"Node {nodeMakingConnectionName} not found in the graph. Did you export it in the children's list and is the node type correct?")
@@ -242,7 +251,7 @@ def import_rsir_json(filepath, matlibNode=None):
 
                     print(f"Node taking connection: {nodeTakingConnectionName} and output socket: {nodeTakingConnectionSocketName} ")
 
-                    nodeTakingConnection = hou.node(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
+                    nodeTakingConnection = hou.item(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
 
 
                     print(f"{nodeTakingConnection.name()}.setNamedInput({nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName})")
