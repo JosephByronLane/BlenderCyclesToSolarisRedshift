@@ -82,6 +82,7 @@ def import_rsir_json(filepath, matlibNode=None):
 
             for name, value in nodeProps.items():
                 try:
+                    #vector/color parameters
                     if isinstance(value, (list, tuple)) and len(value) > 1 and all(isinstance(v, (int, float)) for v in value):
                         print(f"Setting tuple parameter '{name}' to '{value}' on node '{nodeName}'")
 
@@ -90,7 +91,7 @@ def import_rsir_json(filepath, matlibNode=None):
                             parm.set(value)
                         else:
                             raise Exception(f"Tuple parameter '{name}' not found on node '{nodeName}'")
-
+                    #float parameters
                     elif isinstance(value, (int, float)):
                         print(f"Setting float parameter '{name}' to '{value}' on node '{nodeName}'")
 
@@ -100,6 +101,7 @@ def import_rsir_json(filepath, matlibNode=None):
                         else:
                             raise Exception(f"Float parameter '{name}' not found on node '{nodeName}'.")
                         
+                    #ramp Nodes/parameters
                     elif isinstance(value, dict) and name == "ramp":
                         print(f"Setting ramp parameter '{name}' to '{value}' on node '{nodeName}'")
 
@@ -129,6 +131,7 @@ def import_rsir_json(filepath, matlibNode=None):
 
                         createdNode.parm('ramp').set(ramp_data)
 
+                    #OSL Nodes/parameters
                     elif isinstance(value, dict) and name == "osl":
                         
                         for prop in value:
@@ -145,7 +148,8 @@ def import_rsir_json(filepath, matlibNode=None):
 
                             if parm is None:
                                 raise Exception(f"OSL parameter '{prop}' not found on node '{nodeName}'")
-                        
+                   
+                    #string parameters
                     elif isinstance(value, str):
                         print(f"Setting string parameter '{name}' to '{value}' on node '{nodeName}'")
 
@@ -154,6 +158,9 @@ def import_rsir_json(filepath, matlibNode=None):
                             parm.set(value)
                         else:
                             raise Exception(f"String parameter '{name}' not found on node '{nodeName}'")
+                    
+                    
+                    
                     else:
                         raise Exception(f"Unsupported parameter type for '{name}' on node '{nodeName}'")
 

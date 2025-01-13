@@ -21,7 +21,7 @@ def defineNodeReroute(node, errors, parsedNodes):
     rerouteNode = RSIRNode(node_id=rerouteName,  node_type= rerouteString)
 
     #no proprieties since its a network dot/reroute
-
+    rerouteNode.properties["dot"] = {}
 
     #sigle node, no internal connections
     internalConnections={
