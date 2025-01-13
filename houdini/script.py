@@ -83,7 +83,6 @@ def import_rsir_json(filepath, matlibNode=None):
                 else:
                     createdNode = parent_node.createNetworkDot()
 
-
             except Exception as e:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 print(f"Error creating node {nodeType}: {e}")
@@ -225,7 +224,10 @@ def import_rsir_json(filepath, matlibNode=None):
     #now we wire the connections between graphs
     for graph in rsirGraphs:
         inputConnections = graph["inputConnections"]
-
+        if graph["uId"] == "__dot":
+            isDot = True
+        else:
+            isDot = False
 
 
         for connection in inputConnections:
@@ -236,6 +238,12 @@ def import_rsir_json(filepath, matlibNode=None):
                 nodeMakingConnectionInputSocketName = connection.split(":")[1]
 
                 nodeMakingConnection = hou.item(f"/stage/{matlibNode.name()}/{matname}/{nodeMakingConnectionName}")
+                #check if what were tryna connect is a network dot, if it is then it wont have these properties
+                if isDot:
+                    nodeMakingConnectionInputSockets = nodeMakingConnection.inputNames()
+                    nodeMakingConnectionSocketIndex = nodeMakingConnectionInputSockets.index(nodeMakingConnectionInputSocketName) if nodeMakingConnectionInputSocketName in nodeMakingConnectionInputSockets else 0
+                else:
+                    nodeMakingConnectionSocketIndex = 0
 
                 if nodeMakingConnection is None:
                     raise Exception(f"Node {nodeMakingConnectionName} not found in the graph. Did you export it in the children's list and is the node type correct?")
@@ -248,14 +256,18 @@ def import_rsir_json(filepath, matlibNode=None):
                     
                     nodeTakingConnectionName = nNodeConnection.split(":")[0]        
                     nodeTakingConnectionSocketName = nNodeConnection.split(":")[1]
+                    #check if what were tryna connect is a network dot, if it is then it wont have these properties
+                    nodeTakingConnectionInputSockets = nodeTakingConnection.inputNames()
+                    nodeTakingConnectionSocketIndex = nodeTakingConnectionInputSockets.index(nodeTakingConnectionSocketName) if nodeTakingConnectionSocketName in nodeTakingConnectionInputSockets else 0
 
                     print(f"Node taking connection: {nodeTakingConnectionName} and output socket: {nodeTakingConnectionSocketName} ")
 
+                    #we use hou.item rather than hou.node since networkDots cant be accessed with hou.node
                     nodeTakingConnection = hou.item(f"/stage/{matlibNode.name()}/{matname}/{nodeTakingConnectionName}")
 
 
-                    print(f"{nodeTakingConnection.name()}.setNamedInput({nodeTakingConnectionSocketName}, {nodeMakingConnection.name()}, {nodeMakingConnectionInputSocketName})")
-                    nodeTakingConnection.setNamedInput(nodeTakingConnectionSocketName, nodeMakingConnection, nodeMakingConnectionInputSocketName)
+                    print(f"{nodeTakingConnection.name()}.setInput({nodeTakingConnectionSocketIndex}, {nodeMakingConnection.name()}, {nodeMakingConnectionSocketIndex})")
+                    nodeTakingConnection.setInput(nodeTakingConnectionSocketIndex, nodeMakingConnection, nodeMakingConnectionSocketIndex)
                 
             except Exception as e:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
