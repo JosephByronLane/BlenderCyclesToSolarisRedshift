@@ -10,7 +10,7 @@ from ..utils.redshiftPrefix import prefixRedhisftNode
 def defineShaderNodeInvert(node, errors, parsedNodes):
 
     #raw strings of nodes
-    invertString = "RSColorInvert"
+    invertString = "RSMathInvColor"
     mixString = "RSColorMix"
 
     #generate names
@@ -28,7 +28,7 @@ def defineShaderNodeInvert(node, errors, parsedNodes):
 
     #proprieties
     mixNode.properties["mixAmount"] = node.inputs["Fac"].default_value
-    invertNode.properties["input"] = node.inputs["Color"].default_value
+    invertNode.properties["input"] = tuple(node.inputs["Color"].default_value)
 
     internalConnections={
         f"{invertName}:outColor": f"{mixName}:input1",
@@ -47,7 +47,7 @@ def defineShaderNodeInvert(node, errors, parsedNodes):
 
     rsirGraph = RSIRGraph(
         uId=node.name,
-        children=[invertNode],
+        children=[invertNode, mixNode],
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
