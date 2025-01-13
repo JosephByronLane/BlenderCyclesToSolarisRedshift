@@ -216,7 +216,7 @@ def defineShaderNodeMath(node, errors, parsedNodes):
     if isClamped:
         outboundConnectors[f"{node.bl_idname}:Value"] = f"{clampName}:out"
     else:
-        outboundConnectors[f"{node.bl_idname}:Value" : f"{mathName}:out"]
+        outboundConnectors[f"{node.bl_idname}:Value"] : f"{mathName}:out"
 
 
 

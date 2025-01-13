@@ -76,9 +76,10 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                         if nodeRegistry:
                             #errors is  passed by reference
                             #same with parsedNodes
+                            print("Parsing node ", node.bl_idname)
+
                             nodeFunction = nodeRegistry(node, errors, parsedNodes)
 
-                            print("Parsing node ", node.bl_idname)
                             if nodeFunction is None:
                                 print("????????????????????????????????????????????????")
                                 print(f"Parsing of node {node.bl_idname} returned null.")
