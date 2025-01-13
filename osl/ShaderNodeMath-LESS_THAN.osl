@@ -1,0 +1,8 @@
+shader compare_less(
+    float input1 = 0.0, // Input 1
+    float input2 = 0.0, // Input 2
+    output float out = 0.0 // Output
+)
+{
+    out = (input1 < input2) ? 1.0 : 0.0;
+}
