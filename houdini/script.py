@@ -297,7 +297,7 @@ def import_rsir_json(filepath, matlibNode=None):
         matlibNode.layoutChildren()
 
         print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
-        print("Script has finished executing succesffuly")
+        print("All materials have been parsed succesffuly")
         print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
 
     except Exception as e:
@@ -407,13 +407,15 @@ def autoFillMaterials(matLibNode):
 
                 geoAssignmentParm.set(f"/stage/geo/{matNamePart}{matSuffix}")
 
-                
+
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print(f"Error populating materials: {e}")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-
+    print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
+    print("All valid materials binded succesffuly")
+    print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
 
 
 
