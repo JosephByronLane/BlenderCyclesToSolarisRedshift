@@ -13,8 +13,10 @@ class VIEW3D_PT_MaterialExporter(Panel):
     def draw(self, context):
         layout = self.layout
 
-        layout.label(text="Cleanup and export and shit")
-        layout.operator("rfxutils.ungroup_scene_modal", text="Remove Group Nodes")
+        layout.prop(context.scene , "ignore_invert_nodes", text="Ignore Invert Nodes")
+        layout.prop(context.scene , "move_textures_over", text="Move Textures Over")
+        layout.prop(context.scene , "include_osl_shaders", text="Move Textures Over")
+
         layout.operator("rfxutils.material_parser", text="Export Materials")
 
 def register():
