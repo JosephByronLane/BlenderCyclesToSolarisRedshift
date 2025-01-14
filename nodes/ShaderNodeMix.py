@@ -177,18 +177,36 @@ def defineMixNode(node, errors, parsedNodes):
     inboundConnectors = {  
     }
 
+    if node.data_type == 'VECTOR':
+        if isNonUniform:
+            facName = "Factor_Vector"
+        else:
+            facName = "Factor_Float"
+        aName = "A_Vector"
+        bName = "B_Vector"
+    
+    if node.data_type == 'RGBA':
+        facName = "Factor_Float"
+        aName = "A_Color"
+        bName = "B_Color"
+
+    if node.data_type == 'FLOAT':
+        facName = "Factor_Float"
+        aName = "A_Float"
+        bName = "B_Float"
+
     if node.clamp_factor and node.inputs["Factor"].is_linked:
-        inboundConnectors[f"{node.bl_idname}:Factor"] = f"{clampFactorName}:input"
+        inboundConnectors[f"{node.bl_idname}:{facName}"] = f"{clampFactorName}:input"
     else:
-        inboundConnectors[f"{node.bl_idname}:Factor"] = f"{mixName}:mixAmount"
+        inboundConnectors[f"{node.bl_idname}:{facName}"] = f"{mixName}:mixAmount"
 
     if node.blend_type != 'MIX' and node.data_type == 'RGBA':
-        inboundConnectors[f"{node.bl_idname}:A"] = f"{colorCompositeName}:base_color"
-        inboundConnectors[f"{node.bl_idname}:B"] = f"{colorCompositeName}:blend_color&&{mixName}:input2"
+        inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{colorCompositeName}:base_color"
+        inboundConnectors[f"{node.bl_idname}:{bName}"] = f"{colorCompositeName}:blend_color&&{mixName}:input2"
 
     else:
-        inboundConnectors[f"{node.bl_idname}:A"] = f"{mixName}:input1"
-        inboundConnectors[f"{node.bl_idname}:B"] = f"{mixName}:input2"
+        inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{mixName}:input1"
+        inboundConnectors[f"{node.bl_idname}:{bName}"] = f"{mixName}:input2"
 
 
     #setting outbound conectors

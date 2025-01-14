@@ -114,6 +114,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             self.addErrorsToCustomList(error, mat.name)  
                             allErrors.append(error)
                             continue
+                    print("-------------------------------------------------------------")
 
                     print("INFO INFO INFO INFO INFO INFO INFO INFO INFO INFO INFO")
                     print(f"Total parsed nodes: {parsedNodes}")
@@ -124,20 +125,26 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                         if node.name in parsedNodes:
                             print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                             print("Parsing connections for node", node.name)
+
                             #since RSIRGraphs is a list of  custom objects and not data, we cant just use the .index() function, we need to manually search it
+                            #we need to search for the RSIRGraph that has the same name as the node since were iterating over every node (and not every node has an RSIRGraph)
+                            #for example unsuported nodes wont have an RSIRGraph
                             currentNodeRSIRGraph = None
+
+                            print(".................................................................")
+                            print("Checking for RSIRGraph that will take connections...")
+
                             for rsirGraph in RSIRGraphs:
-                                print(f"Checking RSIRGraph {rsirGraph.uId}")
+                                print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                                print(f"Checking for c RSIRGraph {rsirGraph.uId}")
                                 rsirGraphUids = rsirGraph.uId.split("&&")
-                                counter = 0
                                 for uid in rsirGraphUids:
-                                    counter  = counter + 1
                                     print(f"Checking uid {uid}")
                                     if uid == node.name:
-                                        print(f"Found RSIRGraph {rsirGraph.uId} for node {node.name}")
+                                        print(f"Found RSIRGraph taking connection {rsirGraph.uId} for node {node.name}")
                                         currentNodeRSIRGraph = rsirGraph
                                         break
-                                    
+                                                                   
                             if currentNodeRSIRGraph is None:
                                 self.report({'ERROR'}, "There was an error hooking up node conections: Couldnt find current node's RSIRGraph")
                                 return {'CANCELLED'}
@@ -146,6 +153,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             for input_socket in node.inputs:
                                 if input_socket.is_linked:
                                     try:
+                                        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                                         print(f"Input socket {input_socket.identifier} is linked, parsing...")
                                         # These are in RS nodes, since they're pased to the houdini parser.
                                         # 
@@ -158,19 +166,24 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         # "RSMathRange1:input" : "RSColorSplitter1:outA",
 
                                         connectingNode = input_socket.links[0].from_node     
+                                        print(f"Connecting node {connectingNode.name}")
 
                                         connectingNodeRSIRGraph = None
+
                                         for rsirGraph in RSIRGraphs:
+                                            print("==============================================================")
                                             print(f"Checking RSIRGraph {rsirGraph.uId}")
-                                            print(f"Connecting node {connectingNode.name}")
                                             rsirGraphUids = rsirGraph.uId.split("&&")
                                             for uid in rsirGraphUids:
                                                 print(f"Checking uid {uid}")
                                                 if uid == connectingNode.name:
                                                     if uid in parsedNodes:
-                                                        print(f"Found RSIRGraph {rsirGraph.uId} for node {connectingNode.name}")
+                                                        print(f"Found  RSIRGraph making connection {rsirGraph.uId} for node {connectingNode.name}")
                                                         connectingNodeRSIRGraph = rsirGraph
                                                         break
+
+                                        print("==============================================================")
+
                                         #if the RSIRGraph is not found, in the connecting inputs, means its graph was never greated, and thus never parsed. AKA isn't supported
                                         if connectingNodeRSIRGraph is None:
                                             print(f"Unsuported node {connectingNode.name} found. Will be ignored")
