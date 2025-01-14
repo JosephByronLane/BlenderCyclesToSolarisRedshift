@@ -344,6 +344,80 @@ def findAllJson(projectDirectory):
 
     return foundFiles
 
+
+def autoFillMaterials(matLibNode):
+    """Auto fills and assigns the materials to the character according to RuneFX Pipeline naming convention
+
+    :param matLibNode: Material Library node containing the materials
+    :type matLibNode: hou.node
+    """
+
+    print("******************************************************")
+    print("Parsing material names")
+
+    #we populate the materials
+    populateMatsButton = matLibNode.parm("fillmaterials")
+    populateMatsButton.pressButton()
+
+    numMats = matLibNode.parm("materials").eval()
+
+    acceptedMaterialNames = ["hair_mat", "face_mat", "body_mat", "bra_mat", "hands_mat", "tail_mat", "panties_mat", "pupil_mat", "brows_mat", "feet_mat", "pants_mat", "chest_mat", "head_mat", "eyeShadow_mat"]
+
+    #we verify that the materials exist in the list of accepted materials exported from blender
+    #NOTE: the materials output should be sanitized from the blender output, but it doesn't hurt to check it here too.
+    existingMatNodesList = matLibNode.children()
+    validMaterials = []
+    for matNode in existingMatNodesList:
+        try:
+            matName = matNode.name()
+            print("===============================================================")
+            print(f"Checking material {matName}...")
+            if matName in acceptedMaterialNames:
+                validMaterials.append(matName)
+                print(f"Material {matName} found in the list of accepted materials")
+            else:
+                raise Exception(f"Material {matName} not found in the list of accepted materials. It will not be bound to geometry")
+        except Exception as e:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(f"Error checking  materials:: {e}")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    print("******************************************************")
+    print("Binding materials to geometry")
+
+    #we bind the materials to the geometry
+    for i in range(1, numMats+1):
+        try:
+            #first we get the materials name
+            matNameFull = matLibNode.parm(f"matnode{i}").eval() #chest_mat
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print(f"Binding material {matNameFull} to geometry...")
+            if matNameFull in validMaterials:
+                matNamePart = matNameFull.split("_")[0] #chest
+
+                #since the head, hands and face are all separate materials on the same mesh we need do use USD's subdiv groups so no SSS seams appear
+                if matNameFull == "face_mat" or matNameFull == "head_mat" or matNameFull == "body_mat":
+                    matSuffix = f"_grp/{matNamePart}_geo"
+                else:
+                    matSuffix = f"_geo"
+
+                geoAssignmentParm = matlibNode.parm(f'geopath{i}')
+
+                print(f"Binding material {matNameFull} to geometry {matNamePart}{matSuffix}...")
+
+                geoAssignmentParm.set(f"/stage/geo/{matNamePart}{matSuffix}")
+
+                
+        except Exception as e:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(f"Error populating materials: {e}")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+
+
+
+
+
 projectFolder = autoDetectFolder()
 jsonFiles = findAllJson(projectFolder)
 stage = hou.node("/stage")
@@ -359,4 +433,7 @@ matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
 
 for file in jsonFiles:
     import_rsir_json(file, matlibNode)
+
+
+
 

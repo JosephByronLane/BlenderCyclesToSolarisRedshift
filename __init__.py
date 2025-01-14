@@ -62,9 +62,9 @@ from . import nodes
 
 
 def register():
+    projectFolder.register()
     exportMaterial.register()
     materialParser.register()
-    projectFolder.register()
     autoDetectFolder.register()
     selectFolder.register()
     customFolder.register()
