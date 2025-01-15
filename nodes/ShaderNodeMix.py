@@ -201,8 +201,8 @@ def defineMixNode(node, errors, parsedNodes):
         inboundConnectors[f"{node.bl_idname}:{facName}"] = f"{mixName}:mixAmount"
 
     if node.blend_type != 'MIX' and node.data_type == 'RGBA':
-        inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{colorCompositeName}:base_color"
-        inboundConnectors[f"{node.bl_idname}:{bName}"] = f"{colorCompositeName}:blend_color&&{mixName}:input1"
+        inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{colorCompositeName}:base_color&&{mixName}:input1"
+        inboundConnectors[f"{node.bl_idname}:{bName}"] = f"{colorCompositeName}:blend_color"
 
     else:
         inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{mixName}:input1"
