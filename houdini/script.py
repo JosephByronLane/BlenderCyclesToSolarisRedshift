@@ -418,8 +418,8 @@ def autoFillMaterials(matLibNode):
                 matNamePart = matNameFull.split("_")[0] #chest
 
                 #since the head, hands and face are all separate materials on the same mesh we need do use USD's subdiv groups so no SSS seams appear
-                if matNameFull == "face_mat" or matNameFull == "head_mat" or matNameFull == "body_mat":
-                    matSuffix = f"_grp/{matNamePart}_geo"
+                if matNameFull == "face_mat" or matNameFull == "head_mat" or matNameFull == "body_mat" or matNameFull == "hands_mat":
+                    matSuffix = f"_geo/{matNamePart}_grp"
                 else:
                     matSuffix = f"_geo"
 
