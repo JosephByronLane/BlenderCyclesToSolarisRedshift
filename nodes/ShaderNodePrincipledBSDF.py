@@ -70,7 +70,7 @@ def definePrincipledBsdf(node, errors, parsedNodes):
 
     #TODO: if has inbound connections in the specular tab we need to return an error
     inboundConnectors = {
-        f"{node.bl_idname}:Base Color":                f"{nodeName}:base_color",
+        f"{node.bl_idname}:Base Color":           f"{nodeName}:base_color&&{nodeName}:ms_color",
         f"{node.bl_idname}:Metallic":             f"{nodeName}:metalness",  
         f"{node.bl_idname}:Roughness":            f"{nodeName}:refl_roughness",
         f"{node.bl_idname}:IOR":                  f"{nodeName}:refl_ior",
@@ -94,6 +94,8 @@ def definePrincipledBsdf(node, errors, parsedNodes):
         f"{node.bl_idname}:Thin Film Thickness":  f"{nodeName}:thinfilm_thickness",
         f"{node.bl_idname}:Thin Film IOR":        f"{nodeName}:thinfilm_ior"    
     }
+
+    
 
     outboundConnectors = {
         f"{node.bl_idname}:BSDF": f"{nodeName}:outColor" 
