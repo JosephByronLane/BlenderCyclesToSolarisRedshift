@@ -44,6 +44,9 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
         #used to verify if a material has already been exported
         alreadyExportedMmaterials = set()
 
+        moveTextures = bpy.context.scene.move_textures_over
+        
+        
         for obj in selectedObjects:
 
             if obj.type != 'MESH':

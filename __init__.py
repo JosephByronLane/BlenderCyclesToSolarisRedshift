@@ -12,6 +12,8 @@ if "bpy" in locals():
     importlib.reload(jsonSaver)
     importlib.reload(showExportWarning)
     importlib.reload(findOslShader)
+    importlib.reload(cleanupNodeGraph)
+    importlib.reload(orphanRemover)
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
@@ -44,7 +46,7 @@ bl_info = {
 }
 from .panels import exportMaterial
 from .panels import projectFolder
-
+from .panels import cleanupNodeGraph
 
 from .operators import materialParser
 from .operators import autoDetectFolder
@@ -53,7 +55,10 @@ from .operators import degruopNodes
 from .operators import showExportWarning
 from .operators import jsonSaver
 from .operators import showExportWarning
+from .operators import orphanRemover
+
 from .proprieties import customFolder
+from .proprieties import materialParserSettings
 
 from .utils import uniqueDict
 from .utils import findOslShader
@@ -63,6 +68,8 @@ from . import nodes
 
 def register():
     projectFolder.register()
+    cleanupNodeGraph.register()
+
     exportMaterial.register()
     materialParser.register()
     autoDetectFolder.register()
@@ -71,18 +78,22 @@ def register():
     degruopNodes.register()
     jsonSaver.register()
     showExportWarning.register()
+    materialParserSettings.register()
+    orphanRemover.register()
 
 def unregister():
+    projectFolder.unregister()
     exportMaterial.unregister()
     materialParser.unregister()
-    projectFolder.unregister()
     autoDetectFolder.unregister()
     selectFolder.unregister()
     customFolder.unregister()
     degruopNodes.unregister()
     jsonSaver.unregister()
     showExportWarning.unregister()
-
+    materialParserSettings.unregister()
+    cleanupNodeGraph.unregister()
+    orphanRemover.unregister()
 
 if __name__ == "__main__":
     register()
