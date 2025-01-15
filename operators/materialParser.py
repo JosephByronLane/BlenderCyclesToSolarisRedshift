@@ -45,7 +45,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
         alreadyExportedMmaterials = set()
 
         moveTextures = bpy.context.scene.move_textures_over
-        
+        self.clearErrorsFromCustomList()
+
         
         for obj in selectedObjects:
 
@@ -63,7 +64,6 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                     print(f"Processing material {mat.name}")
 
                     RSIRGraphs= []
-                    self.clearErrorsFromCustomList()
                     errors = []
 
                     #TODO: rewrite error handling cause its really finnicky and not very good
@@ -256,13 +256,13 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             print(f"Node {node.name} was not parsed, skipping connections")
                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-                    if allErrors:
-                        print("Errors found")
-                        bpy.ops.rfxutils.call_popup('INVOKE_DEFAULT', key=uniqueId)
+        if allErrors:
+            print("Errors found")
+            bpy.ops.rfxutils.call_popup('INVOKE_DEFAULT', key=uniqueId)
 
-                    else:
-                        print("No errors found")
-                        bpy.ops.rfxutils.json_saver('INVOKE_DEFAULT', key=uniqueId)
+        else:
+            print("No errors found")
+            bpy.ops.rfxutils.json_saver('INVOKE_DEFAULT', key=uniqueId)
 
         return {'FINISHED'}
     
