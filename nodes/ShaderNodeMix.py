@@ -172,7 +172,7 @@ def defineMixNode(node, errors, parsedNodes):
         internalConnections[f"{mixName}:{mixOutputSocketName}"] = f"{clampResultName}:input"
 
     if node.blend_type != 'MIX' and node.data_type == 'RGBA':
-        internalConnections[f"{colorCompositeName}:outColor"] = f"{mixName}:input1"
+        internalConnections[f"{colorCompositeName}:outColor"] = f"{mixName}:input2"
    
     inboundConnectors = {  
     }
@@ -202,7 +202,7 @@ def defineMixNode(node, errors, parsedNodes):
 
     if node.blend_type != 'MIX' and node.data_type == 'RGBA':
         inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{colorCompositeName}:base_color"
-        inboundConnectors[f"{node.bl_idname}:{bName}"] = f"{colorCompositeName}:blend_color&&{mixName}:input2"
+        inboundConnectors[f"{node.bl_idname}:{bName}"] = f"{colorCompositeName}:blend_color&&{mixName}:input1"
 
     else:
         inboundConnectors[f"{node.bl_idname}:{aName}"] = f"{mixName}:input1"
