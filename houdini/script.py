@@ -470,6 +470,23 @@ for file in jsonFiles:
 
 autoFillMaterials(matlibNode)
 
+#finally we wire them up
 
+try:
+    charaNode = stage.node(f"/stage/{charaName}")
+
+    if charaNode is None:
+        raise Exception(f"Node {charaName} not found in the graph")
+
+    matlibNode.setInput(0, charaNode, 0)
+
+    print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
+    print("All materials have been parsed succesffuly")
+    print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
+
+except Exception as e:
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(f"Error wiring up stage nodes: {e}")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 

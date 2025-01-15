@@ -21,6 +21,9 @@ def definePrincipledBsdf(node, errors, parsedNodes):
 
     rsirNode = RSIRNode(node_id=nodeName,  node_type=prefixRedhisftNode("StandardMaterial"))
 
+    sssColorNode = RSIRNode(node_id=sssColorName,  node_type=prefixRedhisftNode("RSColorConstant"))
+
+
     rsirNode.properties["base_color"] = tuple(node.inputs["Base Color"].default_value[:3])
     rsirNode.properties["metalness"] = node.inputs["Metallic"].default_value
     rsirNode.properties["refl_roughness"] = node.inputs["Roughness"].default_value
@@ -54,9 +57,14 @@ def definePrincipledBsdf(node, errors, parsedNodes):
     rsirNode.properties["thinfilm_ior"] = node.inputs["Thin Film IOR"].default_value 
     internalConnections = {}
 
+    sssMultNode.properties["input1"] = tuple(node.inputs["Subsurface Radius"].default_value)
+
+    sssColorNode.properties["val"] = tuple(node.inputs["Subsurface Radius"].default_value)
+
     if node.inputs["Subsurface Scale"].is_linked:
         internalConnections={
             f"{sssMultName}:out":                f"{nodeName}:ms_radius",
+            f"{sssColorName}:outColor":           f"{sssMultName}:input1"
         }
 
 
@@ -108,6 +116,7 @@ def definePrincipledBsdf(node, errors, parsedNodes):
 
     if node.inputs["Subsurface Scale"].is_linked:
         graphChildren.append(sssMultNode)
+        graphChildren.append(sssColorNode)
 
     graphChildren.append(rsirNode)
 
