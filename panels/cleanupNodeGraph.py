@@ -13,6 +13,7 @@ class VIEW3D_PT_cleanUpNodeGraph(bpy.types.Panel):
         layout.label(text="Cleanup and export and shit")
 
         layout.operator("rfxutils.ungroup_scene_modal", text="Remove Group Nodes")
+        layout.operator("rfxutils.disconnect_specular", text="Disconnect Specular outputs (!!!!!)")
         layout.operator("rfxutils.child_remover", text="Remove Orphaned Nodes")
 
 def register():

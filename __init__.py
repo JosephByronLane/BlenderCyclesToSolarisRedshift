@@ -14,6 +14,7 @@ if "bpy" in locals():
     importlib.reload(findOslShader)
     importlib.reload(cleanupNodeGraph)
     importlib.reload(orphanRemover)
+    importlib.reload(disconnectSpecular)
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
@@ -56,6 +57,7 @@ from .operators import showExportWarning
 from .operators import jsonSaver
 from .operators import showExportWarning
 from .operators import orphanRemover
+from .operators import disconnectSpecular
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -80,6 +82,7 @@ def register():
     showExportWarning.register()
     materialParserSettings.register()
     orphanRemover.register()
+    disconnectSpecular.register()
 
 def unregister():
     projectFolder.unregister()
@@ -94,6 +97,7 @@ def unregister():
     materialParserSettings.unregister()
     cleanupNodeGraph.unregister()
     orphanRemover.unregister()
+    disconnectSpecular.unregister()
 
 if __name__ == "__main__":
     register()
