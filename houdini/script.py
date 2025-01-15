@@ -373,7 +373,6 @@ def autoFillMaterials(matLibNode):
     """
 
     #first we prefix the materials so they live in the same hirearchy as the geo
-    matLibNode.parm("matpathprefix").set("/Rune/materials/")
 
     print("******************************************************")
     print("Parsing material names")
@@ -431,7 +430,7 @@ def autoFillMaterials(matLibNode):
 
                 print(f"Binding material {matNameFull} to geometry {matNamePart}{matSuffix}...")
 
-                geoAssignmentParm.set(f"/stage/Rune/geo/{matNamePart}{matSuffix}")
+                geoAssignmentParm.set(f"/{charaName}/geo/{matNamePart}{matSuffix}")
 
 
         except Exception as e:
@@ -439,29 +438,38 @@ def autoFillMaterials(matLibNode):
             print(f"Error populating materials: {e}")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
+    matLibNode.parm("matpathprefix").set(f"/{charaName}/materials/")
+
+
     print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
     print("All valid materials binded succesffuly")
     print("YAY YAY YAY YAY YAY YAY YAY YAY YAY")
 
 
 
-
 projectFolder = autoDetectFolder()
 jsonFiles = findAllJson(projectFolder)
 stage = hou.node("/stage")
+
+charaName = "Rune"
+
 if not stage:
     raise RuntimeError("Could not find /stage!")  
 
 #before creating a new node we delete the old one if it exists
-existingMatLibNode = stage.node("RuneMatLib")
+existingMatLibNode = stage.node(f"{charaName}matlib")
 if existingMatLibNode:            
     existingMatLibNode.destroy()
 
-matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
+
+
+matlibNode = stage.createNode('materiallibrary', node_name=f"{charaName}matlib")
 
 for file in jsonFiles:
     import_rsir_json(file, matlibNode)
 
 autoFillMaterials(matlibNode)
+
+
 
 
