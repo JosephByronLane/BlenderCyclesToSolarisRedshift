@@ -52,12 +52,11 @@ def definePrincipledBsdf(node, errors, parsedNodes):
     rsirNode.properties["emission_color"] = tuple(node.inputs["Emission Color"].default_value[:3])
     rsirNode.properties["thinfilm_thickness"] = node.inputs["Thin Film Thickness"].default_value
     rsirNode.properties["thinfilm_ior"] = node.inputs["Thin Film IOR"].default_value 
+    internalConnections = {}
 
     if node.inputs["Subsurface Scale"].is_linked:
         internalConnections={
             f"{sssMultName}:out":                f"{nodeName}:ms_radius",
-
-
         }
 
 

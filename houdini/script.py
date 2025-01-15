@@ -372,6 +372,9 @@ def autoFillMaterials(matLibNode):
     :type matLibNode: hou.node
     """
 
+    #first we prefix the materials so they live in the same hirearchy as the geo
+    matLibNode.parm("matpathprefix").set("/Rune/materials/")
+
     print("******************************************************")
     print("Parsing material names")
 
@@ -381,7 +384,7 @@ def autoFillMaterials(matLibNode):
 
     numMats = matLibNode.parm("materials").eval()
 
-    acceptedMaterialNames = ["hair_mat", "face_mat", "body_mat", "bra_mat", "hands_mat", "tail_mat", "panties_mat", "pupil_mat", "brows_mat", "feet_mat", "pants_mat", "chest_mat", "head_mat", "eyeShadow_mat"]
+    acceptedMaterialNames = ["hair_mat", "face_mat", "body_mat", "bra_mat", "hands_mat", "tail_mat", "panties_mat", "pupil_mat", "brows_mat", "feet_mat", "pants_mat", "chest_mat", "head_mat", "eyeShadow_mat", "legs_mat"]
 
     #we verify that the materials exist in the list of accepted materials exported from blender
     #NOTE: the materials output should be sanitized from the blender output, but it doesn't hurt to check it here too.
@@ -423,9 +426,12 @@ def autoFillMaterials(matLibNode):
 
                 geoAssignmentParm = matlibNode.parm(f'geopath{i}')
 
+                assignToGeoCheckbox = matlibNode.parm(f'assign{i}')
+                assignToGeoCheckbox.set(1)
+
                 print(f"Binding material {matNameFull} to geometry {matNamePart}{matSuffix}...")
 
-                geoAssignmentParm.set(f"/stage/geo/{matNamePart}{matSuffix}")
+                geoAssignmentParm.set(f"/stage/Rune/geo/{matNamePart}{matSuffix}")
 
 
         except Exception as e:
@@ -456,6 +462,6 @@ matlibNode = stage.createNode('materiallibrary', node_name='RuneMatLib')
 for file in jsonFiles:
     import_rsir_json(file, matlibNode)
 
-#autoFillMaterials(matlibNode)
+autoFillMaterials(matlibNode)
 
 
