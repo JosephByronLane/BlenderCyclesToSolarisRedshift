@@ -25,7 +25,7 @@ def defineImageTexture(node, errors, parsedNodes):
     #colorspace parameters
     if node.image.colorspace_settings.name != 'Non-Color' and  node.image.colorspace_settings.name != 'sRGB':
         errors.append(f"Color space not supported on node: {node.name} will default to sRGB")
-        texSamplerNode.properties["tex0_colorSpace"] = "AgX Base sRGB"
+        texSamplerNode.properties["tex0_colorSpace"] = "Rec.2020"
 
     if node.image.colorspace_settings.name == 'Non-Color':
         texSamplerNode.properties["tex0_colorSpace"] = "Raw"
