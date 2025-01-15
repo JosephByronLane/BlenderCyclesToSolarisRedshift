@@ -9,7 +9,15 @@ from ..utils.redshiftPrefix import prefixRedhisftNode
 @registerNode('ShaderNodeBsdfPrincipled')
 def definePrincipledBsdf(node, errors, parsedNodes):
 
+    graphChildren = []
+
     nodeName= generateNodeName("StandardMaterial")
+
+    sssMultName = generateNodeName("RSMathMulVector")
+
+    sssColorName = generateNodeName("RSColorConstant")
+
+    sssMultNode = RSIRNode(node_id=sssMultName, node_type=prefixRedhisftNode("RSMathMulVector"))
 
     rsirNode = RSIRNode(node_id=nodeName,  node_type=prefixRedhisftNode("StandardMaterial"))
 
@@ -45,9 +53,12 @@ def definePrincipledBsdf(node, errors, parsedNodes):
     rsirNode.properties["thinfilm_thickness"] = node.inputs["Thin Film Thickness"].default_value
     rsirNode.properties["thinfilm_ior"] = node.inputs["Thin Film IOR"].default_value 
 
+    if node.inputs["Subsurface Scale"].is_linked:
+        internalConnections={
+            f"{sssMultName}:out":                f"{nodeName}:ms_radius",
 
-    #single node, no internal connections
-    internalConnections={}
+
+        }
 
 
     #TODO: if has inbound connections in the specular tab we need to return an error
@@ -60,8 +71,9 @@ def definePrincipledBsdf(node, errors, parsedNodes):
         f"{node.bl_idname}:Alpha":                f"{nodeName}:opacity_color",
         f"{node.bl_idname}:Normal":               f"{nodeName}:bump_input",
         f"{node.bl_idname}:Subsurface Weight":    f"{nodeName}:ms_amount",
-        f"{node.bl_idname}:Subsurface Radius":    f"{nodeName}:ms_radius",
+        f"{node.bl_idname}:Subsurface Radius":    f"{sssMultName}:input1",
         f"{node.bl_idname}:Subsurface Anisotropy":f"{nodeName}:ms_phase",
+        f"{node.bl_idname}:Subsurface Scale":     f"{sssMultName}:input2",
         f"{node.bl_idname}:Transmission Weight":  f"{nodeName}:refr_weight",
         f"{node.bl_idname}:Coat Weight":          f"{nodeName}:coat_weight",
         f"{node.bl_idname}:Coat Roughness":       f"{nodeName}:coat_roughness",
@@ -96,12 +108,13 @@ def definePrincipledBsdf(node, errors, parsedNodes):
         errors.append(f"Specular Tangent input not supported on node: {node.name}") 
 
     if node.inputs["Subsurface Scale"].is_linked:
-        errors.append(f"Subsurface Scale input not supported as a connectable input on node: {node.name}")
-    
+        graphChildren.append(sssMultNode)
+
+    graphChildren.append(rsirNode)
 
     rsirGraph = RSIRGraph(
         uId=node.name,
-        children=[rsirNode],
+        children=graphChildren,
         internalConnections=internalConnections,
         inboundConnectors=inboundConnectors,
         outboundConnectors=outboundConnectors
