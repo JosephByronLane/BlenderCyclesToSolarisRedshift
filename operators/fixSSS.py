@@ -22,15 +22,29 @@ class RFX_OT_FixSss(bpy.types.Operator):
                         nodeTree = mat.node_tree
                         for node in nodeTree.nodes:
                             if node.bl_idname == "ShaderNodeBsdfPrincipled":
-                                node.inputs["Subsurface"].default_value = node.inputs["Subsurface"].default_value * .1
+                                #we dont want to half it  f its already 0.05, since 0.025 would be quite  phisically accurate (if a little high)
+                                if node.inputs["Subsurface Scale"].default_value > 0.05:
+                                    node.inputs["Subsurface Scale"].default_value = node.inputs["Subsurface Scale"].default_value * .1
 
-                                if node.inputs["Subsurface  Scale"].is_linked:
-                                    multiplyNode = nodeTree.nodes.new(type="ShaderNodeMath")
+                                if node.inputs["Subsurface Scale"].is_linked:
+
+                                    inputShaderNodeMath = node.inputs["Subsurface Scale"].links[0].from_node
+
+                                    isConnectingNodeShaderMath = inputShaderNodeMath.bl_idname == "ShaderNodeMath" 
                                     
+                                    if isConnectingNodeShaderMath and inputShaderNodeMath.operation == "MULTIPLY" and inputShaderNodeMath.inputs[1].default_value <= .11:
+                                        self.report({'INFO'}, "SSS doesn't need fixing.")
+                                    else:
+                                        multiplyNode = nodeTree.nodes.new(type="ShaderNodeMath")
+                                        multiplyNode.operation = "MULTIPLY"
+                                        multiplyNode.inputs[1].default_value = .1
 
-
-
+                                        originalInput = node.inputs["Subsurface Scale"].links[0].from_socket
+                                        nodeTree.links.new(multiplyNode.outputs[0], node.inputs["Subsurface Scale"])
+                                        nodeTree.links.new(originalInput, multiplyNode.inputs[0])
+                                        self.report({'INFO'}, "SSS Scale successfully fixed.")
         return {"FINISHED"}
+                                
 
 
 def register():
