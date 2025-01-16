@@ -74,6 +74,7 @@ from .operators import mergeSimilarMesh
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
+from .proprieties import glftImportSettings
 
 from .utils import uniqueDict
 from .utils import findOslShader
@@ -101,7 +102,7 @@ def register():
     changeNames.register()
     importGLTFToScene.register()
     mergeSimilarMesh.register()
-    
+    glftImportSettings.register()
 
 
 def unregister():
@@ -124,7 +125,7 @@ def unregister():
     importGLTF.unregister()
     importGLTFToScene.unregister()
     mergeSimilarMesh.unregister()
-
+    glftImportSettings.unregister()
 
 if __name__ == "__main__":
     register()
