@@ -16,7 +16,12 @@ if "bpy" in locals():
     importlib.reload(orphanRemover)
     importlib.reload(disconnectSpecular)
     importlib.reload(fixSSS)
-    
+    importlib.reload(exportMaterialSettings)
+    importlib.reload(changeNames)
+    importlib.reload(importGLTF)
+    importlib.reload(importGLTFToScene)
+    importlib.reload(mergeSimilarMesh)
+
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
@@ -50,6 +55,8 @@ bl_info = {
 from .panels import exportMaterial
 from .panels import projectFolder
 from .panels import cleanupNodeGraph
+from .panels import exportMaterialSettings
+from .panels import importGLTF
 
 from .operators import materialParser
 from .operators import autoDetectFolder
@@ -61,6 +68,9 @@ from .operators import showExportWarning
 from .operators import orphanRemover
 from .operators import disconnectSpecular
 from .operators import fixSSS
+from .operators import changeNames
+from .operators import importGLTFToScene
+from .operators import mergeSimilarMesh
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -73,8 +83,8 @@ from . import nodes
 
 def register():
     projectFolder.register()
+    importGLTF.register()
     cleanupNodeGraph.register()
-
     exportMaterial.register()
     materialParser.register()
     autoDetectFolder.register()
@@ -87,6 +97,12 @@ def register():
     orphanRemover.register()
     disconnectSpecular.register()
     fixSSS.register()
+    exportMaterialSettings.register()
+    changeNames.register()
+    importGLTFToScene.register()
+    mergeSimilarMesh.register()
+    
+
 
 def unregister():
     projectFolder.unregister()
@@ -103,6 +119,12 @@ def unregister():
     orphanRemover.unregister()
     disconnectSpecular.unregister()
     fixSSS.unregister()
+    exportMaterialSettings.unregister()
+    changeNames.unregister()
+    importGLTF.unregister()
+    importGLTFToScene.unregister()
+    mergeSimilarMesh.unregister()
+
 
 if __name__ == "__main__":
     register()

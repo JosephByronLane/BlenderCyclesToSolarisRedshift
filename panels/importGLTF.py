@@ -2,10 +2,10 @@ import bpy
 from bpy.types import Panel, Operator
 
 
-class VIEW3D_PT_MaterialExporter(Panel):
+class VIEW3D_PT_ImportGLTFPanel(Panel):
     """TODO: add description"""
-    bl_label = "Material Parser"
-    bl_idname = "RFXUTILS_PT_panel"
+    bl_label = "Import GLTF Character"
+    bl_idname = "RFXUTILS_PT_importgltf_panel"
     bl_space_type = 'VIEW_3D'     
     bl_region_type = 'UI'         
     bl_category = "RuneFX Utils" 
@@ -13,15 +13,12 @@ class VIEW3D_PT_MaterialExporter(Panel):
     def draw(self, context):
         layout = self.layout
 
-        layout.prop(context.scene , "ignore_invert_nodes", text="Ignore Invert Nodes")
-        layout.prop(context.scene , "move_textures_over", text="Move Textures Over")
-        layout.prop(context.scene , "include_osl_shaders", text="Allow OSL Shaders")
-        layout.prop(context.scene , "move_osl_shaders", text="Move OSL Shaders")
-
-        layout.operator("rfxutils.material_parser", text="Export Materials")
+        layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
+        layout.operator( "rfxutils.merge_meshes", text="Merge Meshes")
+        layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes")
 
 def register():
-    bpy.utils.register_class(VIEW3D_PT_MaterialExporter)
+    bpy.utils.register_class(VIEW3D_PT_ImportGLTFPanel)
 
 def unregister():
-    bpy.utils.unregister_class(VIEW3D_PT_MaterialExporter)
+    bpy.utils.unregister_class(VIEW3D_PT_ImportGLTFPanel)
