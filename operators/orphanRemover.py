@@ -10,8 +10,43 @@ class RFX_OT_OrphanRemover(bpy.types.Operator):
     def poll(cls, context):
         return True
 
-    def execute(self, context):
+    def parse_node(self, node, parsedNodes):
         
+        #if the node has already been parsed, we return because we dont want to parse it again
+        if node.name in parsedNodes:            
+            return
+        
+        parsedNodes.append(node.name)        
+
+        #we go over each input
+        for input in node.inputs:
+            #check if its linked
+            if input.is_linked:
+
+                #if it is, we go over each link
+                for link in input.links:
+                    #we call the function again with the node that is connected to the input
+                    self.parse_node(link.from_node, parsedNodes)
+
+    def execute(self, context):
+        selectedObjects = bpy.context.selected_objects
+
+        parsedMaterials = []
+        parsedNodes= []
+        for object in selectedObjects:
+            if object.type == "MESH":
+                for mat in object.data.materials:
+                    if mat and mat.name not in parsedMaterials:
+                        parsedMaterials.append(mat.name)
+
+                        #kind of redundant, but we need to check if the material has a node tree
+                        if mat.node_tree and mat.node_tree.nodes:
+
+                            #we call a recursive function to check each node of the node [0] which is the output material node
+                            #i wasn't sure how to check all nodes whose outputs are not connected to anything, so i just check the first node
+                            #and go from there, saving all nodes in the pasedNodes list and removing those that dont appear.
+                            self.parse_node(mat.node_tree.nodes[0], parsedNodes)
+        print("Parsed nodes: ", parsedNodes)    
         return {"FINISHED"}
 
 
