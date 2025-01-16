@@ -1,4 +1,4 @@
-import bpy
+import bpy # type: ignore
 
 def register():
     bpy.types.Scene.custom_folder_path = bpy.props.StringProperty(

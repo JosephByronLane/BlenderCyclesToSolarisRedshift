@@ -1,4 +1,4 @@
-import bpy
+import bpy # type: ignore
 
 def register():
     bpy.types.Scene.ignore_invert_nodes = bpy.props.BoolProperty(

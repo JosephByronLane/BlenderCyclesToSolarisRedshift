@@ -1,5 +1,5 @@
-import bpy
-from bpy.types import Panel, Operator
+import bpy # type: ignore
+from bpy.types import Panel, Operator # type: ignore
 
 
 class VIEW3D_PT_MaterialExporter(Panel):

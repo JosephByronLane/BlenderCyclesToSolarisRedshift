@@ -1,4 +1,4 @@
-import bpy
+import bpy # type: ignore
 
 def register():
     bpy.types.Scene.auto_detect_gltf = bpy.props.BoolProperty(
