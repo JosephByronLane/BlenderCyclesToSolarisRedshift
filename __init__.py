@@ -21,6 +21,7 @@ if "bpy" in locals():
     importlib.reload(importGLTF)
     importlib.reload(importGLTFToScene)
     importlib.reload(mergeSimilarMesh)
+    importlib.reload(glftImportSettings)
 
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."

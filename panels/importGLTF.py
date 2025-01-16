@@ -13,6 +13,8 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
     def draw(self, context):
         layout = self.layout
         layout.prop(context.scene , "auto_detect_gltf", text="Auto Detect GLTF location")
+        layout.prop(context.scene , "separate_col_gear_gltf", text="Separate collider and gear GLTF")
+
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
         layout.operator( "rfxutils.merge_meshes", text="Merge Meshes")
         layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes")
