@@ -41,6 +41,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
         uniqueId = ""
         allErrors = []
         parsedNodes = []
+        
         #used to verify if a material has already been exported
         alreadyExportedMmaterials = set()
 

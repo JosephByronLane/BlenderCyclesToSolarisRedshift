@@ -46,7 +46,23 @@ class RFX_OT_OrphanRemover(bpy.types.Operator):
                             #i wasn't sure how to check all nodes whose outputs are not connected to anything, so i just check the first node
                             #and go from there, saving all nodes in the pasedNodes list and removing those that dont appear.
                             self.parse_node(mat.node_tree.nodes[0], parsedNodes)
-        print("Parsed nodes: ", parsedNodes)    
+        print("Parsed nodes: ", parsedNodes)
+        
+        alreadyExportedMmaterials = []
+
+        #if a node isn't in the parsed nodes
+        #aka its output doesn't affect the final material, we nuke it to oblivion
+        for object in selectedObjects:
+            if object.type == "MESH":
+                for mat in object.data.materials:
+                   if mat and mat.use_nodes and mat.name not in alreadyExportedMmaterials:
+                        for node in mat.node_tree.nodes:
+                            if node.name not in parsedNodes:
+                                mat.node_tree.nodes.remove(node)
+
+
+
+                        alreadyExportedMmaterials.append(mat.name) 
         return {"FINISHED"}
 
 
