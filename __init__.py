@@ -15,6 +15,8 @@ if "bpy" in locals():
     importlib.reload(cleanupNodeGraph)
     importlib.reload(orphanRemover)
     importlib.reload(disconnectSpecular)
+    importlib.reload(fixSSS)
+    
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
@@ -58,6 +60,7 @@ from .operators import jsonSaver
 from .operators import showExportWarning
 from .operators import orphanRemover
 from .operators import disconnectSpecular
+from .operators import fixSSS
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -83,6 +86,7 @@ def register():
     materialParserSettings.register()
     orphanRemover.register()
     disconnectSpecular.register()
+    fixSSS.register()
 
 def unregister():
     projectFolder.unregister()
@@ -98,6 +102,7 @@ def unregister():
     cleanupNodeGraph.unregister()
     orphanRemover.unregister()
     disconnectSpecular.unregister()
+    fixSSS.unregister()
 
 if __name__ == "__main__":
     register()

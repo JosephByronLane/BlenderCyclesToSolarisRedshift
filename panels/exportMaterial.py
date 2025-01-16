@@ -17,6 +17,7 @@ class VIEW3D_PT_MaterialExporter(Panel):
         layout.prop(context.scene , "move_textures_over", text="Move Textures Over")
         layout.prop(context.scene , "include_osl_shaders", text="Allow OSL Shaders")
         layout.prop(context.scene , "move_osl_shaders", text="Move OSL Shaders")
+        layout.prop(context.scene , "fix_sss_scale", text="Fix SSS Scale on export")
 
         layout.operator("rfxutils.material_parser", text="Export Materials")
 

@@ -21,6 +21,11 @@ def register():
     description="Moves used OSL Shaders to the Houdini's Projects folder under /osl/.",
     default=True
     )
+    bpy.types.Scene.fix_sss_scale = bpy.props.BoolProperty(
+    name="Fix SSS Scale",
+    description="Fixes the SSS Scale by .1 to make it more phisically accurate.",
+    default=True
+    )
 def unregister():
     del bpy.types.Scene.ignore_invert_nodes
     del bpy.types.Scene.move_textures_over
