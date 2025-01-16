@@ -43,6 +43,7 @@ class RFX_OT_FixSss(bpy.types.Operator):
                                         nodeTree.links.new(multiplyNode.outputs[0], node.inputs["Subsurface Scale"])
                                         nodeTree.links.new(originalInput, multiplyNode.inputs[0])
                                         self.report({'INFO'}, "SSS Scale successfully fixed.")
+                                parsedMaterials.append(mat.name)
         return {"FINISHED"}
                                 
 
