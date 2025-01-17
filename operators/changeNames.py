@@ -29,6 +29,7 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
             "characterocclusion": "eyeShadow",
             "fac": "face",
             "w": "weapon",
+            "til": "tail",
         }
         
         parsedMaterials = []

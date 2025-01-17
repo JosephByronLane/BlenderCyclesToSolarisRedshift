@@ -162,7 +162,7 @@ class RFX_OT_UngroupSceneModal(Operator):
                 return {'FINISHED'}
 
             obj = objects[self.object_index]
-            if obj.type == 'MESH' and obj.material_slots:
+            if obj.type == 'MESH' and obj.material_slots and obj in context.selected_objects:
                 for slot in obj.material_slots:
                     if slot.material and slot.material.use_nodes:
                         mat_name = slot.material.name
