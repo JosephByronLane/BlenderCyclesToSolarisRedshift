@@ -13,32 +13,38 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
     def execute(self, context):
         selectedObjects = bpy.context.selected_objects
 
-        #c0201e0023_dwn_1_mt_c0201b0001_a_skin_1562867740.0
-        
-        # we are really only interested in the 1st and 2nd (Starting at 0) if we separate by _'s
-
-
+        #mappings from their exported names to what their names should be.
         mapRenaming = {
+            "skin": "body",
+            "hir": "hair",
             "rir": "ring",
             "sho": "feet",
+            "nek": "neck",
+            "glv": "hands",
+            "dwn": "pants",
+            "top": "chest",
+            "met": "helmet",
+            "iri": "iris",
+            "etc": "brows",
+            "characterocclusion": "eyeShadow",
         }
-
-        bodyStrings = ["skin", "bra","panties"]
         
-        #if they have skin in the name they get merged into "body"
 
         for object in selectedObjects:
             if object.type == "MESH":
                 meshFullName = object.name
-                meshNameParts = meshFullName.split("_")
-                meshType = meshNameParts[1]
-                
-                #this returns the index at where "skin" is found in the mesh name
-                #realitically i should of used some sort of thing that returns a boolean if its found or not
-                #but oh well
-                bodyIndex = meshFullName.find("skin")
-                if bodyIndex != -1:
-                    meshType = "body"
+
+                #gear might be as in c0801h0148_hir_0_mt_c0201h0148_hir_a_hair_5FB0AC65.0;atr_top
+                #so we split by _'s, and then we take the 3rd to the 8th element
+                #leaving us with hir_0_mt_c0201h0148_hir_a_hair
+                #which wont contain doubles of another class, for example the example above contains _top in it.
+
+                meshPrunedName = meshFullName.split("_")[3:8]
+                for key in mapRenaming:
+                    if key in meshPrunedName:
+                        toNameMesh = f"{mapRenaming[key]}_geo"
+                        object.name = toNameMesh
+
 
                 
         return {"FINISHED"}
