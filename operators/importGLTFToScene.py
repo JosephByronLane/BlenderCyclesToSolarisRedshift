@@ -6,9 +6,9 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
     bl_description = "Import GLTF scene" 
     bl_options = {"REGISTER", "UNDO"}
 
-    filepath: bpy.props.StringProperty(subtype="FILE_PATH")
+    filepath: bpy.props.StringProperty(subtype="FILE_PATH") # type: ignore
     
-    filter_glob: bpy.props.StringProperty(default="*.gltf;*.glb", options={'HIDDEN'})
+    filter_glob: bpy.props.StringProperty(default="*.gltf;*.glb", options={'HIDDEN'}) # type: ignore
 
     def execute(self, context):
         
