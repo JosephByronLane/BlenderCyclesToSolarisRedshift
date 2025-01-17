@@ -2,29 +2,20 @@
 if "bpy" in locals():
     import importlib
     import sys
-    importlib.reload(exportMaterial)
-    importlib.reload(materialParser)
-    importlib.reload(projectFolder)
-    importlib.reload(autoDetectFolder)
-    importlib.reload(selectFolder)
-    importlib.reload(degruopNodes)
-    importlib.reload(nodes)
-    importlib.reload(jsonSaver)
-    importlib.reload(showExportWarning)
-    importlib.reload(findOslShader)
-    importlib.reload(cleanupNodeGraph)
-    importlib.reload(orphanRemover)
-    importlib.reload(disconnectSpecular)
-    importlib.reload(fixSSS)
-    importlib.reload(exportMaterialSettings)
-    importlib.reload(changeNames)
-    importlib.reload(importGLTF)
-    importlib.reload(importGLTFToScene)
-    importlib.reload(mergeSimilarMesh)
-    importlib.reload(glftImportSettings)
-    importlib.reload(eyeShadowFixer)
 
     ##reloading all the node definitions
+    prefix = __package__ + ".panels."
+    for name, module in list(sys.modules.items()):
+        if name.startswith(prefix) and module is not None:
+            importlib.reload(module)
+
+    ##reloading all the node definitions
+    prefix = __package__ + ".operators."
+    for name, module in list(sys.modules.items()):
+        if name.startswith(prefix) and module is not None:
+            importlib.reload(module)
+    ##reloading all the node definitions
+
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
         if name.startswith(prefix) and module is not None:
@@ -81,8 +72,6 @@ from .proprieties import materialParserSettings
 from .proprieties import glftImportSettings
 
 from .utils import uniqueDict
-from .utils import findOslShader
-from . import nodes
 
 
 
