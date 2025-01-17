@@ -13,12 +13,46 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
     def execute(self, context):
         selectedObjects = bpy.context.selected_objects
 
-        parsedMaterials = []
+        #c0201e0023_dwn_1_mt_c0201b0001_a_skin_1562867740.0
+        
+        # we are really only interested in the 1st and 2nd (Starting at 0) if we separate by _'s
+
+        # sho : feet
+        # glv : hands
+        # dwn : pant
+        # top : chest
+        # fac : face
+        # hir : hair
+        # til : tail
+
+        mapRenaming = {
+            "sho": "feet",
+            "glv": "hands",
+            "dwn": "pant",
+            "top": "chest",
+            "fac": "face",
+            "hir": "hair",
+            "til": "tail"
+        }
+
+        bodyStrings = ["skin", "bra","panties"]
+        
+        #if they have skin in the name they get merged into "body"
+
         for object in selectedObjects:
             if object.type == "MESH":
-                pass
+                meshFullName = object.name
+                meshNameParts = meshFullName.split("_")
+                meshType = meshNameParts[1]
+                
+                #this returns the index at where "skin" is found in the mesh name
+                #realitically i should of used some sort of thing that returns a boolean if its found or not
+                #but oh well
+                bodyIndex = meshFullName.find("skin")
+                if bodyIndex != -1:
+                    meshType = "body"
 
-                                      
+                
         return {"FINISHED"}
 
 
