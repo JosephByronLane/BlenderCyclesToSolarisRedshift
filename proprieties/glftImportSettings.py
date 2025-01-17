@@ -11,5 +11,10 @@ def register():
         description="Tells the importer wether you have separate collider + gear GLTF or a single file.",
         default=False
     )
+    bpy.types.Scene.only_merge_skin = bpy.props.BoolProperty(
+        name="Only merge skin meshes",
+        description="Only merges skin meshes rather than the whole darn thing.",
+        default=False
+    )
 def unregister():
     del bpy.types.Scene.auto_detect_gltf

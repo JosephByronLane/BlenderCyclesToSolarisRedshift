@@ -16,7 +16,12 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.prop(context.scene , "separate_col_gear_gltf", text="Separate collider and gear GLTF")
 
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
+        layout.separator()
+
+        layout.prop(context.scene , "only_merge_skin", text="Only skin meshes")
         layout.operator( "rfxutils.merge_meshes", text="Merge Meshes")
+
+        layout.separator()
         layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes")
 
 def register():
