@@ -6,6 +6,9 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
     bl_description = "Import GLTF scene" 
     bl_options = {"REGISTER", "UNDO"}
 
+    filepath: bpy.props.StringProperty(subtype="FILE_PATH")
+    
+    filter_glob: bpy.props.StringProperty(default="*.gltf;*.glb", options={'HIDDEN'})
 
     def execute(self, context):
         
@@ -39,11 +42,24 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
             bpy.ops.import_scene.gltf(filepath=gltfPath + gltfFile)
         
         else:
-            #if we dont want to auto detect, we can open a file browser and use that th set the gltf file
-            bpy.ops.wm.glb_import()
+            #if we dont want to auto detect, we can open a file browser and use that tp set the gltf file
+            try:
+                bpy.ops.import_scene.gltf(filepath=self.filepath)
+                self.report({'INFO'}, f"Imported: {self.filepath}")
+            except Exception as e:
+                self.report({'ERROR'}, str(e))
+            return {'FINISHED'}
 
         return {"FINISHED"}
 
+    def invoke(self, context, event):
+        autoDetectGLTF = context.scene.auto_detect_gltf
+
+        if autoDetectGLTF:
+            self.filepath = context.scene
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+    
 
 def register():
     bpy.utils.register_class(RFX_OT_ImportGLTF)
