@@ -37,10 +37,36 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
                     parsedObjects[meshNameBase].append(object)
                 else:
                     parsedObjects[meshNameBase] = [object]
-                
-        print(parsedObjects)
 
+        #now we have all the objects we want to merge in the parsedObjects dictionary
+        for key in parsedObjects:
+            objectsToMerge = parsedObjects[key]
+            print("----------------------------------------------")
+            print("Merging objects: ", objectsToMerge)
+            print("Key: ", key)
+            if len(objectsToMerge) > 1:
+                #deselect all to ensure a clean context
+                bpy.ops.object.select_all(action='DESELECT')
                 
+                #active object will be first one
+                activeObject = objectsToMerge[0]
+                bpy.context.view_layer.objects.active = activeObject
+                
+                # select all remaining objects
+                for obj in objectsToMerge:
+                    obj.select_set(True)
+                
+                # merge em
+                print("Active object: ", activeObject)
+                print("Selected objects: ", objectsToMerge)
+                bpy.ops.object.join()
+                
+                # deselecting them just incase
+                bpy.ops.object.select_all(action='DESELECT')
+                print("Merged.")
+            print("----------------------------------------------")
+
+        
         return {"FINISHED"}
 
 
