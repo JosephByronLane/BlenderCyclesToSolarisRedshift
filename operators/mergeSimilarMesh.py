@@ -13,7 +13,12 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
     def execute(self, context):
         selectedObjects = bpy.context.selected_objects
 
-        parsedMaterials = []
+        #dictionary that will hold the objects to merge.
+        #the key will be the mesh name up to the last dot
+        #the values are a list of t he meshName objects of all meshes that have the same name up to the last dot
+        parsedObjects = {}
+        
+
         for object in selectedObjects:
             if object.type == "MESH":
                 #mesh names are like 
@@ -23,7 +28,19 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
                 # or 
                 # c0201e0000_glv_0_mt_c0201b0001_bibo_skin_n8DF9FD07.005
                 
-                pass
+                #we want to merge all meshes that have the same name up to the last dot
+                meshName = object.name
+                meshNameParts = meshName.split(".")
+                meshNameBase = meshNameParts[0]
+
+                if meshNameBase in parsedObjects:
+                    parsedObjects[meshNameBase].append(object)
+                else:
+                    parsedObjects[meshNameBase] = [object]
+                
+        print(parsedObjects)
+
+                
         return {"FINISHED"}
 
 
