@@ -22,7 +22,7 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.operator( "rfxutils.merge_meshes", text="Merge Meshes")
 
         layout.separator()
-        layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes")
+        layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes and materials")
 
 def register():
     bpy.utils.register_class(VIEW3D_PT_ImportGLTFPanel)

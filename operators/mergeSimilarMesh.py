@@ -42,6 +42,8 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
                         meshNameBase = "_".join(meshNameParts[:-1]) 
                     elif len(meshNameParts) == 10:
                         meshNameBase = "_".join(meshNameParts[:-2])
+                    else:
+                        meshNameBase = "_".join(meshNameParts[:-2])
                     
                     print("Mesh name base: ", meshNameBase)
                     
