@@ -46,7 +46,8 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
                     if key in meshPrunedName:
                         toNameMesh = f"{mapRenaming[key]}_geo"
                         object.name = toNameMesh
-                
+
+
                 #then we rename the materials aswell
                 materials = object.data.materials
                 for mat in  materials:
@@ -57,6 +58,11 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
                             if key in matPrunedName:
                                 toNameMat = f"{mapRenaming[key]}_mat"
                                 mat.name = toNameMat
+                                #edge cases, my favorite
+                                if mat.name == "body_mat.001":
+                                    mat.name = "neck_mat CHECK IF I NEED DELETING"
+                                elif mat.name == "brows_mat.001":
+                                    mat.name = "eye_shadow_mat"
                         parsedMaterials.append(mat.name)
                 
                 
