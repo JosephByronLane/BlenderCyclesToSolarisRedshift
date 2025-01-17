@@ -38,6 +38,8 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
                 else:
                     parsedObjects[meshNameBase] = [object]
 
+        mergedObjects = []
+
         #now we have all the objects we want to merge in the parsedObjects dictionary
         for key in parsedObjects:
             objectsToMerge = parsedObjects[key]
@@ -61,12 +63,53 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
                 print("Selected objects: ", objectsToMerge)
                 bpy.ops.object.join()
                 
+
+                mergedObjects.append(activeObject)
+
                 # deselecting them just incase
                 bpy.ops.object.select_all(action='DESELECT')
                 print("Merged.")
             print("----------------------------------------------")
 
+
+        if mergedObjects == []:
+            print("No meshes were merged.")
+            return {"FINISHED"}
         
+        #now that everythings merged we need to merge all the body parts into a single one.
+        #we find the meshes that have "skin" in the name and merge them into a single one
+        print("----------------------------------------------")
+        print("Finding skin meshes...")
+        skinMeshes = []
+        for object in mergedObjects:
+            print("Checking object: ", object)
+            meshFullName = object.name
+            if "skin" in meshFullName:
+                print("Found skin mesh: ", object)
+                skinMeshes.append(object)
+
+        print("----------------------------------------------")
+        print("Merging skin meshes...")
+        #deselect all to ensure a clean context
+        bpy.ops.object.select_all(action='DESELECT')
+        
+        #active object will be first one
+        activeObject = skinMeshes[0]
+        bpy.context.view_layer.objects.active = activeObject
+        
+        # select all remaining objects
+        for obj in skinMeshes:
+            obj.select_set(True)
+        
+        # merge em
+        print("Active object: ", activeObject)
+        print("Selected objects: ", skinMeshes)
+        bpy.ops.object.join()   
+
+        # deselecting them just incase
+        bpy.ops.object.select_all(action='DESELECT')
+        print("Merged.")
+
         return {"FINISHED"}
 
 
