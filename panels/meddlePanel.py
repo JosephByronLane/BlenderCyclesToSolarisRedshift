@@ -13,9 +13,6 @@ class VIEW3D_PT_MeddleReminderPanel(Panel):
     def draw(self, context):
         layout = self.layout
         layout.label(text="Go apply Meddle materials")
-        layout.label(text="Go apply Meddle materials")
-        layout.label(text="Go apply Meddle materials")
-        layout.label(text="Go apply Meddle materials")
 
 
 def register():

@@ -22,6 +22,7 @@ if "bpy" in locals():
     importlib.reload(importGLTFToScene)
     importlib.reload(mergeSimilarMesh)
     importlib.reload(glftImportSettings)
+    importlib.reload(eyeShadowFixer)
 
     ##reloading all the node definitions
     prefix = __package__ + ".nodes."
@@ -73,6 +74,7 @@ from .operators import fixSSS
 from .operators import changeNames
 from .operators import importGLTFToScene
 from .operators import mergeSimilarMesh
+from .operators import eyeShadowFixer
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -106,6 +108,7 @@ def register():
     importGLTFToScene.register()
     mergeSimilarMesh.register()
     glftImportSettings.register()
+    eyeShadowFixer.register()
 
 
 def unregister():
@@ -130,6 +133,7 @@ def unregister():
     importGLTFToScene.unregister()
     mergeSimilarMesh.unregister()
     glftImportSettings.unregister()
+    eyeShadowFixer.unregister()
 
 if __name__ == "__main__":
     register()
