@@ -54,10 +54,10 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
 
     def invoke(self, context, event):
         autoDetectGLTF = context.scene.auto_detect_gltf
-
         if autoDetectGLTF:
-            self.filepath = context.scene
+            return self.execute(context)
         context.window_manager.fileselect_add(self)
+        self.filepath = ""  #ensure its a string
         return {'RUNNING_MODAL'}
     
 
