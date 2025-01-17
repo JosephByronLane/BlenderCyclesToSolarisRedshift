@@ -15,6 +15,7 @@ class VIEW3D_PT_cleanUpNodeGraph(bpy.types.Panel):
         layout.operator("rfxutils.disconnect_specular", text="Disconnect Specular outputs (!!!!!)")
         layout.operator("rfxutils.child_remover", text="Remove Orphaned Nodes")
         layout.operator("rfxutils.sss_fixer", text="Fix SSSS Scale")
+        layout.operator("rfxutils.eye_shadow_fixer", text="Fix eye shadow")
 
 def register():
     bpy.utils.register_class(VIEW3D_PT_cleanUpNodeGraph)

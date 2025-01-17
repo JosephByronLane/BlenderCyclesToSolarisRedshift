@@ -58,6 +58,7 @@ from .panels import projectFolder
 from .panels import cleanupNodeGraph
 from .panels import exportMaterialSettings
 from .panels import importGLTF
+from .panels import meddlePanel
 
 from .operators import materialParser
 from .operators import autoDetectFolder
@@ -86,6 +87,7 @@ from . import nodes
 def register():
     projectFolder.register()
     importGLTF.register()
+    meddlePanel.register()
     cleanupNodeGraph.register()
     exportMaterial.register()
     materialParser.register()
@@ -109,6 +111,7 @@ def register():
 def unregister():
     projectFolder.unregister()
     exportMaterial.unregister()
+    meddlePanel.register()
     materialParser.unregister()
     autoDetectFolder.unregister()
     selectFolder.unregister()
