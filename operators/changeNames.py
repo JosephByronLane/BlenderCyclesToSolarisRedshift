@@ -17,22 +17,10 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
         
         # we are really only interested in the 1st and 2nd (Starting at 0) if we separate by _'s
 
-        # sho : feet
-        # glv : hands
-        # dwn : pant
-        # top : chest
-        # fac : face
-        # hir : hair
-        # til : tail
 
         mapRenaming = {
+            "rir": "ring",
             "sho": "feet",
-            "glv": "hands",
-            "dwn": "pant",
-            "top": "chest",
-            "fac": "face",
-            "hir": "hair",
-            "til": "tail"
         }
 
         bodyStrings = ["skin", "bra","panties"]

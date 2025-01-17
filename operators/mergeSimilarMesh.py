@@ -30,14 +30,27 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
                     # or 
                     # c0201e0000_glv_0_mt_c0201b0001_bibo_skin_n8DF9FD07.005
                     
-                    #we want to merge all meshes that have the same name up to the last dot
+                    #we want to merge all with similar names up until the last _ 
+                    print("----------------------------------------------")
+                    
                     meshName = object.name
-                    meshNameParts = meshName.split(".")
-                    meshNameBase = meshNameParts[0]
 
+                    meshNameParts = meshName.split("_")
+                    print("Mesh name parts: ", meshNameParts)
+                    #joins them back while keeping the _'s
+                    if len(meshNameParts) == 9:
+                        meshNameBase = "_".join(meshNameParts[:-1]) 
+                    elif len(meshNameParts) == 10:
+                        meshNameBase = "_".join(meshNameParts[:-2])
+                    
+                    print("Mesh name base: ", meshNameBase)
+                    
                     if meshNameBase in parsedObjects:
+                        print("Appending object: ", object)
                         parsedObjects[meshNameBase].append(object)
+                    
                     else:
+                        print("Creating new key: ", meshNameBase)
                         parsedObjects[meshNameBase] = [object]
 
             mergedObjects = []
@@ -98,6 +111,11 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
             if any(keyword in meshFullName for keyword in mergeKeywords):
                 print("Found skin mesh: ", object)
                 skinMeshes.append(object)
+
+        if len(skinMeshes) == 0:
+            print("No skin meshes found.")
+            self.report({'INFO'}, f"No skin meshes were found.")
+            return {"FINISHED"}
 
         print("----------------------------------------------")
         print("Merging skin meshes...")
