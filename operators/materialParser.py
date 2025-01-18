@@ -2,8 +2,10 @@ import bpy  # type: ignore
 from ..nodes import nodeRegistry 
 from ..nodes.nodeRegistry import getRegistry
 from ..data.tempStorage import GLOBAL_DATA_STORE
-import uuid
 from ..utils.uniqueDict import resetNodeNames 
+
+from ..data.exporterConfig import ExporterConfig
+
 class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
     """Export the active material's node tree to IR JSON."""
     bl_idname = "rfxutils.material_parser"
@@ -48,14 +50,20 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
         moveTextures = bpy.context.scene.move_textures_over
         self.clearErrorsFromCustomList()
 
-        
+        #we set the singleton proprieties so the respective registries can access them when the materials are parsed
+        #TODO: move this to its own function rather than living in the materialParser???
+        config = ExporterConfig()
+        config.set_property("ignore_invert_nodes", context.scene.ignore_invert_nodes)
+        config.set_property("move_textures_over", context.scene.ignore_invert_nodes)
+        config.set_property("include_osl_shaders", context.scene.ignore_invert_nodes)
+        config.set_property("move_osl_shaders", context.scene.ignore_invert_nodes)
+
+
         for obj in selectedObjects:
 
             if obj.type != 'MESH':
                 continue
             for mat in obj.data.materials:
-
-
 
                 resetNodeNames()
                 if mat and mat.use_nodes and mat.name not in alreadyExportedMmaterials:
@@ -66,6 +74,9 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                     RSIRGraphs= []
                     errors = []
+
+
+
 
                     #TODO: rewrite error handling cause its really finnicky and not very good
                     #i think we can move allErrors saving to addErrorsToCustomList?
@@ -111,7 +122,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                             }
 
                         else:
-                            error = f"Node {node.bl_idname} not supported "
+                            error = f"Node {node.name} not supported will be exported as if it was muted/didn't exist."
                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                             print(error)
                             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -201,13 +212,17 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                         if connectingNodeRSIRGraph is None:
                                             #in order to still maintain some semblance of connections, we can grab the node connected to the first input of the unsuported node
                                             #and use that as the connecting node RSIR Graph
+                                            print(f"Node {connectingNode.name} not found in the parsed graphs")
+
                                             print(f"Entering recursive function to find valid input node...")
+                                            print(f"sending values: {RSIRGraphs}, {connectingNode.name}, {parsedNodes}")
                                             connectingNode, connectingNodeRSIRGraph = self.findConnectingNode(RSIRGraphs, connectingNode, parsedNodes)
                                             hasTraversedUnsupportedNodes = True
+
                                             #if it does the whole traverse thing from the recursive function above, and it still can't find a node
                                             #that means you plugged in a string of unsuported nodes.
                                             if connectingNodeRSIRGraph is None or connectingNode is None:
-                                                print(f"Unsuported node {connectingNode.name} found. Will be ignored")
+                                                print(f"Unsuported node found. Will be ignored")
                                                 self.addErrorsToCustomList(f"Unsuported node {connectingNode.name} found. Will be ignored", mat.name)  
                                                 allErrors.append(f"Unsuported node {connectingNode.name} found. Will be ignored")
 
@@ -300,26 +315,33 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
     def findConnectingNode(self, RSIRGraphs, connectingNode, parsedNodes):
         print("==============================================================")
         #if the node is linked it means we can traverse back to find the node that is connected to it
-        if connectingNode.inputs[0].is_linked:
-            print(f"Connecting node {connectingNode.name} is linked")
-            connectingNode = connectingNode.inputs[0].links[0].from_node
-            for rsirGraph in RSIRGraphs:
-                print("----------------------------------------------")
-                print(f"Checking RSIRGraph {rsirGraph.uId}")
-                rsirGraphUids = rsirGraph.uId.split("&&")
-                for uid in rsirGraphUids:
-                    print(f"Checking uid {uid}")
-                    if uid == connectingNode.name:
-                        if uid in parsedNodes:
-                            print(f"Found  RSIRGraph making connection {rsirGraph.uId} for node {connectingNode.name}")
-                            return connectingNode, rsirGraph
-                        
-            #if it does the whole traverse thing from the recursive function above, and it still can't find a node we search again
-            print(f"Entering recursive function to find valid input node...")
-            return self.findConnectingNode(RSIRGraphs, connectingNode, parsedNodes)
-        #if it isn't that me ans you reached the end of the line and you plugged in a line of not supported nodes
-        else:
-            return None, None
+        print(f"Checking if connecting node is linked")
+        counter = 0
+        for inputs in connectingNode.inputs:
+            counter = counter + 1
+            print(counter)
+            print(f"Checking input {inputs.name}")
+            if inputs.is_linked:
+                print(f"Connecting node {connectingNode.name} is linked")
+                connectingNode = inputs.links[0].from_node
+                for rsirGraph in RSIRGraphs:
+                    print("----------------------------------------------")
+                    print(f"Checking RSIRGraph {rsirGraph.uId}")
+                    rsirGraphUids = rsirGraph.uId.split("&&")
+                    for uid in rsirGraphUids:
+                        print(f"Checking uid {uid}")
+                        if uid == connectingNode.name:
+                            if uid in parsedNodes:
+                                print(f"Found  RSIRGraph making connection {rsirGraph.uId} for node {connectingNode.name}")
+                                return connectingNode, rsirGraph
+                            
+                #if it does the whole traverse thing from the recursive function above, and it still can't find a node we search again
+                print(f"Entering recursive function to find valid input node...")
+                return self.findConnectingNode(RSIRGraphs, connectingNode, parsedNodes)
+            #if it isn't that me ans you reached the end of the line and you plugged in a line of not supported nodes
+            
+        print(f"Reached the end of the node trail with Nones.")
+        return None, None
 
 def register():
     bpy.utils.register_class(RFXUTILS_OT_MaterialParser)

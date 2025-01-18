@@ -6,8 +6,18 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
+from ..data.exporterConfig import ExporterConfig
+
 @registerNode('ShaderNodeInvert')
 def defineShaderNodeInvert(node, errors, parsedNodes):
+
+    config = ExporterConfig()
+
+    print("config", config.properties)
+    ignore_invert_nodes = config.get_property("ignore_invert_nodes", True)
+    
+    if ignore_invert_nodes:
+        return None
 
     #raw strings of nodes
     invertString = "RSMathInvColor"

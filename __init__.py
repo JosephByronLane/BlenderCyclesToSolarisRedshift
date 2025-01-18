@@ -73,8 +73,6 @@ from .proprieties import glftImportSettings
 
 from .utils import uniqueDict
 
-
-
 def register():
     projectFolder.register()
     importGLTF.register()
