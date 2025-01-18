@@ -3,19 +3,19 @@ if "bpy" in locals():
     import importlib
     import sys
 
-    ##reloading all the node definitions
+    ##reloading all the panel definitions
     prefix = __package__ + ".panels."
     for name, module in list(sys.modules.items()):
         if name.startswith(prefix) and module is not None:
             importlib.reload(module)
 
-    ##reloading all the node definitions
+    ##reloading all the operator definitions
     prefix = __package__ + ".operators."
     for name, module in list(sys.modules.items()):
         if name.startswith(prefix) and module is not None:
             importlib.reload(module)
-    ##reloading all the node definitions
 
+    ##reloading all the node definitions
     prefix = __package__ + ".nodes."
     for name, module in list(sys.modules.items()):
         if name.startswith(prefix) and module is not None:
@@ -66,6 +66,7 @@ from .operators import changeNames
 from .operators import importGLTFToScene
 from .operators import mergeSimilarMesh
 from .operators import eyeShadowFixer
+from .operators import imaveMover
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -96,7 +97,7 @@ def register():
     mergeSimilarMesh.register()
     glftImportSettings.register()
     eyeShadowFixer.register()
-
+    imaveMover.register()
 
 def unregister():
     projectFolder.unregister()
@@ -121,6 +122,7 @@ def unregister():
     mergeSimilarMesh.unregister()
     glftImportSettings.unregister()
     eyeShadowFixer.unregister()
+    imaveMover.unregister()
 
 if __name__ == "__main__":
     register()
