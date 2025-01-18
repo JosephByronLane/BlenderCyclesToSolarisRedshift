@@ -5,8 +5,22 @@ from ..data.RSIRNode import RSIRNode
 
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
+
+
+from ..data.exporterConfig import ExporterConfig
+from ..utils.fileMover import fileMover
+
 @registerNode('ShaderNodeTexImage')
 def defineImageTexture(node, errors, parsedNodes):
+
+    config = ExporterConfig()
+
+    ignore_invert_nodes = config.get_property("move_textures_over", True)
+    
+    if ignore_invert_nodes:
+        currentImagePath = node.image.filepath
+        toFile
+
 
     texSamplerString = "TextureSampler"
     colorSplitterString = "RSColorSplitter"
