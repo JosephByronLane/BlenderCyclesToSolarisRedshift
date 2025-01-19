@@ -13,27 +13,6 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
     def execute(self, context):
         selectedObjects = bpy.context.selected_objects
 
-        #mappings from their exported names to what their names should be.
-        mapRenaming = {
-            "skin": "body",
-            "hir": "hair",
-            "rir": "ring",
-            "sho": "feet",
-            "nek": "neck",
-            "glv": "hands",
-            "dwn": "pants",
-            "top": "chest",
-            "met": "helmet",
-            "iri": "iris",
-            "etc": "brows",
-            "characterocclusion": "eyeShadow",
-            "fac": "face",
-            "w": "weapon",
-            "til": "tail",
-            "e000_top": "bra",
-            "e000_dwn": "panties",
-        }
-        
         parsedMaterials = []
         for object in selectedObjects:
             if object.type == "MESH":
@@ -43,51 +22,118 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
                 #so we split by _'s, and then we take the 3rd to the 8th element
                 #leaving us with hir_0_mt_c0201h0148_hir_a_hair
                 #which wont contain doubles of another class, for example the example above contains _top in it.
-                wasNameChanged = False
-                meshPrunedName = meshFullName.split("_")[3:8]
-                for key in mapRenaming:
-                    if key in meshPrunedName:
-                        toNameMesh = f"{mapRenaming[key]}_geo"
-                        object.name = toNameMesh
-                        wasNameChanged = True
+                print("==============================================")
 
-                #we cant quite rename the tail programaticaly since it has a different name in the exported files
-                #so if a mesh isn't renamed, we can assme its the tail
-                if not wasNameChanged:
-                    toNameMesh = "tail_geo"
-                    object.name = toNameMesh    
+                print(f"Mesh full name: {meshFullName}")
+                returnedName = self.renamer(meshFullName)
+                print(f"Returned geo name: {returnedName}")
 
-                wasNameChanged = False
+                object.name = returnedName
 
                 #then we rename the materials aswell
                 materials = object.data.materials
                 for mat in  materials:
                     if mat.name not in parsedMaterials:
-                        matName = mat.name
-                        matPrunedName = matName.split("_")[2:4]
-                        if "w" in matPrunedName[0]:
-                            mat.name = "weapon_mat"
-
-                        manRejoinedName = "_".join(matPrunedName)
-                        for key in mapRenaming:
-                            if key in manRejoinedName:
-                                toNameMat = f"{mapRenaming[key]}_mat"
-                                mat.name = toNameMat
-                                wasNameChanged = True
-                                #edge cases, my favorite
-                                if mat.name == "body_mat.001":
-                                    mat.name = "neck_mat CHECK IF I NEED DELETING"
-                                elif mat.name == "brows_mat.001":
-                                    mat.name = "eye_shadow_mat"
-                        if not wasNameChanged:
-                            toNameMat = "tail_mat"
-                            mat.name = toNameMat
+                        print("==============================================")
+                        matNameFull = mat.name
+                        print(f"Material full name: {matNameFull}")
+                        returnedName = self.renamer(matNameFull)
+                        print(f"Returned mat name: {returnedName}")
+                        mat.name = returnedName
                         parsedMaterials.append(mat.name)
                 
-                
+
         return {"FINISHED"}
 
+    def renamer(self, fullName):
+        print("----------------------------------------------")
+        print("Renaming...")
+        fullNameSplitBase = fullName.split("_")
 
+        isMaterial = "mt" in fullNameSplitBase[0] 
+
+        exportSuffix = "_mat" if isMaterial else "_geo"
+
+        
+        #we check  this one first because weapons have less total splits than their counterparts.
+        #and id rather deal with them here rather than give them their whole house in the function below
+        #we can deal with it in the function below, but only as a material, since that one seems to have consistent splits
+        if "w" in fullName[0]:
+            return "weapon" + exportSuffix
+         
+        if isMaterial:            
+            print("Material detected")
+            fullNameSplit = fullNameSplitBase[1:]
+        else:
+            print("Geo detected")
+            fullNameSplit = fullNameSplitBase[4:]
+
+        print(f"Name we will be working with: {fullNameSplit}")
+
+        if  "w" in fullNameSplit[0]:
+            return "weapon"+ exportSuffix
+        #character (gear, skin, tail, etc)
+        elif "c" in fullNameSplit[0]:
+            #tail
+            #smallclothes
+            if "e000" in fullNameSplit[0]:
+                if "top" in fullNameSplit[1]:
+                    return "bra"+ exportSuffix
+                elif "dwn" in fullNameSplit[1]:
+                    return "panties"+ exportSuffix
+                else:
+                    return "unknown"+ exportSuffix
+            
+            #body/skin
+            elif "skin" in fullNameSplit[2]:
+                if "bibo" in fullNameSplit[1]:
+                    return "bibo_body"+ exportSuffix
+                elif "a" in fullNameSplit[1]:
+                    return "default_body"+ exportSuffix 
+                elif "b" in fullNameSplit[1]:
+                    return "bibo_body_hands_legs"+ exportSuffix
+                else:
+                    return "unknown"+ exportSuffix
+
+            #face    
+            #we dont simply check for 'fac' because fac can also be taken by beards, face marking thingies, etc
+            elif "fac" in fullNameSplit[1] and "a" in fullNameSplit[2]:
+                return "face"+ exportSuffix
+
+            #hair
+            elif "hir" in fullNameSplit[1]:
+                return "hair"+ exportSuffix
+
+            #brows
+            elif "etc" in fullNameSplit[1] and "a" in fullNameSplit[2]:
+                return "brows"+ exportSuffix
+            
+            #etc b doesn't exist since originally a was the eyebrows and b was the eyelashes, but since we merged them it dont exist no more.
+
+            #eye shadow
+            elif "etc" in fullNameSplit[1] and "c" in fullNameSplit[2]:
+                return "eye_shadow"+ exportSuffix
+            
+            #iris
+            elif "iri" in fullNameSplit[1]:
+                return "pupil"+ exportSuffix
+            
+
+            #ring
+            elif "rir" in fullNameSplit[1]:
+                return "ring"+ exportSuffix
+            
+            elif "t" in fullNameSplit[0]:
+                return "tail"+ exportSuffix
+
+            
+            else:
+                return "unknown"+ exportSuffix
+        else:
+            return "unknown"+ exportSuffix    
+
+                    
+            
                 
 def register():
     bpy.utils.register_class(RFX_OT_ChangeMeshNames)
