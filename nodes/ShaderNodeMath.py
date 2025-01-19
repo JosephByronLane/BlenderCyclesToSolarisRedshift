@@ -1,3 +1,4 @@
+import os
 from .nodeRegistry import registerNode
 
 from ..data.RSIRGraph import RSIRGraph 
@@ -7,9 +8,14 @@ from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
 from ..utils.findOslShader import findOSLShaderDirectory
+from ..utils.fileMover import fileMover
+
+from ..data.exporterConfig import ExporterConfig
 
 @registerNode('ShaderNodeMath')
 def defineShaderNodeMath(node, errors, parsedNodes):
+
+    config = ExporterConfig()
 
     graphChildren =[]
 
@@ -113,7 +119,13 @@ def defineShaderNodeMath(node, errors, parsedNodes):
         mathString = "RSMathAdd"
     #also implement all of the hyperbolic functions and conversions
 
-
+    #considering all isOsl is set above, we can re-set it below and it should work.
+    canOSL = config.get_property("include_osl_shaders", False)
+    if not canOSL and isOSL:
+        print(f"OSL Shaders are not enable. Cannot translate {node.name} with operation {node.operation}. Node will be ignored.")
+        isOSL = False
+        errors.append(f"OSL Shaders are not enable. Cannot translate {node.name} with operation {node.operation}. Node will be ignored.")
+        return None
 
     #generate names
     mathName= generateNodeName(mathString)
@@ -155,8 +167,17 @@ def defineShaderNodeMath(node, errors, parsedNodes):
     elif isOSL:
         mathNode.properties["osl"] = {}
         oslFileDirectory = findOSLShaderDirectory(node.bl_idname, node.operation)
+        moveOSL = config.get_property("move_osl_shaders", False)
+
+        if moveOSL:
+            dstOSLFileDest = os.path.join("osl", os.path.basename(oslFileDirectory))
+            oslFileDirectory = fileMover(oslFileDirectory, dstOSLFileDest, errors)
 
         print(f"OSL FILE DIRECTORY: {oslFileDirectory}")
+
+        if oslFileDirectory is None:
+            errors.append(f"OSL Shader for node {node.name} is not found. Node will be ignored.")
+            return None
 
         mathNode.properties["osl"]["RS_osl_file"] = oslFileDirectory
         mathNode.properties["osl"]["input1"] = node.inputs[0].default_value

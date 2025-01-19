@@ -96,6 +96,15 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
 
                             nodeFunction = nodeRegistry(node, errors, parsedNodes)
 
+                            if errors:           
+                                for error in errors:
+                                    allErrors.append(error)
+                                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                    print(f"Found error in node {node.name}: {error}")
+                                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                    self.addErrorsToCustomList(error, mat.name)      
+
+
                             if nodeFunction is None:
                                 print("????????????????????????????????????????????????")
                                 print(f"Parsing of node {node.bl_idname} returned null.")
@@ -105,16 +114,7 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                 continue
 
                             RSIRGraphs.append(nodeFunction) 
-                            
-                            if errors:           
-                                for error in errors:
-                                    allErrors.append(error)
-                                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                    print(f"Found error in node {node.name}: {error}")
-                                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                                    self.addErrorsToCustomList(error, mat.name)        
 
-                                
                             print(f"Node {node.name} parsed successfully")
                             uniqueId = mat.name  #uuid because why not lmao       
                             GLOBAL_DATA_STORE[uniqueId] = {
@@ -224,8 +224,8 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
                                             #that means you plugged in a string of unsuported nodes.
                                             if connectingNodeRSIRGraph is None or connectingNode is None:
                                                 print(f"Unsuported node found. Will be ignored")
-                                                self.addErrorsToCustomList(f"Unsuported node {connectingNode.name} found. Will be ignored", mat.name)  
-                                                allErrors.append(f"Unsuported node {connectingNode.name} found. Will be ignored")
+                                                self.addErrorsToCustomList(f"Unsuported node found at the end of the chain. Will be ignored", mat.name)  
+                                                allErrors.append(f"Unsuported node found. Will be ignored")
 
                                                 #technically we shouldnt need to set this to false since we set it at the beginning of the loop, but just in case
                                                 hasTraversedUnsupportedNodes = False

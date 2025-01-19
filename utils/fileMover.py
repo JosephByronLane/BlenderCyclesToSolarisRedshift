@@ -38,7 +38,7 @@ def fileMover(src, dst, errors):
         os.makedirs(dstDirectiryWithoutFileName, exist_ok=True)
 
     try:
-        shutil.move(src, fullDstPath)
+        shutil.copy(src, fullDstPath)
     except FileNotFoundError as e:
         errors.append(f"Blender image filepath couldn't be found. Make sure to not save the images in the blender project: {e}")
         return src
