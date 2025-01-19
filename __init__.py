@@ -35,6 +35,12 @@ if "bpy" in locals():
         if name.startswith(prefix) and module is not None:
             importlib.reload(module)
     
+    ##reloading all the property definitions
+    prefix = __package__ + ".proprieties."
+    for name, module in list(sys.modules.items()):
+        if name.startswith(prefix) and module is not None:
+            importlib.reload(module)
+    
 
 #even though we dont use it we need to use bpy for hot reload to work
 import bpy  # type: ignore

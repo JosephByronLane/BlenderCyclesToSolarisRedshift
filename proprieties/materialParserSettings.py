@@ -21,6 +21,18 @@ def register():
     description="Moves used OSL Shaders to the Houdini's Projects folder under /osl/.",
     default=True
     )
+    bpy.types.Scene.render_engine = bpy.props.EnumProperty(
+        name="Render Engine",
+        description="Select the render engine to use for the export.",
+        items=[
+            ("REDSHIFT", "Redshift", "Exports the materials for Redshift."),
+            ("KARMA", "Karma", "Exports the materials for Karma."),   
+            ("Renderman", "Renderman", "Exports the materials for Renderman."),           
+            ("MaterialX", "Pure MaterialX", "Exports the materials conforming to the MaterialX standard."),    
+
+        ],
+        default="REDSHIFT"
+    )
 
 def unregister():
     del bpy.types.Scene.ignore_invert_nodes
