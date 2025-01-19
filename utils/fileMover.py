@@ -1,6 +1,6 @@
 import os
 import shutil
-import bpy
+import bpy # type: ignore
 
 def fileMover(src, dst, errors):
     """Moves files from the src directory to the /HoudiniProjectFolder/dst directory.
