@@ -123,6 +123,7 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
             elif "rir" in fullNameSplit[1]:
                 return "ring"+ exportSuffix
             
+            #tail
             elif "t" in fullNameSplit[0]:
                 return "tail"+ exportSuffix
 
