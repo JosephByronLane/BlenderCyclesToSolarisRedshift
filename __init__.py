@@ -28,6 +28,12 @@ if "bpy" in locals():
     for name, module in list(sys.modules.items()):
         if name.startswith(prefix) and module is not None:
             importlib.reload(module)
+
+    ##reloading all the utils definitions
+    prefix = __package__ + ".utils."
+    for name, module in list(sys.modules.items()):
+        if name.startswith(prefix) and module is not None:
+            importlib.reload(module)
     
 
 #even though we dont use it we need to use bpy for hot reload to work
@@ -66,7 +72,6 @@ from .operators import changeNames
 from .operators import importGLTFToScene
 from .operators import mergeSimilarMesh
 from .operators import eyeShadowFixer
-from .operators import imaveMover
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -97,7 +102,6 @@ def register():
     mergeSimilarMesh.register()
     glftImportSettings.register()
     eyeShadowFixer.register()
-    imaveMover.register()
 
 def unregister():
     projectFolder.unregister()
@@ -122,7 +126,6 @@ def unregister():
     mergeSimilarMesh.unregister()
     glftImportSettings.unregister()
     eyeShadowFixer.unregister()
-    imaveMover.unregister()
 
 if __name__ == "__main__":
     register()

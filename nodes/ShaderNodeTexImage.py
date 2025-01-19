@@ -1,3 +1,5 @@
+import os
+
 from .nodeRegistry import registerNode
 
 from ..data.RSIRGraph import RSIRGraph 
@@ -6,22 +8,36 @@ from ..data.RSIRNode import RSIRNode
 from ..utils.uniqueDict import generateNodeName
 from ..utils.redshiftPrefix import prefixRedhisftNode
 
-
 from ..data.exporterConfig import ExporterConfig
+
 from ..utils.fileMover import fileMover
 
 @registerNode('ShaderNodeTexImage')
-def defineImageTexture(node, errors, parsedNodes):
+def defineImageTexture(node, errors, parsedNodes):    
+    #preprocessing
 
     config = ExporterConfig()
 
-    ignore_invert_nodes = config.get_property("move_textures_over", True)
+    matName = config.get_property("material_name", "Material")
+
+    move_textures_over =  config.get_property("move_textures_over", False)
+    print("move_textures_over", move_textures_over)
+    print("matName", matName)
+
+    if move_textures_over:
+        try:
+            currentImagePath = node.image.filepath
+            fileName = currentImagePath.split("\\")[-1]
+            fullNewFilePath = os.path.join("tex", matName, fileName)
+            newFilePath  = fileMover(currentImagePath, fullNewFilePath, errors)
+            node.image.filepath = newFilePath
+
+        except Exception as e:
+            errors.append(f"Error moving texture file: {e}")
     
-    if ignore_invert_nodes:
-        currentImagePath = node.image.filepath
-        toFile
 
 
+    #node definition
     texSamplerString = "TextureSampler"
     colorSplitterString = "RSColorSplitter"
     colorMakerString = "RSColorMaker"

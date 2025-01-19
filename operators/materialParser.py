@@ -54,16 +54,17 @@ class RFXUTILS_OT_MaterialParser(bpy.types.Operator):
         #TODO: move this to its own function rather than living in the materialParser???
         config = ExporterConfig()
         config.set_property("ignore_invert_nodes", context.scene.ignore_invert_nodes)
-        config.set_property("move_textures_over", context.scene.ignore_invert_nodes)
-        config.set_property("include_osl_shaders", context.scene.ignore_invert_nodes)
-        config.set_property("move_osl_shaders", context.scene.ignore_invert_nodes)
-
+        config.set_property("move_textures_over", context.scene.move_textures_over)
+        config.set_property("include_osl_shaders", context.scene.include_osl_shaders)
+        config.set_property("move_osl_shaders", context.scene.move_osl_shaders)
 
         for obj in selectedObjects:
 
             if obj.type != 'MESH':
                 continue
             for mat in obj.data.materials:
+
+                config.set_property("material_name", mat.name)
 
                 resetNodeNames()
                 if mat and mat.use_nodes and mat.name not in alreadyExportedMmaterials:
