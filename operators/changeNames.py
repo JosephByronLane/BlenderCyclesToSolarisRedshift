@@ -88,7 +88,7 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
         return {"FINISHED"}
 
 
-
+                
 def register():
     bpy.utils.register_class(RFX_OT_ChangeMeshNames)
 

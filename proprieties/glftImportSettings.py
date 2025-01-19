@@ -16,5 +16,10 @@ def register():
         description="Only merges skin meshes rather than the whole darn thing.",
         default=False
     )
+    bpy.types.Scene.keep_smallclothes_separate = bpy.props.BoolProperty(
+    name="Keep smallclothes separate",
+    description="Ensures that the smallclotes aren't merged into the same mesh as the body.",
+    default=False
+)
 def unregister():
     del bpy.types.Scene.auto_detect_gltf

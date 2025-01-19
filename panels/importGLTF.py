@@ -19,6 +19,8 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.separator()
 
         layout.prop(context.scene , "only_merge_skin", text="Only skin meshes")
+        layout.prop(context.scene , "keep_smallclothes_separate", text="Keep smallclothes separate")
+
         layout.operator( "rfxutils.merge_meshes", text="Merge Meshes")
 
         layout.separator()
