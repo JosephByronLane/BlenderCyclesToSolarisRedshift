@@ -17,7 +17,10 @@ class VIEW3D_PT_MaterialExporterSettings(Panel):
         layout.prop(context.scene , "ignore_invert_nodes", text="Ignore Invert Nodes")
         layout.prop(context.scene , "move_textures_over", text="Move Textures Over")
         layout.prop(context.scene , "include_osl_shaders", text="Allow OSL Shaders")
-        layout.prop(context.scene , "move_osl_shaders", text="Move OSL Shaders")
+
+        row = layout.row()
+        row.enabled = context.scene.include_osl_shaders
+        row.prop(context.scene , "move_osl_shaders", text="Move OSL Shaders")
 
 def register():
     bpy.utils.register_class(VIEW3D_PT_MaterialExporterSettings)
