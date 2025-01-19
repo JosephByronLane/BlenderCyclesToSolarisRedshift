@@ -25,11 +25,8 @@ def register():
         name="Render Engine",
         description="Select the render engine to use for the export.",
         items=[
-            ("REDSHIFT", "Redshift", "Exports the materials for Redshift."),
-            ("KARMA", "Karma", "Exports the materials for Karma."),   
-            ("Renderman", "Renderman", "Exports the materials for Renderman."),           
-            ("MaterialX", "Pure MaterialX", "Exports the materials conforming to the MaterialX standard."),    
-
+            ("REDSHIFT", "Redshift", "Exports the materials for Redshift."), 
+            #future plans...
         ],
         default="REDSHIFT"
     )

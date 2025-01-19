@@ -140,6 +140,7 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
         # deselecting them just incase
         bpy.ops.object.select_all(action='DESELECT')
         print("Merged.")
+        bpy.ops.object.select_all(action='SELECT')
 
         return {"FINISHED"}
 
