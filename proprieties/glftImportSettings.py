@@ -1,10 +1,10 @@
 import bpy # type: ignore
 from ..utils.fillItemsCallback import fillItemsCallback
 def register():
-    bpy.types.Scene.auto_detect_gltf = bpy.props.BoolProperty(
-        name="Auto Detect GLTF",
-        description="Auto detects the character GLTF file from the Houdini Project folder.",
-        default=False
+    bpy.types.Scene.grab_most_recent_meddle_export = bpy.props.BoolProperty(
+        name="Grab most recent meddle export",
+        description="Retrieves the most recent meddle export and grabs that as the import character.",
+        default=True
     )
     bpy.types.Scene.separate_col_gear_gltf = bpy.props.BoolProperty(
         name="Separate Gear and Collider GLTF",
@@ -19,8 +19,13 @@ def register():
     bpy.types.Scene.keep_smallclothes_separate = bpy.props.BoolProperty(
         name="Keep smallclothes separate",
         description="Ensures that the smallclotes aren't merged into the same mesh as the body.",
-        default=False
+        default=True
     )   
+    bpy.types.Scene.meddle_export_folder = bpy.props.BoolProperty(
+        name="Meddle export folder",
+        description="Folder where all meddle characters/terrain are stored.",
+        default="L:\FFXIV TexTools\Meddle"
+    )  
     bpy.types.Scene.character_name = bpy.props.EnumProperty(
         name="Character name",
         description="Name of the character to be processed.",
