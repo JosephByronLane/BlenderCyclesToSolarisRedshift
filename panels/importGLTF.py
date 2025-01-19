@@ -12,8 +12,20 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(context.scene , "auto_detect_gltf", text="Auto Detect GLTF location")
+        layout.label(text="Set Meddle export folder")
+
+        layout.prop(context.scene, "meddle_export_folder", text="Folder Path", icon='FILE_FOLDER')
+
+        layout.operator("rfxutils.auto_detect_folder", text="Auto Fill")
+        layout.separator()
+        
+        layout.prop(context.scene , "grab_most_recent_meddle_export", text="Use most recent Meddle export")
         layout.prop(context.scene , "separate_col_gear_gltf", text="Separate collider and gear GLTF")
+
+        row = layout.split(factor=0.5)
+        row.prop(context.scene, "character_name", text="Name")
+        row.prop(context.scene, "body_type", text="Collider")
+        layout.prop(context.scene , "character_outfit", text="Outfit")
 
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
         layout.separator()

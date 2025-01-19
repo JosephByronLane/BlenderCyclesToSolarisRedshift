@@ -1,5 +1,7 @@
 import bpy # type: ignore
-from ..utils.fillItemsCallback import fillItemsCallback
+from ..utils.fillItemsCallback import fillCharactersCallback
+from ..utils.fillItemsCallback import fillOutfitCallback
+from ..utils.fillItemsCallback import fillBodyCallback
 def register():
     bpy.types.Scene.grab_most_recent_meddle_export = bpy.props.BoolProperty(
         name="Grab most recent meddle export",
@@ -21,7 +23,7 @@ def register():
         description="Ensures that the smallclotes aren't merged into the same mesh as the body.",
         default=True
     )   
-    bpy.types.Scene.meddle_export_folder = bpy.props.BoolProperty(
+    bpy.types.Scene.meddle_export_folder = bpy.props.StringProperty(
         name="Meddle export folder",
         description="Folder where all meddle characters/terrain are stored.",
         default="L:\FFXIV TexTools\Meddle"
@@ -29,27 +31,29 @@ def register():
     bpy.types.Scene.character_name = bpy.props.EnumProperty(
         name="Character name",
         description="Name of the character to be processed.",
-        items=[
-        ],
-        default=""
+        items=fillCharactersCallback
     )   
-    bpy.types.Scene.collider_type = bpy.props.EnumProperty(
-        name="Collider Type",
-        description="The type of collider to be imported (vanilla, modded, etc.).",
-        items=[
-        ],
-        default=""
+    bpy.types.Scene.body_type = bpy.props.EnumProperty(
+        name="Mesh Type",
+        description="The type of the body to be imported (vanilla, modded, etc.).",
+        items=fillBodyCallback
     )
     bpy.types.Scene.character_outfit = bpy.props.EnumProperty(
         name="Character Outfit",
         description="The outfit of the character to be imported.",
-        items=[
-        ],
-        default=fillItemsCallback
+        items=fillOutfitCallback
     )
 
 #TODO: move to a separate file pls
 
 
 def unregister():
-    del bpy.types.Scene.auto_detect_gltf
+    del bpy.types.Scene.grab_most_recent_meddle_export
+    del bpy.types.Scene.separate_col_gear_gltf
+    del bpy.types.Scene.only_merge_skin
+    del bpy.types.Scene.keep_smallclothes_separate
+    del bpy.types.Scene.meddle_export_folder
+    del bpy.types.Scene.character_name
+    del bpy.types.Scene.body_type
+    del bpy.types.Scene.character_outfit
+

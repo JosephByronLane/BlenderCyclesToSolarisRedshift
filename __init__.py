@@ -86,6 +86,7 @@ from .proprieties import glftImportSettings
 from .utils import uniqueDict
 
 def register():
+
     projectFolder.register()
     importGLTF.register()
     meddlePanel.register()
@@ -93,6 +94,8 @@ def register():
     exportMaterial.register()
     materialParser.register()
     autoDetectFolder.register()
+    glftImportSettings.register()
+
     selectFolder.register()
     customFolder.register()
     degruopNodes.register()
@@ -106,10 +109,11 @@ def register():
     changeNames.register()
     importGLTFToScene.register()
     mergeSimilarMesh.register()
-    glftImportSettings.register()
     eyeShadowFixer.register()
 
 def unregister():
+    glftImportSettings.unregister()
+
     projectFolder.unregister()
     exportMaterial.unregister()
     meddlePanel.register()
@@ -130,7 +134,6 @@ def unregister():
     importGLTF.unregister()
     importGLTFToScene.unregister()
     mergeSimilarMesh.unregister()
-    glftImportSettings.unregister()
     eyeShadowFixer.unregister()
 
 if __name__ == "__main__":
