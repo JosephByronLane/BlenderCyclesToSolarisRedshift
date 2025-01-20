@@ -80,6 +80,7 @@ from .operators import changeNames
 from .operators import importGLTFToScene
 from .operators import mergeSimilarMesh
 from .operators import eyeShadowFixer
+from .operators import fixArmatures
 
 from .proprieties import customFolder
 from .proprieties import materialParserSettings
@@ -92,6 +93,7 @@ def register():
     projectFolder.register()
     importGLTF.register()
     meddlePanel.register()
+    applyMekToolsRig.register()
     meshCleanup.register()
     cleanupNodeGraph.register()
     exportMaterial.register()
@@ -113,6 +115,7 @@ def register():
     importGLTFToScene.register()
     mergeSimilarMesh.register()
     eyeShadowFixer.register()
+    fixArmatures.register()
     
 def unregister():
     glftImportSettings.unregister()
@@ -139,6 +142,8 @@ def unregister():
     mergeSimilarMesh.unregister()
     eyeShadowFixer.unregister()
     meshCleanup.unregister()
+    fixArmatures.unregister()
+    applyMekToolsRig.unregister()
 
 if __name__ == "__main__":
     register()

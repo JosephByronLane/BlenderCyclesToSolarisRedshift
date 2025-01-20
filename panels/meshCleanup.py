@@ -13,7 +13,7 @@ class VIEW3D_PT_MeshCleanup(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        layout.label(text="Clean up meshes")
+        layout.label(text="Merge and rename meshes and materials")
 
         layout.prop(context.scene , "only_merge_skin", text="Only skin meshes")
         layout.prop(context.scene , "keep_smallclothes_separate", text="Keep smallclothes separate")
@@ -22,8 +22,8 @@ class VIEW3D_PT_MeshCleanup(Panel):
 
         layout.separator()
         layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes and materials")
-
         
+        layout.operator( "rfxutils.fix_armatures", text="Fix Armatures")
 
 def register():
     bpy.utils.register_class(VIEW3D_PT_MeshCleanup)

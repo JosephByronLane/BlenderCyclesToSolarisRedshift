@@ -32,7 +32,6 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.prop(context.scene , "character_outfit", text="Gear")
 
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
-        layout.separator()
 
 
 def register():

@@ -5,14 +5,13 @@ from bpy.types import Panel, Operator # type: ignore
 class VIEW3D_PT_ApplyMekRig(Panel):
     """Creates a Panel in the Object properties window"""
     bl_label = "Apply Mektools Rig"
-    bl_idname = "RFXUTILS_PT_mesh_cleanup"
+    bl_idname = "RFXUTILS_PT_apply_mektools_rigs"
     bl_space_type = 'VIEW_3D'     
     bl_region_type = 'UI'         
     bl_category = "RuneFX Utils" 
 
     def draw(self, context):
         layout = self.layout
-        scene = context.scene
         layout.label(text="MekTools is required for this panel to work.")
 
         layout.operator("wm.url_open", text="Support them on Patreon!", icon="URL").url = "https://www.patreon.com/MekuuMaki"
