@@ -30,7 +30,9 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         row1.prop(context.scene, "body_type", text="Body")
         row1.enabled = context.scene.separate_col_gear_gltf
         layout.prop(context.scene , "character_outfit", text="Gear")
-
+        layout.separator()
+        
+        layout.prop(context.scene, "apply_meddle_shaders", text="Append meddle shader")
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
 
 

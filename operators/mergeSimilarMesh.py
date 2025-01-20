@@ -109,7 +109,7 @@ class RFX_OT_MergeSimilarMeshes(bpy.types.Operator):
 
             #we use e000 because thats the gear ID for smallclothes/emperors robe, which we usually want to merge with the skin base
             #to make a watertight  collider in houdini.
-            mergeKeywords = ["skin", "e0000"]
+            mergeKeywords = ["skin"]
             if any(keyword in meshFullName for keyword in mergeKeywords):
                 print("Found skin mesh: ", object)
                 skinMeshes.append(object)

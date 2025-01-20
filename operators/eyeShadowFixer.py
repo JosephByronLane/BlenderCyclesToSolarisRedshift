@@ -19,7 +19,7 @@ class RFX_OT_Fix_Eye_Shadow(bpy.types.Operator):
         for object in selectedObjects:
             if object.type == "MESH":
                 for mat in object.data.materials:
-                    if mat.name == "eye_shadow_mat":
+                    if "eye_shadow" in mat.name:
                         for node in mat.node_tree.nodes:
                             if node.bl_idname == "ShaderNodeBsdfPrincipled":
                                 for input in node.inputs:
