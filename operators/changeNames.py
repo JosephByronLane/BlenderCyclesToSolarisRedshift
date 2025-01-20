@@ -128,6 +128,30 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
                 return "tail"+ exportSuffix
 
             
+            
+            
+            #gear
+
+            #hands
+            elif "glv" in fullNameSplit[1]:
+                return "hands"+ exportSuffix
+            
+            #feet
+            elif "sho" in fullNameSplit[1]:
+                return "feet"+ exportSuffix
+            
+            #legs
+            elif "dwn" in fullNameSplit[1]:
+                return "legs"+ exportSuffix
+            
+            #chest
+            elif "top" in fullNameSplit[1]:
+                return "chest"+ exportSuffix
+            
+            #helmet
+            elif "met" in fullNameSplit[1]:
+                return "helmet"+ exportSuffix
+
             else:
                 return "unknown"+ exportSuffix
         else:
