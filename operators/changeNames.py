@@ -76,7 +76,7 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
         elif "c" in fullNameSplit[0]:
             #tail
             #smallclothes
-            if "e000" in fullNameSplit[0]:
+            if "e0000" in fullNameSplit[0]:
                 if "top" in fullNameSplit[1]:
                     return "bra"+ exportSuffix
                 elif "dwn" in fullNameSplit[1]:
