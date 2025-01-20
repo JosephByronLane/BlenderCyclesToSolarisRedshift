@@ -18,40 +18,41 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
         characterOutfitName = context.scene.character_outfit
         characterBodyName = context.scene.body_type
 
+        
+        if meddlePath == "":
+            self.report({'ERROR'}, "No Meddle folder selected.")
+            return {"CANCELLED"}
+
+        #gets the GLTF directory
+        gearGltfPath = os.path.join(meddlePath + (f"gear-{selectedCharacter}-{characterOutfitName}-raw"))
+        bodyGltfPath = os.path.join(meddlePath + (f"body-{selectedCharacter}-{characterBodyName}-raw"))
+
+        print("Gear GLTF path: ", gearGltfPath)
+        print("Body GLTF path: ", bodyGltfPath)
+
+        if not os.path.exists(gearGltfPath):
+            self.report({'ERROR'}, "No gear GLTF directory found.")
+            return {"CANCELLED"}
+        
+        if not os.path.exists(bodyGltfPath):
+            self.report({'ERROR'}, "No body GLTF directory found.")
+            return {"CANCELLED"}
+                    
+        gearGltfFile = os.path.join(gearGltfPath, "character.gltf")
+        bodyGltfFile = os.path.join(bodyGltfPath, "character.gltf")
+
+        print("Gear GLTF file: ", gearGltfFile)
+        print("Body GLTF file: ", bodyGltfFile)
+
+        if not os.path.exists(gearGltfFile):
+            self.report({'ERROR'}, "No gear GLTF file found.")
+            return {"CANCELLED"}
+        
+        if not os.path.exists(bodyGltfFile):
+            self.report({'ERROR'}, "No body GLTF file found.")
+            return {"CANCELLED"}
+
         if separateBodyAndGear:
-
-            if meddlePath == "":
-                self.report({'ERROR'}, "No Meddle folder selected.")
-                return {"CANCELLED"}
-
-            #gets the GLTF directory
-            gearGltfPath = os.path.join(meddlePath + (f"gear-{selectedCharacter}-{characterOutfitName}-raw"))
-            bodyGltfPath = os.path.join(meddlePath + (f"body-{selectedCharacter}-{characterBodyName}-raw"))
-
-            print("Gear GLTF path: ", gearGltfPath)
-            print("Body GLTF path: ", bodyGltfPath)
-
-            if not os.path.exists(gearGltfPath):
-                self.report({'ERROR'}, "No gear GLTF directory found.")
-                return {"CANCELLED"}
-            
-            if not os.path.exists(bodyGltfPath):
-                self.report({'ERROR'}, "No body GLTF directory found.")
-                return {"CANCELLED"}
-                        
-            gearGltfFile = os.path.join(gearGltfPath, "character.gltf")
-            bodyGltfFile = os.path.join(bodyGltfPath, "character.gltf")
-
-            print("Gear GLTF file: ", gearGltfFile)
-            print("Body GLTF file: ", bodyGltfFile)
-
-            if not os.path.exists(gearGltfFile):
-                self.report({'ERROR'}, "No gear GLTF file found.")
-                return {"CANCELLED"}
-            
-            if not os.path.exists(bodyGltfFile):
-                self.report({'ERROR'}, "No body GLTF file found.")
-                return {"CANCELLED"}
             
             #since we cant assign imported files to a file and iterate over them
             #what we do instead is take note of all of the existing meshes before the import, import the mesh then compare which ones are new
@@ -95,8 +96,17 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
 
             self.report({'INFO'}, f"Imported: {gearGltfFile} and {bodyGltfFile}")
             return {'FINISHED'}
-
-        return {"FINISHED"}  
+        else:
+            #if the user is importing a single mesh as the object, there isn't really much preprocessing needed lmao, its mostly just importing it and calling it a day
+            #we simply import the gear, keep its body components and thats it. No need to import the body since the gear already has it (though its not the full body)
+            bpy.ops.import_scene.gltf(filepath=gearGltfFile)
+            self.report({'INFO'}, f"Imported: {gearGltfFile} and {bodyGltfFile}")
+            for obj in bpy.context.selected_objects:
+                if obj.type == 'ARMATURE':
+                    obj.name = "body_armature"
+                    obj.data.pose_position = 'REST'
+                    break
+            return {'FINISHED'}
 
 def register():
     bpy.utils.register_class(RFX_OT_ImportGLTF)
