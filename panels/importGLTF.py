@@ -35,7 +35,6 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.prop(context.scene, "apply_meddle_shaders", text="Append meddle shader")
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
 
-
 def register():
     bpy.utils.register_class(VIEW3D_PT_ImportGLTFPanel)
 

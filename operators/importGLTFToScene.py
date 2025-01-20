@@ -12,6 +12,8 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
 
     def execute(self, context):
         
+        importMeddleShader = context.scene.apply_meddle_shaders
+
         separateBodyAndGear = context.scene.separate_col_gear_gltf
         meddlePath = context.scene.meddle_export_folder
         selectedCharacter = context.scene.character_name
@@ -26,6 +28,8 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
         #gets the GLTF directory
         gearGltfPath = os.path.join(meddlePath + (f"gear_{selectedCharacter}_{characterOutfitName}_raw"))
         bodyGltfPath = os.path.join(meddlePath + (f"character_{selectedCharacter}_{characterBodyName}_raw"))
+
+
 
         print("Gear GLTF path: ", gearGltfPath)
         print("Body GLTF path: ", bodyGltfPath)
@@ -51,6 +55,22 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
         if not os.path.exists(bodyGltfFile):
             self.report({'ERROR'}, "No body GLTF file found.")
             return {"CANCELLED"}
+
+
+        gearCachePath = os.path.join(gearGltfPath, "cache","")
+        bodyCachePath = os.path.join(bodyGltfPath, "cache","")
+        
+        print("Gear cache path: ", gearCachePath)
+        print("Body cache path: ", bodyCachePath)
+
+        if not os.path.exists(gearCachePath):
+            self.report({'ERROR'}, "No gear cache found.")
+            return {"CANCELLED"}
+
+        if not os.path.exists(bodyCachePath):
+            self.report({'ERROR'}, "No body cache found.")
+            return {"CANCELLED"}
+        
 
         if separateBodyAndGear:
             
@@ -95,7 +115,8 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
                     break
 
             self.report({'INFO'}, f"Imported: {gearGltfFile} and {bodyGltfFile}")
-            return {'FINISHED'}
+
+
         else:
             #if the user is importing a single mesh as the object, there isn't really much preprocessing needed lmao, its mostly just importing it and calling it a day
             #we simply import the gear, keep its body components and thats it. No need to import the body since the gear already has it (though its not the full body)
@@ -106,7 +127,13 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
                     obj.name = f"gear_{selectedCharacter}_{characterOutfitName}_armature"
                     obj.data.pose_position = 'REST'
                     break
-            return {'FINISHED'}
+            if importMeddleShader:
+              
+              bpy.ops.append.use_shaders_current('EXEC_DEFAULT', directory=gearCachePath)
+
+                
+        return {"FINISHED"}
+
 
 def register():
     bpy.utils.register_class(RFX_OT_ImportGLTF)

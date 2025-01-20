@@ -11,7 +11,7 @@ def register():
     bpy.types.Scene.apply_meddle_shaders = bpy.props.BoolProperty(
         name="Import with Meddle Shader",
         description="Automatically applies the Meddle-exported shaders to the imported GLTF.",
-        default=False
+        default=True
     )
     bpy.types.Scene.separate_col_gear_gltf = bpy.props.BoolProperty(
         name="Separate Gear and Collider GLTF",
