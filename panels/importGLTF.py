@@ -34,13 +34,6 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
         layout.separator()
 
-        layout.prop(context.scene , "only_merge_skin", text="Only skin meshes")
-        layout.prop(context.scene , "keep_smallclothes_separate", text="Keep smallclothes separate")
-
-        layout.operator( "rfxutils.merge_meshes", text="Merge Meshes")
-
-        layout.separator()
-        layout.operator( "rfxutils.change_mesh_names", text="Rename Meshes and materials")
 
 def register():
     bpy.utils.register_class(VIEW3D_PT_ImportGLTFPanel)

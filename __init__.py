@@ -63,6 +63,8 @@ from .panels import cleanupNodeGraph
 from .panels import exportMaterialSettings
 from .panels import importGLTF
 from .panels import meddlePanel
+from .panels import meshCleanup
+from .panels import applyMekToolsRig
 
 from .operators import materialParser
 from .operators import autoDetectFolder
@@ -90,6 +92,7 @@ def register():
     projectFolder.register()
     importGLTF.register()
     meddlePanel.register()
+    meshCleanup.register()
     cleanupNodeGraph.register()
     exportMaterial.register()
     materialParser.register()
@@ -110,7 +113,7 @@ def register():
     importGLTFToScene.register()
     mergeSimilarMesh.register()
     eyeShadowFixer.register()
-
+    
 def unregister():
     glftImportSettings.unregister()
 
@@ -135,6 +138,7 @@ def unregister():
     importGLTFToScene.unregister()
     mergeSimilarMesh.unregister()
     eyeShadowFixer.unregister()
+    meshCleanup.unregister()
 
 if __name__ == "__main__":
     register()
