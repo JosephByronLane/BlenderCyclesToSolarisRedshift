@@ -15,13 +15,12 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         layout.label(text="Set Meddle export folder")
 
         layout.prop(context.scene, "meddle_export_folder", text="Folder Path", icon='FILE_FOLDER')
-
-        layout.operator("rfxutils.auto_detect_folder", text="Auto Fill")
         layout.separator()
         
         #property isnt needed anymore...
         #woohoo i guess
         #layout.prop(context.scene , "grab_most_recent_meddle_export", text="Use most recent Meddle export")
+
         layout.prop(context.scene , "separate_col_gear_gltf", text="Separate body and gear GLTF")
 
         row = layout.split(factor=0.5)

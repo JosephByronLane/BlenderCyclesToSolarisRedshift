@@ -26,7 +26,9 @@ def register():
     bpy.types.Scene.meddle_export_folder = bpy.props.StringProperty(
         name="Meddle export folder",
         description="Folder where all meddle characters/terrain are stored.",
-        default="L:\FFXIV TexTools\Meddle"
+        subtype='DIR_PATH',
+
+        default="L:\\FFXIV TexTools\\Meddle\\"
     )  
     bpy.types.Scene.character_name = bpy.props.EnumProperty(
         name="Character name",

@@ -12,54 +12,91 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
 
     def execute(self, context):
         
-        autoDetectGLTF = context.scene.auto_detect_gltf
+        separateBodyAndGear = context.scene.separate_col_gear_gltf
+        meddlePath = context.scene.meddle_export_folder
+        selectedCharacter = context.scene.character_name
+        characterOutfitName = context.scene.character_outfit
+        characterBodyName = context.scene.body_type
 
+        if separateBodyAndGear:
 
-
-        if autoDetectGLTF:
-            #gets the GLTF from the custom folder path
-            houdiniProjectPath = context.scene.custom_folder_path
-            if houdiniProjectPath == "":
-                self.report({'ERROR'}, "No folder selected.  Pleasethe  Houdini Project or try to auto-detect it.")
+            if meddlePath == "":
+                self.report({'ERROR'}, "No Meddle folder selected.")
                 return {"CANCELLED"}
 
-            #gets the GLTF file from houdini path + /gltf/ + the first gltf file in the folder
-            gltfPath = houdiniProjectPath + "/gltf/"
+            #gets the GLTF directory
+            gearGltfPath = os.path.join(meddlePath + (f"gear-{selectedCharacter}-{characterOutfitName}-raw"))
+            bodyGltfPath = os.path.join(meddlePath + (f"body-{selectedCharacter}-{characterBodyName}-raw"))
 
-            if not os.path.exists(gltfPath):
-                self.report({'ERROR'}, "No GLTF folder found in the Houdini Project folder.")
+            print("Gear GLTF path: ", gearGltfPath)
+            print("Body GLTF path: ", bodyGltfPath)
+
+            if not os.path.exists(gearGltfPath):
+                self.report({'ERROR'}, "No gear GLTF directory found.")
                 return {"CANCELLED"}
             
-            gltfFiles = [f for f in os.listdir(gltfPath) if f.endswith(".gltf")]
-         
-            if len(gltfFiles) == 0:
-                self.report({'ERROR'}, "No GLTF files found in the Houdini Project folder.")
+            if not os.path.exists(bodyGltfPath):
+                self.report({'ERROR'}, "No body GLTF directory found.")
                 return {"CANCELLED"}
+                        
+            gearGltfFile = os.path.join(gearGltfPath, "character.gltf")
+            bodyGltfFile = os.path.join(bodyGltfPath, "character.gltf")
 
-            gltfFile = gltfFiles[0]
+            print("Gear GLTF file: ", gearGltfFile)
+            print("Body GLTF file: ", bodyGltfFile)
 
-            #using blenders build in GLTF importer with the gltfFile
-            bpy.ops.import_scene.gltf(filepath=gltfPath + gltfFile)
-        
-        else:
-            #if we dont want to auto detect, we can open a file browser and use that tp set the gltf file
-            try:
-                bpy.ops.import_scene.gltf(filepath=self.filepath)
-                self.report({'INFO'}, f"Imported: {self.filepath}")
-            except Exception as e:
-                self.report({'ERROR'}, str(e))
+            if not os.path.exists(gearGltfFile):
+                self.report({'ERROR'}, "No gear GLTF file found.")
+                return {"CANCELLED"}
+            
+            if not os.path.exists(bodyGltfFile):
+                self.report({'ERROR'}, "No body GLTF file found.")
+                return {"CANCELLED"}
+            
+            #since we cant assign imported files to a file and iterate over them
+            #what we do instead is take note of all of the existing meshes before the import, import the mesh then compare which ones are new
+            #to determine which ones are the imported meshes
+            existingObjects = set(bpy.context.scene.objects)
+
+            bpy.ops.import_scene.gltf(filepath=gearGltfFile)
+
+            importedMeshes = [obj for obj in bpy.context.scene.objects if obj not in existingObjects]
+
+            #once imported we check which meshes contain character information and we delete them
+            #we need to delete them since we're importing the gear and body separately
+            bodyPartKeywords  = ["skin", "hair", "etc", "iri", "bibo"]
+
+            for mesh in importedMeshes:
+                if mesh.type == 'MESH':  
+                    for keyword in bodyPartKeywords:
+                        if keyword in mesh.name:
+                            bpy.data.objects.remove(mesh)
+                            break
+
+
+            #since we still need to set the armature to 'rest position' well do a hacky thing rather than keeping and reorganizing what meshes we got
+            #after we import it, the last imported mesh (in this case the body) will be the active object
+            #so we can iterate over every selected object and if its an armature we set it to rest pose
+            for obj in bpy.context.selected_objects:
+                if obj.type == 'ARMATURE':
+                    obj.name = "gear_armature"
+                    obj.data.pose_position = 'REST'
+                    break
+
+
+            #next we import the body
+            #we dont need to determine what objects were imported since we generally want to keep the whole body itself
+            bpy.ops.import_scene.gltf(filepath=bodyGltfFile)
+            for obj in bpy.context.selected_objects:
+                if obj.type == 'ARMATURE':
+                    obj.name = "body_armature"
+                    obj.data.pose_position = 'REST'
+                    break
+
+            self.report({'INFO'}, f"Imported: {gearGltfFile} and {bodyGltfFile}")
             return {'FINISHED'}
 
-        return {"FINISHED"}
-
-    def invoke(self, context, event):
-        autoDetectGLTF = context.scene.auto_detect_gltf
-        if autoDetectGLTF:
-            return self.execute(context)
-        context.window_manager.fileselect_add(self)
-        self.filepath = ""  #ensure its a string
-        return {'RUNNING_MODAL'}
-    
+        return {"FINISHED"}  
 
 def register():
     bpy.utils.register_class(RFX_OT_ImportGLTF)
