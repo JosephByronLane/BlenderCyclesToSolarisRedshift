@@ -33,18 +33,20 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
 
                 importType = splitArmatureName[0]                
                 characterName = splitArmatureName[1]
+                outfitName = splitArmatureName[2]
 
                 #gear might be as in c0801h0148_hir_0_mt_c0201h0148_hir_a_hair_5FB0AC65.0;atr_top
                 #so we split by _'s, and then we take the 3rd to the 8th element
-                #leaving us with hir_0_mt_c0201h0148_hir_a_hair
+                #leaving us with hir_0_mt_c0201h0148_hir_a_hairQQ
                 #which wont contain doubles of another class, for example the example above contains _top in it.
                 print("==============================================")
 
                 print(f"Mesh full name: {meshFullName}")
                 returnedName = self.renamer(meshFullName)
                 print(f"Returned geo name: {returnedName}")
+                nameToApply = f"{importType}_{characterName}_{returnedName}"
 
-                object.name = returnedName
+                object.name = nameToApply
 
                 #then we rename the materials aswell
                 materials = object.data.materials
@@ -96,7 +98,7 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
             #smallclothes
             if "e0000" in fullNameSplit[0]:
                 if "top" in fullNameSplit[1]:
-                    return "bra"+ exportSuffix
+                    return "body-bra"+ exportSuffix
                 elif "dwn" in fullNameSplit[1]:
                     return "panties"+ exportSuffix
                 else:
@@ -105,11 +107,11 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
             #body/skin
             elif "skin" in fullNameSplit[2]:
                 if "bibo" in fullNameSplit[1]:
-                    return "bibo_body"+ exportSuffix
+                    return "body_bibo"+ exportSuffix
                 elif "a" in fullNameSplit[1]:
-                    return "default_body"+ exportSuffix 
+                    return "body_default"+ exportSuffix 
                 elif "b" in fullNameSplit[1]:
-                    return "bibo_body_hands_legs"+ exportSuffix
+                    return "body_bibo_hands_legs"+ exportSuffix
                 else:
                     return "unknown"+ exportSuffix
 
@@ -124,17 +126,17 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
 
             #brows
             elif "etc" in fullNameSplit[1] and "a" in fullNameSplit[2]:
-                return "brows"+ exportSuffix
+                return "face_brows"+ exportSuffix
             
             #etc b doesn't exist since originally a was the eyebrows and b was the eyelashes, but since we merged them it dont exist no more.
 
             #eye shadow
             elif "etc" in fullNameSplit[1] and "c" in fullNameSplit[2]:
-                return "eye_shadow"+ exportSuffix
+                return "face_eye_shadow"+ exportSuffix
             
             #iris
             elif "iri" in fullNameSplit[1]:
-                return "pupil"+ exportSuffix
+                return "face_pupil"+ exportSuffix
             
 
             #ring

@@ -31,7 +31,7 @@ def fillCharactersCallback(self, context):
             continue
        
 
-        split = dir.split("-")
+        split = dir.split("_")
         if (split[0] in {"gear", "collider", "terrain"}) and len(split) == 4:
             chara_name = split[1]
             chara_desc = f"Import the character {chara_name}"
@@ -79,7 +79,7 @@ def fillOutfitCallback(self, context):
         if not os.path.isdir(os.path.join(meddleFolder, dir)):
             continue       
         
-        split = dir.split("-")
+        split = dir.split("_")
         if (split[0] in {"gear", "terrain"}) and len(split) == 4:
             chara_outfit = split[2]
             chara_desc = f"Import the outfit {chara_outfit}"
@@ -126,7 +126,7 @@ def fillBodyCallback(self, context):
         if not os.path.isdir(os.path.join(meddleFolder, dir)):
             continue       
         
-        split = dir.split("-")
+        split = dir.split("_")
         if (split[0] in {"character"}) and len(split) == 4:
             bodyName = split[2]
             bodyDesc = f"Import the body {bodyName}"

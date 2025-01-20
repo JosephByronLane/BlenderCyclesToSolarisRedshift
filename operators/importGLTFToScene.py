@@ -24,8 +24,8 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
             return {"CANCELLED"}
 
         #gets the GLTF directory
-        gearGltfPath = os.path.join(meddlePath + (f"gear-{selectedCharacter}-{characterOutfitName}-raw"))
-        bodyGltfPath = os.path.join(meddlePath + (f"body-{selectedCharacter}-{characterBodyName}-raw"))
+        gearGltfPath = os.path.join(meddlePath + (f"gear_{selectedCharacter}_{characterOutfitName}_raw"))
+        bodyGltfPath = os.path.join(meddlePath + (f"character_{selectedCharacter}_{characterBodyName}_raw"))
 
         print("Gear GLTF path: ", gearGltfPath)
         print("Body GLTF path: ", bodyGltfPath)
@@ -35,7 +35,7 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
             return {"CANCELLED"}
         
         if not os.path.exists(bodyGltfPath):
-            self.report({'ERROR'}, "No body GLTF directory found.")
+            self.report({'ERROR'}, "No character GLTF directory found.")
             return {"CANCELLED"}
                     
         gearGltfFile = os.path.join(gearGltfPath, "character.gltf")
