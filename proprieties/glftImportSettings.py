@@ -36,13 +36,13 @@ def register():
         items=fillCharactersCallback
     )   
     bpy.types.Scene.body_type = bpy.props.EnumProperty(
-        name="Mesh Type",
-        description="The type of the body to be imported (vanilla, modded, etc.).",
+        name="Character Type",
+        description="The verson of the character to be imported (vanilla, modded, with/out piercing, etc).",
         items=fillBodyCallback
     )
     bpy.types.Scene.character_outfit = bpy.props.EnumProperty(
-        name="Character Outfit",
-        description="The outfit of the character to be imported.",
+        name="Character gear",
+        description="The gear of the character to be imported.",
         items=fillOutfitCallback
     )
 

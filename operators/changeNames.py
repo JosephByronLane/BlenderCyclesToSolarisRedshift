@@ -17,6 +17,22 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
         for object in selectedObjects:
             if object.type == "MESH":
                 meshFullName = object.name
+            
+
+                #since for renaming we need the character's name/body/gear, and the user might of changed the selected character (to import another one, for example)
+                #we can grab the name of the parent armature to get the character's data.
+
+                armatureName = object.parent.name
+
+                #the armature name is as follows:
+                #{character/gear}_{charaName}_{gear/bodyName}_armature.
+
+                #however the material/geo will be named
+                #{character/gear}_{charaName}_{geoName/matName}_geo/{mat}
+                splitArmatureName = armatureName.split("_")
+
+                importType = splitArmatureName[0]                
+                characterName = splitArmatureName[1]
 
                 #gear might be as in c0801h0148_hir_0_mt_c0201h0148_hir_a_hair_5FB0AC65.0;atr_top
                 #so we split by _'s, and then we take the 3rd to the 8th element
@@ -39,7 +55,9 @@ class RFX_OT_ChangeMeshNames(bpy.types.Operator):
                         print(f"Material full name: {matNameFull}")
                         returnedName = self.renamer(matNameFull)
                         print(f"Returned mat name: {returnedName}")
-                        mat.name = returnedName
+                        nameToApply = f"{importType}_{characterName}_{returnedName}"
+                        mat.name = nameToApply
+
                         parsedMaterials.append(mat.name)
                 
 

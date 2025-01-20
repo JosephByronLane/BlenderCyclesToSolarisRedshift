@@ -21,7 +21,7 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         #woohoo i guess
         #layout.prop(context.scene , "grab_most_recent_meddle_export", text="Use most recent Meddle export")
 
-        layout.prop(context.scene , "separate_col_gear_gltf", text="Separate body and gear GLTF")
+        layout.prop(context.scene , "separate_col_gear_gltf", text="Separate character and gear GLTF")
 
         row = layout.split(factor=0.5)
         row.prop(context.scene, "character_name", text="Name")
@@ -29,7 +29,7 @@ class VIEW3D_PT_ImportGLTFPanel(Panel):
         row1 = row.split(factor=1)
         row1.prop(context.scene, "body_type", text="Body")
         row1.enabled = context.scene.separate_col_gear_gltf
-        layout.prop(context.scene , "character_outfit", text="Outfit")
+        layout.prop(context.scene , "character_outfit", text="Gear")
 
         layout.operator( "rfxutils.import_gltf_operator", text="Import GLTF")
         layout.separator()

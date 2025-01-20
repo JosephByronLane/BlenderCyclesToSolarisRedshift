@@ -80,7 +80,7 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
             #so we can iterate over every selected object and if its an armature we set it to rest pose
             for obj in bpy.context.selected_objects:
                 if obj.type == 'ARMATURE':
-                    obj.name = "gear_armature"
+                    obj.name = f"gear_{selectedCharacter}_{characterOutfitName}_armature"
                     obj.data.pose_position = 'REST'
                     break
 
@@ -90,7 +90,7 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
             bpy.ops.import_scene.gltf(filepath=bodyGltfFile)
             for obj in bpy.context.selected_objects:
                 if obj.type == 'ARMATURE':
-                    obj.name = "body_armature"
+                    obj.name = f"character_{selectedCharacter}_{characterBodyName}_armature"
                     obj.data.pose_position = 'REST'
                     break
 
@@ -103,7 +103,7 @@ class RFX_OT_ImportGLTF(bpy.types.Operator):
             self.report({'INFO'}, f"Imported: {gearGltfFile} and {bodyGltfFile}")
             for obj in bpy.context.selected_objects:
                 if obj.type == 'ARMATURE':
-                    obj.name = "body_armature"
+                    obj.name = f"gear_{selectedCharacter}_{characterOutfitName}_armature"
                     obj.data.pose_position = 'REST'
                     break
             return {'FINISHED'}

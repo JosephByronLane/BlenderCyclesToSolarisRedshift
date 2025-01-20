@@ -127,7 +127,7 @@ def fillBodyCallback(self, context):
             continue       
         
         split = dir.split("-")
-        if (split[0] in {"body"}) and len(split) == 4:
+        if (split[0] in {"character"}) and len(split) == 4:
             bodyName = split[2]
             bodyDesc = f"Import the body {bodyName}"
             
